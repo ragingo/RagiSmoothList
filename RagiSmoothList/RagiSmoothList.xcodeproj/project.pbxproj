@@ -9,16 +9,33 @@
 /* Begin PBXBuildFile section */
 		52D01E002941CE4700103B11 /* RagiSmoothList.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D01DFF2941CE4700103B11 /* RagiSmoothList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E0C2941D05900103B11 /* RagiSmoothList.swift */; };
+		52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */; };
+		52D01E172941D19000103B11 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E162941D19000103B11 /* ContentView.swift */; };
+		52D01E192941D19100103B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E182941D19100103B11 /* Assets.xcassets */; };
+		52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E1B2941D19100103B11 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RagiSmoothList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D01DFF2941CE4700103B11 /* RagiSmoothList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RagiSmoothList.h; sourceTree = "<group>"; };
 		52D01E0C2941D05900103B11 /* RagiSmoothList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothList.swift; sourceTree = "<group>"; };
+		52D01E122941D19000103B11 /* RagiSmoothListExampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RagiSmoothListExampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListExampleAppApp.swift; sourceTree = "<group>"; };
+		52D01E162941D19000103B11 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		52D01E182941D19100103B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		52D01E1B2941D19100103B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		52D01E212941D1C600103B11 /* RagiSmoothList */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RagiSmoothList; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		52D01DF92941CE4700103B11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52D01E0F2941D19000103B11 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -31,8 +48,10 @@
 		52D01DF22941CE4700103B11 = {
 			isa = PBXGroup;
 			children = (
+				52D01E202941D1C600103B11 /* Packages */,
 				52D01E062941D00F00103B11 /* Sources */,
 				52D01DFF2941CE4700103B11 /* RagiSmoothList.h */,
+				52D01E132941D19000103B11 /* RagiSmoothListExampleApp */,
 				52D01DFD2941CE4700103B11 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */,
+				52D01E122941D19000103B11 /* RagiSmoothListExampleApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,6 +80,33 @@
 				52D01E0C2941D05900103B11 /* RagiSmoothList.swift */,
 			);
 			path = RagiSmoothList;
+			sourceTree = "<group>";
+		};
+		52D01E132941D19000103B11 /* RagiSmoothListExampleApp */ = {
+			isa = PBXGroup;
+			children = (
+				52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */,
+				52D01E162941D19000103B11 /* ContentView.swift */,
+				52D01E182941D19100103B11 /* Assets.xcassets */,
+				52D01E1A2941D19100103B11 /* Preview Content */,
+			);
+			path = RagiSmoothListExampleApp;
+			sourceTree = "<group>";
+		};
+		52D01E1A2941D19100103B11 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				52D01E1B2941D19100103B11 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		52D01E202941D1C600103B11 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				52D01E212941D1C600103B11 /* RagiSmoothList */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -94,6 +141,23 @@
 			productReference = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		52D01E112941D19000103B11 /* RagiSmoothListExampleApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52D01E1F2941D19100103B11 /* Build configuration list for PBXNativeTarget "RagiSmoothListExampleApp" */;
+			buildPhases = (
+				52D01E0E2941D19000103B11 /* Sources */,
+				52D01E0F2941D19000103B11 /* Frameworks */,
+				52D01E102941D19000103B11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RagiSmoothListExampleApp;
+			productName = RagiSmoothListExampleApp;
+			productReference = 52D01E122941D19000103B11 /* RagiSmoothListExampleApp.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -101,11 +165,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					52D01DFB2941CE4700103B11 = {
 						CreatedOnToolsVersion = 14.1;
 						LastSwiftMigration = 1410;
+					};
+					52D01E112941D19000103B11 = {
+						CreatedOnToolsVersion = 14.1;
 					};
 				};
 			};
@@ -123,6 +191,7 @@
 			projectRoot = "";
 			targets = (
 				52D01DFB2941CE4700103B11 /* RagiSmoothList */,
+				52D01E112941D19000103B11 /* RagiSmoothListExampleApp */,
 			);
 		};
 /* End PBXProject section */
@@ -135,6 +204,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52D01E102941D19000103B11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */,
+				52D01E192941D19100103B11 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -143,6 +221,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52D01E0E2941D19000103B11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				52D01E172941D19000103B11 /* ContentView.swift in Sources */,
+				52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,6 +413,62 @@
 			};
 			name = Release;
 		};
+		52D01E1D2941D19100103B11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"RagiSmoothListExampleApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ragingo.ios.RagiSmoothListExampleApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		52D01E1E2941D19100103B11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"RagiSmoothListExampleApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ragingo.ios.RagiSmoothListExampleApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -343,6 +486,15 @@
 			buildConfigurations = (
 				52D01E042941CE4700103B11 /* Debug */,
 				52D01E052941CE4700103B11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		52D01E1F2941D19100103B11 /* Build configuration list for PBXNativeTarget "RagiSmoothListExampleApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52D01E1D2941D19100103B11 /* Debug */,
+				52D01E1E2941D19100103B11 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
