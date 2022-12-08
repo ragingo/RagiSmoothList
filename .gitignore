@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# VSCode
+.vscode
+
+# SwiftPM
+.build
+
+# Xcode
+xcuserdata
