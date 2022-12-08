@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		524ABCE62941D67800205599 /* RagiSmoothList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; };
+		524ABCE72941D67800205599 /* RagiSmoothList.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		52D01E002941CE4700103B11 /* RagiSmoothList.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D01DFF2941CE4700103B11 /* RagiSmoothList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E0C2941D05900103B11 /* RagiSmoothList.swift */; };
 		52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */; };
@@ -14,6 +16,30 @@
 		52D01E192941D19100103B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E182941D19100103B11 /* Assets.xcassets */; };
 		52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E1B2941D19100103B11 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		524ABCE82941D67800205599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 52D01DF32941CE4700103B11 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 52D01DFB2941CE4700103B11;
+			remoteInfo = RagiSmoothList;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		524ABCEA2941D67800205599 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				524ABCE72941D67800205599 /* RagiSmoothList.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RagiSmoothList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,12 +65,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				524ABCE62941D67800205599 /* RagiSmoothList.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		524ABCE52941D67800205599 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		52D01DF22941CE4700103B11 = {
 			isa = PBXGroup;
 			children = (
@@ -53,6 +87,7 @@
 				52D01DFF2941CE4700103B11 /* RagiSmoothList.h */,
 				52D01E132941D19000103B11 /* RagiSmoothListExampleApp */,
 				52D01DFD2941CE4700103B11 /* Products */,
+				524ABCE52941D67800205599 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -148,10 +183,12 @@
 				52D01E0E2941D19000103B11 /* Sources */,
 				52D01E0F2941D19000103B11 /* Frameworks */,
 				52D01E102941D19000103B11 /* Resources */,
+				524ABCEA2941D67800205599 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				524ABCE92941D67800205599 /* PBXTargetDependency */,
 			);
 			name = RagiSmoothListExampleApp;
 			productName = RagiSmoothListExampleApp;
@@ -234,6 +271,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		524ABCE92941D67800205599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 52D01DFB2941CE4700103B11 /* RagiSmoothList */;
+			targetProxy = 524ABCE82941D67800205599 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		52D01E012941CE4700103B11 /* Debug */ = {
