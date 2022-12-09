@@ -14,7 +14,7 @@ public struct RagiSmoothList<
     Cell: View
 >: View
 {
-    public typealias ListSectionModelType = AnimatableSectionModel<ListSectionType<SectionType>, ListSectionItemType<ItemType>>
+    public typealias ListSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
     public typealias ListDataType = [ListSectionModelType]
     public typealias DiffDataType = [Changeset<ListSectionModelType>]
 

@@ -5,9 +5,10 @@
 //  Created by ragingo on 2022/12/08.
 //
 
-import Differentiator
+import Foundation
 
-public struct ListSectionItemType<T: Identifiable & Hashable>: IdentifiableType, Equatable {
+/// 利用者に IdentifiableType を要求しないようにするための型
+public struct ListSectionItemType<T: Identifiable & Hashable>: IdentifiableType, Hashable {
     public typealias Identity = T
     public let value: T
     public var id: T.ID { value.id }

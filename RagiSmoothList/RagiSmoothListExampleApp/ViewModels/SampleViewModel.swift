@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Differentiator
 import RagiSmoothList
 
 final class SampleViewModel: ObservableObject {
@@ -14,7 +13,7 @@ final class SampleViewModel: ObservableObject {
         let id: Int
     }
 
-    typealias SectionModelType = AnimatableSectionModel<ListSectionType<SectionType>, ListSectionItemType<Employee>>
+    typealias SectionModelType = ListSectionModel<SectionType, ListSectionItemType<Employee>>
 
     enum State: Equatable {
         case initial
@@ -89,7 +88,7 @@ final class SampleViewModel: ObservableObject {
 
     private func sections() -> [SectionModelType] {
         var sections: [SectionModelType] = []
-        let section = ListSectionType(value: SectionType(id: 0))
+        let section = SectionType(id: 0)
         let items: [ListSectionItemType<Employee>] = employees.map { ListSectionItemType(value: $0) }
         sections.append(.init(model: section, items: items))
         return sections

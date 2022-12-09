@@ -1,6 +1,6 @@
 //
 //  RagiSmoothListTextCell.swift
-//  RagiSmoothListExampleApp
+//  RagiSmoothList
 //
 //  Created by ragingo on 2022/12/08.
 //

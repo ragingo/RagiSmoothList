@@ -15,7 +15,7 @@ final class InnerTableView<
     Cell: View
 >: UIViewControllerRepresentable
 {
-    typealias TableSectionModelType = AnimatableSectionModel<ListSectionType<SectionType>, ListSectionItemType<ItemType>>
+    typealias TableSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
     typealias TableDataType = [TableSectionModelType]
     typealias DiffDataType = [Changeset<TableSectionModelType>]
     typealias UIViewControllerType = UIViewController
