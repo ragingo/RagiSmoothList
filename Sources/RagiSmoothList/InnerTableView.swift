@@ -15,9 +15,9 @@ final class InnerTableView<
     Cell: View
 >: UIViewControllerRepresentable
 {
-    typealias TableSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
-    typealias TableDataType = [TableSectionModelType]
-    typealias DiffDataType = [Changeset<TableSectionModelType>]
+    typealias ListSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
+    typealias ListDataType = [ListSectionModelType]
+    typealias DiffDataType = [Changeset<ListSectionModelType>]
     typealias UIViewControllerType = UIViewController
 
     @Binding private var diffData: DiffDataType
@@ -95,7 +95,7 @@ final class InnerTableView<
 
     final class Coordinator: NSObject, UITableViewDataSource {
         private let parent: InnerTableView
-        fileprivate var data: TableDataType = []
+        fileprivate var data: ListDataType = []
 
         init(parent: InnerTableView) {
             self.parent = parent

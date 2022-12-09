@@ -62,9 +62,3 @@ public struct RagiSmoothList<
         }
     }
 }
-
-//struct RagiSmoothList_Previews: PreviewProvider {
-//    static var previews: some View {
-//        RagiSmoothList()
-//    }
-//}
