@@ -25,6 +25,7 @@
 		52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */; };
 		52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */; };
 		52FF0451294306660044495F /* ListSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044F294306440044495F /* ListSectionModel.swift */; };
+		52FF04542943583F0044495F /* HostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0452294357F50044495F /* HostingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListTextCell.swift; sourceTree = "<group>"; };
 		52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListButtonCell.swift; sourceTree = "<group>"; };
 		52FF044F294306440044495F /* ListSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSectionModel.swift; sourceTree = "<group>"; };
+		52FF0452294357F50044495F /* HostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 		52D01E072941D00F00103B11 /* RagiSmoothList */ = {
 			isa = PBXGroup;
 			children = (
+				52FF0452294357F50044495F /* HostingView.swift */,
 				52FF04352942149F0044495F /* InnerTableView.swift */,
 				524ABCEB29420F0000205599 /* InnerTableViewCell.swift */,
 				52D01E0C2941D05900103B11 /* RagiSmoothList.swift */,
@@ -335,6 +338,7 @@
 				52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */,
 				524ABCEC29420F0000205599 /* InnerTableViewCell.swift in Sources */,
 				52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */,
+				52FF04542943583F0044495F /* HostingView.swift in Sources */,
 				52FF0451294306660044495F /* ListSectionModel.swift in Sources */,
 				52FF043A294216DA0044495F /* ListSectionItemType.swift in Sources */,
 				52FF04362942149F0044495F /* InnerTableView.swift in Sources */,
