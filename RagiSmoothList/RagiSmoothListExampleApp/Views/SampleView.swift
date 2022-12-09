@@ -43,6 +43,11 @@ struct SampleView: View {
             ZStack {
                 RagiSmoothList(
                     data: $employees,
+                    listConfiguration: .init(
+                        hasSeparator: true,
+                        separatorInsets: EdgeInsets(top: 0, leading: 100, bottom: 0, trailing: 100),
+                        separatorColor: .red
+                    ),
                     sectionContent: { section in
                         Button {
                         } label: {

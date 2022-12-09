@@ -22,6 +22,7 @@ final class InnerTableView<
     typealias UIViewControllerType = UIViewController
 
     @Binding private var diffData: DiffDataType
+    private let listConfiguration: RagiSmoothListConfiguration?
     private let sectionContent: (SectionType) -> Section
     private let cellContent: (ItemType) -> Cell
     @Binding private var needsRefresh: Bool
@@ -34,6 +35,7 @@ final class InnerTableView<
 
     init(
         diffData: Binding<DiffDataType>,
+        listConfiguration: RagiSmoothListConfiguration? = nil,
         @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         needsRefresh: Binding<Bool>,
@@ -41,6 +43,7 @@ final class InnerTableView<
         onRefresh: @escaping () -> Void
     ) {
         self._diffData = diffData
+        self.listConfiguration = listConfiguration
         self.sectionContent = sectionContent
         self.cellContent = cellContent
         self._needsRefresh = needsRefresh
@@ -56,6 +59,7 @@ final class InnerTableView<
         tableView.delegate = context.coordinator
         tableView.register(InnerTableViewSection<Section>.self, forHeaderFooterViewReuseIdentifier: sectionID)
         tableView.register(InnerTableViewCell<Cell>.self, forCellReuseIdentifier: cellID)
+        configureTableView(tableView)
         viewController.view = tableView
 
         let refreshControl = UIRefreshControl()
@@ -154,5 +158,18 @@ final class InnerTableView<
     @objc private func onRefreshControlValueChanged(sender: UIRefreshControl) {
         onRefresh()
         sender.endRefreshing()
+    }
+
+    private func configureTableView(_ tableView: UITableView) {
+        guard let listConfiguration else { return }
+
+        tableView.separatorStyle = listConfiguration.hasSeparator ? .singleLine : .none
+
+        if let separatorColor = listConfiguration.separatorColor {
+            tableView.separatorColor = UIColor(separatorColor)
+        }
+        if let separatorInsets = listConfiguration.separatorInsets {
+            tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
+        }
     }
 }

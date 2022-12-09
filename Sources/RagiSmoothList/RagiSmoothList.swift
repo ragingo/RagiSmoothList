@@ -20,6 +20,7 @@ public struct RagiSmoothList<
     public typealias DiffDataType = [Changeset<ListSectionModelType>]
 
     @Binding private var data: ListDataType
+    private let listConfiguration: RagiSmoothListConfiguration?
     private let sectionContent: (SectionType) -> Section
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
@@ -30,12 +31,14 @@ public struct RagiSmoothList<
 
     public init(
         data: Binding<ListDataType>,
+        listConfiguration: RagiSmoothListConfiguration? = nil,
         @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil
     ) {
         self._data = data
+        self.listConfiguration = listConfiguration
         self.sectionContent = sectionContent
         self.cellContent = cellContent
         self.onLoadMore = onLoadMore
@@ -45,6 +48,7 @@ public struct RagiSmoothList<
     public var body: some View {
         InnerTableView(
             diffData: $diffData,
+            listConfiguration: listConfiguration,
             sectionContent: sectionContent,
             cellContent: cellContent,
             needsRefresh: $needsRefresh,
@@ -65,5 +69,17 @@ public struct RagiSmoothList<
             self.diffData = diffData ?? []
             needsRefresh = true
         }
+    }
+}
+
+public struct RagiSmoothListConfiguration {
+    public var hasSeparator: Bool = true
+    public var separatorInsets: EdgeInsets?
+    public var separatorColor: Color?
+
+    public init(hasSeparator: Bool = true, separatorInsets: EdgeInsets? = nil, separatorColor: Color? = nil) {
+        self.hasSeparator = hasSeparator
+        self.separatorInsets = separatorInsets
+        self.separatorColor = separatorColor
     }
 }
