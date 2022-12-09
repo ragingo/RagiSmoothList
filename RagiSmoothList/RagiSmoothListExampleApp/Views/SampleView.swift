@@ -9,11 +9,24 @@ import SwiftUI
 import RagiSmoothList
 
 struct SampleView: View {
+    struct AlertInfo {
+        let message: String
+    }
+
+    struct CellButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .background(configuration.isPressed ? Color.yellow : Color.white)
+        }
+    }
+
     @State private var employees: [SampleViewModel.SectionModelType] = []
     @State private var isLoading = false
     @State private var isFirstLoadFailed = false
     @State private var isMoreLoadFailed = false
     @StateObject private var viewModel: SampleViewModel
+    @State private var showAlert = false
+    @State private var alertInfo: AlertInfo?
 
     // MARK: - デバッグ用
     @State private var forceFirstLoadError = false
@@ -31,9 +44,7 @@ struct SampleView: View {
                 RagiSmoothList(
                     data: $employees,
                     cellContent: { employee in
-                        RagiSmoothListButtonCell(label: { Text("\(employee.name)") }) {}
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .frame(height: 50)
+                        makeEmployeeCell(employee: employee)
                     },
                     onLoadMore: {
                         Task {
@@ -49,6 +60,13 @@ struct SampleView: View {
                         }
                     }
                 )
+                .alert(isPresented: $showAlert) {
+                    if let alertInfo {
+                        return Alert(title: Text(alertInfo.message))
+                    }
+                    assertionFailure()
+                    return Alert(title: Text(""))
+                }
                 .overlay(
                     moreLoadingState
                         .opacity(isLoading ? 1.0 : 0.0),
@@ -103,6 +121,41 @@ struct SampleView: View {
                 }
             }
         }
+    }
+
+    private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
+
+    private func makeEmployeeCell(employee: Employee) -> some View {
+        RagiSmoothListButtonCell(
+            label: {
+                HStack(spacing: 32) {
+                    Image(systemName: "\(employee.id % 50).square.fill")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(employee.id % 2 == 0 ? Color.blue : Color.orange)
+
+                    VStack(alignment: .leading) {
+                        Text("id: \(employee.id)")
+                            .font(.title3)
+                        Text("name: \(employee.name)")
+                            .font(.title)
+                    }
+
+                    Spacer()
+
+                    checkMarkIcon
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(.green)
+                        .opacity(employee.id % 5 == 0 ? 1.0 : 0.0)
+                }
+                .padding()
+            }
+        ) {
+            alertInfo = .init(message: "id: \(employee.id)")
+            showAlert = true
+        }
+        .buttonStyle(CellButtonStyle())
     }
 
     private var moreLoadingState: some View {
