@@ -11,6 +11,7 @@ import SwiftUI
 public struct RagiSmoothList<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
+    Section: View,
     Cell: View
 >: View
 {
@@ -19,6 +20,7 @@ public struct RagiSmoothList<
     public typealias DiffDataType = [Changeset<ListSectionModelType>]
 
     @Binding private var data: ListDataType
+    private let sectionContent: (SectionType) -> Section
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
@@ -28,11 +30,13 @@ public struct RagiSmoothList<
 
     public init(
         data: Binding<ListDataType>,
+        @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil
     ) {
         self._data = data
+        self.sectionContent = sectionContent
         self.cellContent = cellContent
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
@@ -41,6 +45,7 @@ public struct RagiSmoothList<
     public var body: some View {
         InnerTableView(
             diffData: $diffData,
+            sectionContent: sectionContent,
             cellContent: cellContent,
             needsRefresh: $needsRefresh,
             onLoadMore: {

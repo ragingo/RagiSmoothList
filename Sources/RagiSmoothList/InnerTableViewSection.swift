@@ -1,18 +1,18 @@
 //
-//  InnerTableViewCell.swift
+//  InnerTableViewSection.swift
 //  RagiSmoothList
 //
-//  Created by ragingo on 2022/12/08.
+//  Created by ragingo on 2022/12/09.
 //
 
 import SwiftUI
 import UIKit
 
-final class InnerTableViewCell<Content: View>: UITableViewCell {
+final class InnerTableViewSection<Content: View>: UITableViewHeaderFooterView {
     private var hostingView = HostingView<Content>()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
     }
 
     required init?(coder: NSCoder) {

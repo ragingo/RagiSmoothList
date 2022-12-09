@@ -43,6 +43,19 @@ struct SampleView: View {
             ZStack {
                 RagiSmoothList(
                     data: $employees,
+                    sectionContent: { section in
+                        Button {
+                        } label: {
+                            HStack {
+                                Image(systemName: "car")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .foregroundColor(.purple)
+                                Text("section id: \(section.id)")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                    },
                     cellContent: { employee in
                         makeEmployeeCell(employee: employee)
                     },

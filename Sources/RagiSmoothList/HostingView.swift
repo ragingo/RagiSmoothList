@@ -42,7 +42,7 @@ final class HostingView<Content: View>: UIView {
         hostingController.view.backgroundColor = .clear
     }
 
-    required init?(coder decoder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

@@ -12,6 +12,7 @@ import UIKit
 final class InnerTableView<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
+    Section: View,
     Cell: View
 >: UIViewControllerRepresentable
 {
@@ -21,22 +22,26 @@ final class InnerTableView<
     typealias UIViewControllerType = UIViewController
 
     @Binding private var diffData: DiffDataType
+    private let sectionContent: (SectionType) -> Section
     private let cellContent: (ItemType) -> Cell
     @Binding private var needsRefresh: Bool
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
 
     private let cellID = UUID().uuidString
+    private let sectionID = UUID().uuidString
     private var innerViewController: UIViewControllerType?
 
     init(
         diffData: Binding<DiffDataType>,
+        @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void
     ) {
         self._diffData = diffData
+        self.sectionContent = sectionContent
         self.cellContent = cellContent
         self._needsRefresh = needsRefresh
         self.onLoadMore = onLoadMore
@@ -48,6 +53,8 @@ final class InnerTableView<
 
         let tableView = UITableView()
         tableView.dataSource = context.coordinator
+        tableView.delegate = context.coordinator
+        tableView.register(InnerTableViewSection<Section>.self, forHeaderFooterViewReuseIdentifier: sectionID)
         tableView.register(InnerTableViewCell<Cell>.self, forCellReuseIdentifier: cellID)
         viewController.view = tableView
 
@@ -93,7 +100,7 @@ final class InnerTableView<
         return Coordinator(parent: self)
     }
 
-    final class Coordinator: NSObject, UITableViewDataSource {
+    final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
         private let parent: InnerTableView
         fileprivate var data: ListDataType = []
 
@@ -129,6 +136,18 @@ final class InnerTableView<
             cell.selectionStyle = .none
 
             return cell
+        }
+
+        // MARK: - UITableViewDelegate
+        func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionID) as? InnerTableViewSection<Section> else {
+                return nil
+            }
+
+            let sectionData = data[section]
+            headerView.set(content: parent.sectionContent(sectionData.model), parentController: parent.innerViewController)
+
+            return headerView
         }
     }
 
