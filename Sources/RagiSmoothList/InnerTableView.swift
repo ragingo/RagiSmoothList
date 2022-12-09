@@ -126,6 +126,7 @@ final class InnerTableView<
             let element = data[indexPath.section].items[indexPath.row]
             let content = parent.cellContent(element.value)
             cell.set(content: content, parentController: parent.innerViewController)
+            cell.selectionStyle = .none
 
             return cell
         }
