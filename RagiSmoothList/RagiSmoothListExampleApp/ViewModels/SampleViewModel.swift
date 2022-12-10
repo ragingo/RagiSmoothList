@@ -10,7 +10,8 @@ import RagiSmoothList
 
 final class SampleViewModel: ObservableObject {
     struct SectionType: Identifiable, Hashable {
-        let id: Int
+        var id: String { hireYear }
+        let hireYear: String
     }
 
     typealias SectionModelType = ListSectionModel<SectionType, ListSectionItemType<Employee>>
@@ -81,16 +82,58 @@ final class SampleViewModel: ObservableObject {
             .prefix(Self.itemsPerPage)
 
         let employees = Array(range)
-            .map { Employee(id: $0, name: "emp \($0)") }
+            .map {
+                Employee(id: $0, name: "emp \($0)", hireDate: makeDate(year: 2022 - ($0 / 10), month: 1, day: 1))
+            }
 
         return employees
     }
 
     private func sections() -> [SectionModelType] {
-        var sections: [SectionModelType] = []
-        let section = SectionType(id: 0)
-        let items: [ListSectionItemType<Employee>] = employees.map { ListSectionItemType(value: $0) }
-        sections.append(.init(model: section, items: items))
-        return sections
+        let groups = Dictionary(grouping: employees) { employee in
+            Self.toYear(from: employee.hireDate)
+        }
+        return groups
+            .sorted(by: { lhs, rhs in
+                lhs.key > rhs.key
+            })
+            .map { key, value in
+                SectionModelType(
+                    model: SectionType(hireYear: key),
+                    items: value.map { ListSectionItemType(value: $0) }
+                )
+            }
+    }
+
+    private static func toYear(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
+        return formatter.string(from: date)
+    }
+
+    private static func randomDate() -> Date {
+        let year = Int.random(in: 2000...2022)
+        let month = Int.random(in: 1...12)
+        let components = DateComponents(
+            calendar: .current,
+            timeZone: .current,
+            year: year,
+            month: month
+        )
+        let date = Calendar.current.date(from: components) ?? Date()
+        let days = Calendar.current.range(of: .day, in: .month, for: date)?.count ?? 1
+
+        return makeDate(year: year, month: month, day: Int.random(in: 1...days))
+    }
+
+    private static func makeDate(year: Int, month: Int, day: Int) -> Date {
+        let components = DateComponents(
+            calendar: .current,
+            timeZone: .current,
+            year: year,
+            month: month,
+            day: day
+        )
+        return Calendar.current.date(from: components) ?? Date()
     }
 }

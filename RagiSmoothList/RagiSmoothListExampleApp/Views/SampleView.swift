@@ -45,20 +45,23 @@ struct SampleView: View {
                     data: $employees,
                     listConfiguration: .init(
                         hasSeparator: true,
-                        separatorInsets: EdgeInsets(top: 0, leading: 100, bottom: 0, trailing: 100),
+                        separatorInsets: EdgeInsets(),
                         separatorColor: .red
                     ),
                     sectionContent: { section in
                         Button {
                         } label: {
                             HStack {
-                                Image(systemName: "car")
+                                calendarIcon
                                     .resizable()
                                     .frame(width: 50, height: 50)
                                     .foregroundColor(.purple)
-                                Text("section id: \(section.id)")
+                                Text("hire year: \(section.hireYear)")
+                                    .font(.title)
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
+                            .padding()
+                            .background(Color(red: 176/255, green: 237/255, blue: 148/255))
                         }
                     },
                     cellContent: { employee in
@@ -141,6 +144,7 @@ struct SampleView: View {
         }
     }
 
+    private let calendarIcon = Image(systemName: "calendar")
     private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
 
     private func makeEmployeeCell(employee: Employee) -> some View {
@@ -157,6 +161,12 @@ struct SampleView: View {
                             .font(.title3)
                         Text("name: \(employee.name)")
                             .font(.title)
+                    }
+
+                    VStack {
+                        Text("hire date: \(employee.hireDate, style: .date)")
+                            .font(.title3)
+                        Spacer()
                     }
 
                     Spacer()

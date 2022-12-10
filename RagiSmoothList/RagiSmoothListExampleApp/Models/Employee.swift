@@ -10,12 +10,9 @@ import Foundation
 struct Employee {
     let id: Int
     let name: String
+    let hireDate: Date
 }
 
 extension Employee: Identifiable {}
 
-extension Employee: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
+extension Employee: Hashable {}
