@@ -24,12 +24,12 @@ final class InnerTableViewCell<Content: View>: UITableViewCell {
         hostingView.invalidateIntrinsicContentSize()
 
         if !subviews.contains(hostingView) {
-            addSubview(hostingView)
+            contentView.addSubview(hostingView)
             hostingView.translatesAutoresizingMaskIntoConstraints = false
-            hostingView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            hostingView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            hostingView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            hostingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+            hostingView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+            hostingView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+            hostingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         }
     }
 }
