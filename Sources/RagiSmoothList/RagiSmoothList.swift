@@ -59,6 +59,14 @@ public struct RagiSmoothList<
                 onRefresh?()
             }
         )
+        .onAppear {
+            let diffData = try? Diff.differencesForSectionedView(
+                initialSections: [],
+                finalSections: data
+            )
+            self.diffData = diffData ?? []
+            needsRefresh = true
+        }
         .onChange(of: data) { [oldData = data] newData in
             // 参考の実装
             // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/RxTableViewSectionedAnimatedDataSource.swift#L97
@@ -72,6 +80,25 @@ public struct RagiSmoothList<
     }
 }
 
+extension RagiSmoothList {
+    public init(
+        data: Binding<ListDataType>,
+        listConfiguration: RagiSmoothListConfiguration? = nil,
+        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
+        onLoadMore: (() -> Void)? = nil,
+        onRefresh: (() -> Void)? = nil
+    ) where SectionType == RagiSmoothListEmptySection, Section == EmptyView {
+        self.init(
+            data: data,
+            listConfiguration: listConfiguration,
+            sectionContent: { _ in EmptyView() },
+            cellContent: cellContent,
+            onLoadMore: onLoadMore,
+            onRefresh: onRefresh
+        )
+    }
+}
+
 public struct RagiSmoothListConfiguration {
     public var hasSeparator: Bool = true
     public var separatorInsets: EdgeInsets?
@@ -82,4 +109,9 @@ public struct RagiSmoothListConfiguration {
         self.separatorInsets = separatorInsets
         self.separatorColor = separatorColor
     }
+}
+
+public struct RagiSmoothListEmptySection: Hashable, Identifiable {
+    public let id = 0
+    public init() {}
 }

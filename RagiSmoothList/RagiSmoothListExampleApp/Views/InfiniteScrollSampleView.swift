@@ -8,7 +8,7 @@
 import SwiftUI
 import RagiSmoothList
 
-struct SampleView: View {
+struct InfiniteScrollSampleView: View {
     struct AlertInfo {
         let message: String
     }
@@ -20,11 +20,11 @@ struct SampleView: View {
         }
     }
 
-    @State private var employees: [SampleViewModel.SectionModelType] = []
+    @State private var employees: [InfiniteScrollSampleViewModel.SectionModelType] = []
     @State private var isLoading = false
     @State private var isFirstLoadFailed = false
     @State private var isMoreLoadFailed = false
-    @StateObject private var viewModel: SampleViewModel
+    @StateObject private var viewModel: InfiniteScrollSampleViewModel
     @State private var showAlert = false
     @State private var alertInfo: AlertInfo?
 
@@ -33,7 +33,7 @@ struct SampleView: View {
     @State private var forceMoreLoadError = false
 
     init() {
-        self._viewModel = .init(wrappedValue: SampleViewModel())
+        self._viewModel = .init(wrappedValue: InfiniteScrollSampleViewModel())
     }
 
     var body: some View {
@@ -49,20 +49,7 @@ struct SampleView: View {
                         separatorColor: .red
                     ),
                     sectionContent: { section in
-                        Button {
-                        } label: {
-                            HStack {
-                                calendarIcon
-                                    .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .foregroundColor(.purple)
-                                Text("hire year: \(section.hireYear)")
-                                    .font(.title)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding()
-                            .background(Color(red: 176/255, green: 237/255, blue: 148/255))
-                        }
+                        makeSection(section: section)
                     },
                     cellContent: { employee in
                         makeEmployeeCell(employee: employee)
@@ -147,6 +134,23 @@ struct SampleView: View {
     private let calendarIcon = Image(systemName: "calendar")
     private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
 
+    private func makeSection(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
+        Button {
+        } label: {
+            HStack {
+                calendarIcon
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(.purple)
+                Text("hire year: \(section.hireYear)")
+                    .font(.title)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding()
+            .background(Color(red: 176/255, green: 237/255, blue: 148/255))
+        }
+    }
+
     private func makeEmployeeCell(employee: Employee) -> some View {
         RagiSmoothListButtonCell(
             label: {
@@ -226,6 +230,6 @@ struct SampleView: View {
 
 struct SampleView_Previews: PreviewProvider {
     static var previews: some View {
-        SampleView()
+        InfiniteScrollSampleView()
     }
 }

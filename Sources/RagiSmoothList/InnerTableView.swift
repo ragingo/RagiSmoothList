@@ -149,9 +149,16 @@ final class InnerTableView<
             }
 
             let sectionData = data[section]
-            headerView.set(content: parent.sectionContent(sectionData.model), parentController: parent.innerViewController)
+            let content = parent.sectionContent(sectionData.model)
+            headerView.set(content: content, parentController: parent.innerViewController)
 
             return headerView
+        }
+
+        func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+            let sectionData = data[section]
+            let content = parent.sectionContent(sectionData.model)
+            return content is EmptyView ? .leastNormalMagnitude : -1
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  SampleViewModel.swift
+//  InfiniteScrollSampleViewModel.swift
 //  RagiSmoothListExampleApp
 //
 //  Created by ragingo on 2022/12/08.
@@ -8,7 +8,7 @@
 import Foundation
 import RagiSmoothList
 
-final class SampleViewModel: ObservableObject {
+final class InfiniteScrollSampleViewModel: ObservableObject {
     struct SectionType: Identifiable, Hashable {
         var id: String { hireYear }
         let hireYear: String

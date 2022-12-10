@@ -19,14 +19,15 @@
 		52FF04362942149F0044495F /* InnerTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04352942149F0044495F /* InnerTableView.swift */; };
 		52FF043A294216DA0044495F /* ListSectionItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0439294216DA0044495F /* ListSectionItemType.swift */; };
 		52FF043D2942177F0044495F /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = 52FF043C2942177F0044495F /* Differentiator */; };
-		52FF044229421D8B0044495F /* SampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044129421D8B0044495F /* SampleView.swift */; };
-		52FF044429421D9D0044495F /* SampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044329421D9D0044495F /* SampleViewModel.swift */; };
+		52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */; };
 		52FF044629421DCF0044495F /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044529421DCF0044495F /* Employee.swift */; };
 		52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */; };
 		52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */; };
 		52FF0451294306660044495F /* ListSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044F294306440044495F /* ListSectionModel.swift */; };
 		52FF04542943583F0044495F /* HostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0452294357F50044495F /* HostingView.swift */; };
 		52FF045629435A980044495F /* InnerTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045529435A980044495F /* InnerTableViewSection.swift */; };
+		52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */; };
+		52FF045C2944B2890044495F /* SimpleListSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045B2944B2890044495F /* SimpleListSampleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,14 +67,15 @@
 		52D01E212941D1C600103B11 /* RagiSmoothList */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RagiSmoothList; path = ..; sourceTree = "<group>"; };
 		52FF04352942149F0044495F /* InnerTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTableView.swift; sourceTree = "<group>"; };
 		52FF0439294216DA0044495F /* ListSectionItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSectionItemType.swift; sourceTree = "<group>"; };
-		52FF044129421D8B0044495F /* SampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleView.swift; sourceTree = "<group>"; };
-		52FF044329421D9D0044495F /* SampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleViewModel.swift; sourceTree = "<group>"; };
+		52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteScrollSampleViewModel.swift; sourceTree = "<group>"; };
 		52FF044529421DCF0044495F /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListTextCell.swift; sourceTree = "<group>"; };
 		52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListButtonCell.swift; sourceTree = "<group>"; };
 		52FF044F294306440044495F /* ListSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListSectionModel.swift; sourceTree = "<group>"; };
 		52FF0452294357F50044495F /* HostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingView.swift; sourceTree = "<group>"; };
 		52FF045529435A980044495F /* InnerTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTableViewSection.swift; sourceTree = "<group>"; };
+		52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteScrollSampleView.swift; sourceTree = "<group>"; };
+		52FF045B2944B2890044495F /* SimpleListSampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleListSampleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,7 +189,7 @@
 		52FF043F29421D0A0044495F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				52FF044329421D9D0044495F /* SampleViewModel.swift */,
+				52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -196,7 +198,8 @@
 			isa = PBXGroup;
 			children = (
 				52D01E162941D19000103B11 /* ContentView.swift */,
-				52FF044129421D8B0044495F /* SampleView.swift */,
+				52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */,
+				52FF045B2944B2890044495F /* SimpleListSampleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -354,9 +357,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */,
 				52D01E172941D19000103B11 /* ContentView.swift in Sources */,
-				52FF044229421D8B0044495F /* SampleView.swift in Sources */,
-				52FF044429421D9D0044495F /* SampleViewModel.swift in Sources */,
+				52FF045C2944B2890044495F /* SimpleListSampleView.swift in Sources */,
+				52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */,
 				52FF044629421DCF0044495F /* Employee.swift in Sources */,
 				52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */,
 			);
