@@ -19,7 +19,7 @@ struct SimpleListSampleView: View {
     @State private var employees: [ListSectionModel<RagiSmoothListEmptySection, ListSectionItemType<Employee>>] = [
         .init(
             model: .init(),
-            items: (0..<100)
+            items: (0..<10_000)
                 .map {
                     Employee(id: $0 + 1, name: "emp \($0 + 1)", hireDate: Date().advanced(by: -Double($0 * 60 * 60 * 24)))
                 }
@@ -38,7 +38,7 @@ struct SimpleListSampleView: View {
                     action: {},
                     label: {
                         HStack {
-                            Text("id: \(employee.id, specifier: "%03d")")
+                            Text("id: \(String(employee.id))")
                                 .font(.title)
                                 .padding()
                                 .background(
