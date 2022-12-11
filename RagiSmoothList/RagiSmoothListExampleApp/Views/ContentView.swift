@@ -15,12 +15,17 @@ struct ContentView: View {
                 makeLink(
                     destination: { InfiniteScrollSampleView() },
                     description: "無限スクロール 動作確認用画面",
-                    iconColor: .red
+                    iconColor: .blue
                 )
                 makeLink(
                     destination: { SimpleListSampleView() },
                     description: "シンプルなリストの動作確認用画面",
                     iconColor: .green
+                )
+                makeLink(
+                    destination: { VerySlowStandardListSampleView() },
+                    description: "標準コンポーネントを使った超低速なリストUIの動作確認用画面\n※古い iOS/iPadOS デバイスだとスクロールが滑らかではない(例えば iPad mini 4th gen など)",
+                    iconColor: .red
                 )
             }
         }
@@ -30,7 +35,7 @@ struct ContentView: View {
 
     private let tableCellIcon: some View = Image(systemName: "tablecells")
         .resizable()
-        .frame(width: 50)
+        .frame(width: 50, height: 50)
 
     @ViewBuilder
     private func makeLink<Destination: View>(
