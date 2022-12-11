@@ -9,7 +9,7 @@ import Differentiator
 import SwiftUI
 import UIKit
 
-final class InnerTableView<
+struct InnerTableView<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
     Section: View,
@@ -31,7 +31,7 @@ final class InnerTableView<
 
     private let cellID = UUID().uuidString
     private let sectionID = UUID().uuidString
-    private var innerViewController: UIViewControllerType?
+    @State private var innerViewController: UIViewControllerType?
 
     init(
         diffData: Binding<DiffDataType>,
@@ -63,10 +63,12 @@ final class InnerTableView<
         viewController.view = tableView
 
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(onRefreshControlValueChanged(sender:)), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(context.coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
-        innerViewController = viewController
+        Task {
+            innerViewController = viewController
+        }
 
         return viewController
     }
@@ -118,6 +120,11 @@ final class InnerTableView<
             self.parent = parent
         }
 
+        @objc func onRefreshControlValueChanged(sender: UIRefreshControl) {
+            parent.onRefresh()
+            sender.endRefreshing()
+        }
+
         // MARK: - UITableViewDataSource
         func numberOfSections(in tableView: UITableView) -> Int {
             return data.count
@@ -166,11 +173,6 @@ final class InnerTableView<
             let content = parent.sectionContent(sectionData.model)
             return content is EmptyView ? .leastNormalMagnitude : -1
         }
-    }
-
-    @objc private func onRefreshControlValueChanged(sender: UIRefreshControl) {
-        onRefresh()
-        sender.endRefreshing()
     }
 
     private func configureTableView(_ tableView: UITableView) {
