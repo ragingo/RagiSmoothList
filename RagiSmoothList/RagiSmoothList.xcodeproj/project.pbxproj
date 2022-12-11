@@ -135,7 +135,7 @@
 		52D01E062941D00F00103B11 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				52FF044829421F1B0044495F /* Cell */,
+				52FF044829421F1B0044495F /* Cells */,
 				52D01E072941D00F00103B11 /* RagiSmoothList */,
 				52FF044729421E9B0044495F /* Section */,
 			);
@@ -219,13 +219,13 @@
 			path = Section;
 			sourceTree = "<group>";
 		};
-		52FF044829421F1B0044495F /* Cell */ = {
+		52FF044829421F1B0044495F /* Cells */ = {
 			isa = PBXGroup;
 			children = (
 				52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */,
 				52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */,
 			);
-			path = Cell;
+			path = Cells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
