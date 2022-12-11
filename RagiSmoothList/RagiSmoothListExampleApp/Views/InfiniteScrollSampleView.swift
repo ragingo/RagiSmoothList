@@ -29,6 +29,7 @@ struct InfiniteScrollSampleView: View {
     @State private var alertInfo: AlertInfo?
 
     // MARK: - デバッグ用
+    @State private var isDebugMenuExpanded = false
     @State private var forceFirstLoadError = false
     @State private var forceMoreLoadError = false
 
@@ -140,44 +141,47 @@ struct InfiniteScrollSampleView: View {
             HStack {
                 calendarIcon
                     .resizable()
-                    .frame(width: 50, height: 50)
+                    .frame(width: 20, height: 20)
                     .foregroundColor(.purple)
                 Text("hire year: \(section.hireYear)")
-                    .font(.title)
+                    .font(.title2)
             }
             .frame(maxWidth: .infinity, alignment: .center)
-            .padding()
+            .padding(.vertical, 8)
             .background(Color(red: 176/255, green: 237/255, blue: 148/255))
         }
     }
 
+    private static var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter
+    }()
+
     private func makeEmployeeCell(employee: Employee) -> some View {
         RagiSmoothListButtonCell(
             label: {
-                HStack(spacing: 32) {
-                    Image(systemName: "\(employee.id % 50).square.fill")
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .foregroundColor(employee.id % 2 == 0 ? Color.blue : Color.orange)
+                HStack(spacing: 16) {
+                    Text("id: \(String(employee.id))")
+                        .font(.title3)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(.orange)
+                        )
 
                     VStack(alignment: .leading) {
-                        Text("id: \(employee.id)")
-                            .font(.title3)
-                        Text("name: \(employee.name)")
-                            .font(.title)
-                    }
-
-                    VStack {
-                        Text("hire date: \(employee.hireDate, style: .date)")
-                            .font(.title3)
-                        Spacer()
+                        Text("\(employee.name)")
+                            .font(.title2)
+                        Text("hire date: \(employee.hireDate, formatter: Self.dateFormatter)")
+                            .font(.subheadline)
                     }
 
                     Spacer()
 
                     checkMarkIcon
                         .resizable()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 30, height: 30)
                         .foregroundColor(.green)
                         .opacity(employee.id % 5 == 0 ? 1.0 : 0.0)
                 }
@@ -218,15 +222,34 @@ struct InfiniteScrollSampleView: View {
     }
 
     private var debugView: some View {
-        HStack(spacing: 32) {
-            Toggle("初回データ取得時にエラー", isOn: $forceFirstLoadError)
-                .fixedSize()
-            Toggle("追加データ取得時にエラー", isOn: $forceMoreLoadError)
-                .fixedSize()
-        }
+        Expander(
+            isExpanded: $isDebugMenuExpanded,
+            header: { isExpanded in
+                ExpanderHeader(
+                    isExpanded: isExpanded,
+                    label: {
+                        Text("\(Image(systemName: "gearshape.fill")) Debug Menu")
+                    },
+                    toggleIcon: {
+                        Image(systemName: "chevron.right")
+                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                    }
+                )
+                .padding()
+            },
+            content: { _ in
+                VStack {
+                    Toggle("初回データ取得時にエラー", isOn: $forceFirstLoadError)
+                        .fixedSize()
+                    Toggle("追加データ取得時にエラー", isOn: $forceMoreLoadError)
+                        .fixedSize()
+                }
+                .padding()
+            }
+        )
+        .background(Color.blue.opacity(0.3))
     }
 }
-
 
 struct SampleView_Previews: PreviewProvider {
     static var previews: some View {
