@@ -31,6 +31,8 @@
 		52FF046029459DB20044495F /* RagiSmoothListEmptySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045F29459DB20044495F /* RagiSmoothListEmptySection.swift */; };
 		52FF046229459E170044495F /* RagiSmoothListSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF046129459E170044495F /* RagiSmoothListSectionModel.swift */; };
 		52FF04652945F89C0044495F /* VerySlowStandardListSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04642945F89C0044495F /* VerySlowStandardListSampleView.swift */; };
+		52FF046F294609DA0044495F /* Expander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF046D294609DA0044495F /* Expander.swift */; };
+		52FF0470294609DA0044495F /* ExpanderHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF046E294609DA0044495F /* ExpanderHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +84,8 @@
 		52FF045F29459DB20044495F /* RagiSmoothListEmptySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListEmptySection.swift; sourceTree = "<group>"; };
 		52FF046129459E170044495F /* RagiSmoothListSectionModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RagiSmoothListSectionModel.swift; sourceTree = "<group>"; };
 		52FF04642945F89C0044495F /* VerySlowStandardListSampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerySlowStandardListSampleView.swift; sourceTree = "<group>"; };
+		52FF046D294609DA0044495F /* Expander.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expander.swift; sourceTree = "<group>"; };
+		52FF046E294609DA0044495F /* ExpanderHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpanderHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +165,7 @@
 		52D01E132941D19000103B11 /* RagiSmoothListExampleApp */ = {
 			isa = PBXGroup;
 			children = (
+				52FF046B294609AF0044495F /* Components */,
 				52FF043E29421D000044495F /* Models */,
 				52D01E1A2941D19100103B11 /* Preview Content */,
 				52FF043F29421D0A0044495F /* ViewModels */,
@@ -229,6 +234,23 @@
 				52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		52FF046B294609AF0044495F /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				52FF046C294609B70044495F /* Expander */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		52FF046C294609B70044495F /* Expander */ = {
+			isa = PBXGroup;
+			children = (
+				52FF046D294609DA0044495F /* Expander.swift */,
+				52FF046E294609DA0044495F /* ExpanderHeader.swift */,
+			);
+			path = Expander;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -368,7 +390,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52FF046F294609DA0044495F /* Expander.swift in Sources */,
 				52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */,
+				52FF0470294609DA0044495F /* ExpanderHeader.swift in Sources */,
 				52D01E172941D19000103B11 /* ContentView.swift in Sources */,
 				52FF04652945F89C0044495F /* VerySlowStandardListSampleView.swift in Sources */,
 				52FF045C2944B2890044495F /* SimpleListSampleView.swift in Sources */,
