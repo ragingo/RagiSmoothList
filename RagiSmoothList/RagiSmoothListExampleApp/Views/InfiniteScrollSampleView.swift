@@ -186,6 +186,7 @@ struct InfiniteScrollSampleView: View {
                         .opacity(employee.id % 5 == 0 ? 1.0 : 0.0)
                 }
                 .padding()
+                .contentShape(Rectangle())
             }
         ) {
             alertInfo = .init(message: "id: \(employee.id)")
