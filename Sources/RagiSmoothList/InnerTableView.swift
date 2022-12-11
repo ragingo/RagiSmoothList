@@ -74,6 +74,12 @@ final class InnerTableView<
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         if needsRefresh, let uiTableView = uiViewController.view as? UITableView {
             diffData.forEach { changeset in
+                if changeset.originalSections.isEmpty {
+                    context.coordinator.data = changeset.finalSections
+                    uiTableView.reloadData()
+                    return
+                }
+
                 uiTableView.performBatchUpdates {
                     context.coordinator.data = changeset.finalSections
 
