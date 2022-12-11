@@ -16,7 +16,7 @@ struct InfiniteScrollSampleView: View {
     struct CellButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
-                .background(configuration.isPressed ? Color.yellow : Color.white)
+                .background(configuration.isPressed ? Color.yellow : nil)
         }
     }
 
