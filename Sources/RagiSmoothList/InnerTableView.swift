@@ -176,6 +176,10 @@ struct InnerTableView<
     }
 
     private func configureTableView(_ tableView: UITableView) {
+        if #available(iOS 15.0, *) {
+            tableView.sectionHeaderTopPadding = 0
+        }
+
         guard let listConfiguration else { return }
 
         tableView.separatorStyle = listConfiguration.hasSeparator ? .singleLine : .none
