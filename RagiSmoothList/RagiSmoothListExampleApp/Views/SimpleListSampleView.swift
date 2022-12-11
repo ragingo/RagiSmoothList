@@ -16,7 +16,7 @@ struct SimpleListSampleView: View {
         }
     }
 
-    @State private var employees: [ListSectionModel<RagiSmoothListEmptySection, ListSectionItemType<Employee>>] = [
+    @State private var employees: [RagiSmoothListSectionModel<RagiSmoothListEmptySection, RagiSmoothListSectionItemType<Employee>>] = [
         .init(
             model: .init(),
             items: (0..<10_000)
@@ -24,7 +24,7 @@ struct SimpleListSampleView: View {
                     Employee(id: $0 + 1, name: "emp \($0 + 1)", hireDate: Date().advanced(by: -Double($0 * 60 * 60 * 24)))
                 }
                 .map {
-                    ListSectionItemType(value: $0)
+                    RagiSmoothListSectionItemType(value: $0)
                 }
         )
     ]

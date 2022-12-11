@@ -15,7 +15,7 @@ public struct RagiSmoothList<
     Cell: View
 >: View
 {
-    public typealias ListSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
+    public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<ItemType>>
     public typealias ListDataType = [ListSectionModelType]
     public typealias DiffDataType = [Changeset<ListSectionModelType>]
 
@@ -97,21 +97,4 @@ extension RagiSmoothList {
             onRefresh: onRefresh
         )
     }
-}
-
-public struct RagiSmoothListConfiguration {
-    public var hasSeparator: Bool = true
-    public var separatorInsets: EdgeInsets?
-    public var separatorColor: Color?
-
-    public init(hasSeparator: Bool = true, separatorInsets: EdgeInsets? = nil, separatorColor: Color? = nil) {
-        self.hasSeparator = hasSeparator
-        self.separatorInsets = separatorInsets
-        self.separatorColor = separatorColor
-    }
-}
-
-public struct RagiSmoothListEmptySection: Hashable, Identifiable {
-    public let id = 0
-    public init() {}
 }

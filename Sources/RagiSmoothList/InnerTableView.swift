@@ -16,7 +16,7 @@ final class InnerTableView<
     Cell: View
 >: UIViewControllerRepresentable
 {
-    typealias ListSectionModelType = ListSectionModel<SectionType, ListSectionItemType<ItemType>>
+    typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<ItemType>>
     typealias ListDataType = [ListSectionModelType]
     typealias DiffDataType = [Changeset<ListSectionModelType>]
     typealias UIViewControllerType = UIViewController

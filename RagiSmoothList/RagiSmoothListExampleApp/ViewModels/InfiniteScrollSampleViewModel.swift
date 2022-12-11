@@ -14,7 +14,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         let hireYear: String
     }
 
-    typealias SectionModelType = ListSectionModel<SectionType, ListSectionItemType<Employee>>
+    typealias SectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<Employee>>
 
     enum State: Equatable {
         case initial
@@ -100,7 +100,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
             .map { key, value in
                 SectionModelType(
                     model: SectionType(hireYear: key),
-                    items: value.map { ListSectionItemType(value: $0) }
+                    items: value.map { RagiSmoothListSectionItemType(value: $0) }
                 )
             }
     }

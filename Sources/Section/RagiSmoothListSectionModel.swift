@@ -1,5 +1,5 @@
 //
-//  ListSectionModel.swift
+//  RagiSmoothListSectionModel.swift
 //  RagiSmoothList
 //
 //  Created by ragingo on 2022/12/09.
@@ -10,7 +10,7 @@ import Differentiator
 
 public typealias IdentifiableType = Differentiator.IdentifiableType
 
-public struct ListSectionModel<Section: Identifiable & Hashable, ItemType: IdentifiableType & Hashable> {
+public struct RagiSmoothListSectionModel<Section: Identifiable & Hashable, ItemType: IdentifiableType & Hashable> {
     public var model: Section
     public var items: [Item]
 
@@ -20,7 +20,7 @@ public struct ListSectionModel<Section: Identifiable & Hashable, ItemType: Ident
     }
 }
 
-extension ListSectionModel: AnimatableSectionModelType {
+extension RagiSmoothListSectionModel: AnimatableSectionModelType {
     public typealias Item = ItemType
     public typealias Identity = Section.ID
 
@@ -28,10 +28,10 @@ extension ListSectionModel: AnimatableSectionModelType {
         return model.id
     }
 
-    public init(original: ListSectionModel, items: [Item]) {
+    public init(original: RagiSmoothListSectionModel, items: [Item]) {
         self.model = original.model
         self.items = items
     }
 }
 
-extension ListSectionModel: Hashable {}
+extension RagiSmoothListSectionModel: Hashable {}
