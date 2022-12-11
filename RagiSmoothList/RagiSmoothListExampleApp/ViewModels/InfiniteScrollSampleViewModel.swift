@@ -83,7 +83,12 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
 
         let employees = Array(range)
             .map {
-                Employee(id: $0, name: "emp \($0)", hireDate: makeDate(year: 2022 - ($0 / 10), month: 1, day: 1))
+                let year = 2022 - ($0 / 10)
+                return Employee(
+                    id: $0,
+                    name: "emp \($0)",
+                    hireDate: randomDate(year: year)
+                )
             }
 
         return employees
@@ -108,8 +113,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         return formatter.string(from: date)
     }
 
-    private static func randomDate() -> Date {
-        let year = Int.random(in: 2000...2022)
+    private static func randomDate(year: Int) -> Date {
         let month = Int.random(in: 1...12)
         let components = DateComponents(
             calendar: .current,
