@@ -24,7 +24,7 @@ struct SimpleListSampleView: View {
                 hireDate: Date().advanced(by: -Double($0 * 60 * 60 * 24))
             )
         }
-        .listEmptySectionModel()
+        .listEmptySectionModels()
 
     var body: some View {
         RagiSmoothList(

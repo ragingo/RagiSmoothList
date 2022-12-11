@@ -90,19 +90,16 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
     }
 
     private func sections() -> [SectionModelType] {
-        let groups = Dictionary(grouping: employees) { employee in
+        Dictionary(grouping: employees) { employee in
             Self.toYear(from: employee.hireDate)
         }
-        return groups
-            .sorted(by: { lhs, rhs in
-                lhs.key > rhs.key
-            })
-            .map { key, value in
-                SectionModelType(
-                    model: SectionType(hireYear: key),
-                    items: value.map { RagiSmoothListSectionItemType(value: $0) }
-                )
-            }
+        .sorted(by: { lhs, rhs in
+            lhs.key > rhs.key
+        })
+        .map { key, value in
+            (section: SectionType(hireYear: key), items: value)
+        }
+        .listSectionModels()
     }
 
     private static func toYear(from date: Date) -> String {
