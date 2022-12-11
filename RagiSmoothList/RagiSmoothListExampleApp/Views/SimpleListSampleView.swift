@@ -16,18 +16,15 @@ struct SimpleListSampleView: View {
         }
     }
 
-    @State private var employees: [RagiSmoothListSectionModel<RagiSmoothListEmptySection, RagiSmoothListSectionItemType<Employee>>] = [
-        .init(
-            model: .init(),
-            items: (0..<10_000)
-                .map {
-                    Employee(id: $0 + 1, name: "emp \($0 + 1)", hireDate: Date().advanced(by: -Double($0 * 60 * 60 * 24)))
-                }
-                .map {
-                    RagiSmoothListSectionItemType(value: $0)
-                }
-        )
-    ]
+    @State private var employees = (0..<10_000)
+        .map {
+            Employee(
+                id: $0 + 1,
+                name: "emp \($0 + 1)",
+                hireDate: Date().advanced(by: -Double($0 * 60 * 60 * 24))
+            )
+        }
+        .listEmptySectionModel()
 
     var body: some View {
         RagiSmoothList(

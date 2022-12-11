@@ -35,3 +35,14 @@ extension RagiSmoothListSectionModel: AnimatableSectionModelType {
 }
 
 extension RagiSmoothListSectionModel: Hashable {}
+
+extension Array where Element: Identifiable & Hashable {
+    public func listEmptySectionModel() -> [RagiSmoothListSectionModel<RagiSmoothListEmptySection, RagiSmoothListSectionItemType<Element>>] {
+        [
+            RagiSmoothListSectionModel(
+                model: RagiSmoothListEmptySection(),
+                items: self.map { RagiSmoothListSectionItemType(value: $0) }
+            )
+        ]
+    }
+}
