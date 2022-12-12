@@ -27,6 +27,7 @@ struct InfiniteScrollSampleView: View {
     @StateObject private var viewModel: InfiniteScrollSampleViewModel
     @State private var showAlert = false
     @State private var alertInfo: AlertInfo?
+    @State private var scrollToTop = false
 
     // MARK: - デバッグ用
     @State private var isDebugMenuExpanded = false
@@ -41,100 +42,106 @@ struct InfiniteScrollSampleView: View {
         VStack {
             debugView
 
-            ZStack {
-                RagiSmoothList(
-                    data: $employees,
-                    listConfiguration: .init(
-                        hasSeparator: true,
-                        separatorInsets: EdgeInsets(),
-                        separatorColor: .red,
-                        canRowDelete: true
-                    ),
-                    sectionContent: { section in
-                        makeSection(section: section)
-                    },
-                    cellContent: { employee in
-                        makeEmployeeCell(employee: employee)
-                    },
-                    onLoadMore: {
-                        Task {
-                            await viewModel.loadMore(
-                                forceFirstLoadError: forceFirstLoadError,
-                                forceMoreLoadError: forceMoreLoadError
-                            )
-                        }
-                    },
-                    onRefresh: {
-                        Task {
-                            await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
-                        }
-                    },
-                    onDeleting: { employee in
-                    },
-                    onDeleted: { employee in
-                        viewModel.delete(target: employee)
-                        alertInfo = .init(message: "[removed] id: \(employee.id)")
-                        showAlert = true
-                    }
-                )
-                .alert(isPresented: $showAlert) {
-                    if let alertInfo {
-                        return Alert(title: Text(alertInfo.message))
-                    }
-                    assertionFailure()
-                    return Alert(title: Text(""))
-                }
-                .overlay(
-                    moreLoadingState
-                        .opacity(isLoading ? 1.0 : 0.0),
-                    alignment: .bottom
-                )
-                .overlay(
-                    // MEMO: タップを貫通させたい
-                    firstLoadErrorState
-                        .opacity(isFirstLoadFailed ? 1.0 : 0.0),
-                    alignment: .center
-                )
-                .overlay(
-                    moreLoadErrorState
-                        .opacity(isMoreLoadFailed ? 1.0 : 0.0)
-                        .padding(),
-                    alignment: .bottom
-                )
-                .onAppear {
+            Button {
+                scrollToTop = true
+            } label: {
+                Text("\(Image(systemName: "arrow.up.circle")) scroll to top")
+            }
+
+
+            RagiSmoothList(
+                data: $employees,
+                listConfiguration: .init(
+                    hasSeparator: true,
+                    separatorInsets: EdgeInsets(),
+                    separatorColor: .red,
+                    canRowDelete: true
+                ),
+                sectionContent: { section in
+                    makeSection(section: section)
+                },
+                cellContent: { employee in
+                    makeEmployeeCell(employee: employee)
+                },
+                onLoadMore: {
                     Task {
-                        await viewModel.loadMore()
+                        await viewModel.loadMore(
+                            forceFirstLoadError: forceFirstLoadError,
+                            forceMoreLoadError: forceMoreLoadError
+                        )
                     }
+                },
+                onRefresh: {
+                    Task {
+                        await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
+                    }
+                },
+                onDeleting: { employee in
+                },
+                onDeleted: { employee in
+                    viewModel.delete(target: employee)
+                    alertInfo = .init(message: "[removed] id: \(employee.id)")
+                    showAlert = true
                 }
-                .onChange(of: viewModel.state) { state in
-                    switch state {
-                    case .initial:
-                        isLoading = false
-                        isFirstLoadFailed = false
-                        isMoreLoadFailed = false
-                    case .loading:
-                        isLoading = true
-                        isFirstLoadFailed = false
-                        isMoreLoadFailed = false
-                    case .loaded(let employees):
-                        isLoading = false
-                        isFirstLoadFailed = false
-                        isMoreLoadFailed = false
-                        self.employees = employees
-                    case .unchanged:
-                        isLoading = false
-                        isFirstLoadFailed = false
-                        isMoreLoadFailed = false
-                    case .firstLoadFailed:
-                        isLoading = false
-                        isFirstLoadFailed = true
-                        isMoreLoadFailed = false
-                        self.employees = []
-                    case .moreLoadFailed:
-                        isLoading = false
-                        isFirstLoadFailed = false
-                        isMoreLoadFailed = true
-                    }
+            )
+            .scrollToTop($scrollToTop)
+            .alert(isPresented: $showAlert) {
+                if let alertInfo {
+                    return Alert(title: Text(alertInfo.message))
+                }
+                assertionFailure()
+                return Alert(title: Text(""))
+            }
+            .overlay(
+                moreLoadingState
+                    .opacity(isLoading ? 1.0 : 0.0),
+                alignment: .bottom
+            )
+            .overlay(
+                // MEMO: タップを貫通させたい
+                firstLoadErrorState
+                    .opacity(isFirstLoadFailed ? 1.0 : 0.0),
+                alignment: .center
+            )
+            .overlay(
+                moreLoadErrorState
+                    .opacity(isMoreLoadFailed ? 1.0 : 0.0)
+                    .padding(),
+                alignment: .bottom
+            )
+            .onAppear {
+                Task {
+                    await viewModel.loadMore()
+                }
+            }
+            .onChange(of: viewModel.state) { state in
+                switch state {
+                case .initial:
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                case .loading:
+                    isLoading = true
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                case .loaded(let employees):
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                    self.employees = employees
+                case .unchanged:
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                case .firstLoadFailed:
+                    isLoading = false
+                    isFirstLoadFailed = true
+                    isMoreLoadFailed = false
+                    self.employees = []
+                case .moreLoadFailed:
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = true
                 }
             }
         }
