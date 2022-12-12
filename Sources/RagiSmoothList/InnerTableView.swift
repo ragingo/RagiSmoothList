@@ -69,7 +69,7 @@ struct InnerTableView<
         viewController.view = tableView
 
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(context.coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
+        refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
         return viewController
