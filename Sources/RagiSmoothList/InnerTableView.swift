@@ -33,7 +33,6 @@ struct InnerTableView<
 
     private let cellID = UUID().uuidString
     private let sectionID = UUID().uuidString
-    @State private var innerViewController: UIViewControllerType?
 
     init(
         diffData: Binding<DiffDataType>,
@@ -70,38 +69,38 @@ struct InnerTableView<
         refreshControl.addTarget(self, action: #selector(context.coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
         tableView.refreshControl = refreshControl
 
-        Task {
-            innerViewController = viewController
-        }
-
         return viewController
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        if needsRefresh, let uiTableView = uiViewController.view as? UITableView {
+        if context.coordinator.viewController != uiViewController {
+            context.coordinator.viewController = uiViewController
+        }
+
+        if needsRefresh, let tableView = context.coordinator.tableView {
             diffData.forEach { changeset in
                 if changeset.originalSections.isEmpty {
                     context.coordinator.data = changeset.finalSections
-                    uiTableView.reloadData()
+                    tableView.reloadData()
                     return
                 }
 
-                uiTableView.performBatchUpdates {
+                tableView.performBatchUpdates {
                     context.coordinator.data = changeset.finalSections
 
                     // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
                     // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
                     // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
-                    uiTableView.deleteSections(.init(changeset.deletedSections), with: .automatic)
-                    uiTableView.insertSections(.init(changeset.insertedSections), with: .automatic)
+                    tableView.deleteSections(.init(changeset.deletedSections), with: .automatic)
+                    tableView.insertSections(.init(changeset.insertedSections), with: .automatic)
                     changeset.movedSections.forEach {
-                        uiTableView.moveSection($0.from, toSection: $0.to)
+                        tableView.moveSection($0.from, toSection: $0.to)
                     }
-                    uiTableView.deleteRows(at: .init(changeset.deletedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
-                    uiTableView.insertRows(at: .init(changeset.insertedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
-                    uiTableView.reloadRows(at: .init(changeset.updatedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
+                    tableView.deleteRows(at: .init(changeset.deletedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
+                    tableView.insertRows(at: .init(changeset.insertedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
+                    tableView.reloadRows(at: .init(changeset.updatedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
                     changeset.movedItems.forEach {
-                        uiTableView.moveRow(at: IndexPath(row: $0.from.itemIndex, section: $0.from.sectionIndex), to: IndexPath(row: $0.to.itemIndex, section: $0.to.sectionIndex))
+                        tableView.moveRow(at: IndexPath(row: $0.from.itemIndex, section: $0.from.sectionIndex), to: IndexPath(row: $0.to.itemIndex, section: $0.to.sectionIndex))
                     }
                 }
             }
@@ -119,6 +118,10 @@ struct InnerTableView<
     final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
         private let parent: InnerTableView
         fileprivate var data: ListDataType = []
+        fileprivate var viewController: UIViewControllerType?
+        var tableView: UITableView? {
+            viewController?.view as? UITableView
+        }
 
         init(parent: InnerTableView) {
             self.parent = parent
@@ -153,7 +156,7 @@ struct InnerTableView<
 
             let element = data[indexPath.section].items[indexPath.row]
             let content = parent.cellContent(element.value)
-            cell.set(content: content, parentController: parent.innerViewController)
+            cell.set(content: content, parentController: viewController)
             cell.selectionStyle = .none
 
             return cell
@@ -167,7 +170,7 @@ struct InnerTableView<
 
             let sectionData = data[section]
             let content = parent.sectionContent(sectionData.model)
-            headerView.set(content: content, parentController: parent.innerViewController)
+            headerView.set(content: content, parentController: viewController)
 
             return headerView
         }
