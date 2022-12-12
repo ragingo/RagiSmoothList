@@ -75,6 +75,12 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         await loadMore(forceFirstLoadError: forceFirstLoadError)
     }
 
+    func delete(target employee: Employee) {
+        if let index = employees.firstIndex(of: employee) {
+            employees.remove(at: index)
+        }
+    }
+
     private static func request(offset: Int) async -> [Employee] {
         let range = (1...).lazy
             .filter { $0 >= offset } // from

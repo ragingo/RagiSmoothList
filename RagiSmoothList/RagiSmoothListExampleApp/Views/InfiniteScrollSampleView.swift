@@ -47,7 +47,8 @@ struct InfiniteScrollSampleView: View {
                     listConfiguration: .init(
                         hasSeparator: true,
                         separatorInsets: EdgeInsets(),
-                        separatorColor: .red
+                        separatorColor: .red,
+                        canRowDelete: true
                     ),
                     sectionContent: { section in
                         makeSection(section: section)
@@ -67,6 +68,13 @@ struct InfiniteScrollSampleView: View {
                         Task {
                             await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
                         }
+                    },
+                    onDeleting: { employee in
+                    },
+                    onDeleted: { employee in
+                        viewModel.delete(target: employee)
+                        alertInfo = .init(message: "[removed] id: \(employee.id)")
+                        showAlert = true
                     }
                 )
                 .alert(isPresented: $showAlert) {

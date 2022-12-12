@@ -20,6 +20,7 @@ struct InnerTableView<
     typealias ListDataType = [ListSectionModelType]
     typealias DiffDataType = [Changeset<ListSectionModelType>]
     typealias UIViewControllerType = UIViewController
+    typealias DeleteCallback = ((section: Int, row: Int, item: ItemType)) -> Void
 
     @Binding private var diffData: DiffDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -28,6 +29,7 @@ struct InnerTableView<
     @Binding private var needsRefresh: Bool
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
+    private let onDelete: DeleteCallback
 
     private let cellID = UUID().uuidString
     private let sectionID = UUID().uuidString
@@ -40,7 +42,8 @@ struct InnerTableView<
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
-        onRefresh: @escaping () -> Void
+        onRefresh: @escaping () -> Void,
+        onDelete: @escaping DeleteCallback
     ) {
         self._diffData = diffData
         self.listConfiguration = listConfiguration
@@ -49,6 +52,7 @@ struct InnerTableView<
         self._needsRefresh = needsRefresh
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
+        self.onDelete = onDelete
     }
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
@@ -172,6 +176,27 @@ struct InnerTableView<
             let sectionData = data[section]
             let content = parent.sectionContent(sectionData.model)
             return content is EmptyView ? .leastNormalMagnitude : -1
+        }
+
+        func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+            return parent.listConfiguration?.canRowDelete == true
+        }
+
+        func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+            let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, handler) in
+                guard let self = self else {
+                    handler(false)
+                    return
+                }
+                self.parent.onDelete((
+                    section: indexPath.section,
+                    row: indexPath.row,
+                    item: self.data[indexPath.section].items[indexPath.row].value
+                ))
+                handler(true)
+            }
+            action.image = .init(systemName: "xmark.bin.fill")
+            return UISwipeActionsConfiguration(actions: [action])
         }
     }
 

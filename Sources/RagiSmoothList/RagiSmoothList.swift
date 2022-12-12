@@ -25,6 +25,8 @@ public struct RagiSmoothList<
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
+    private let onDeleting: ((ItemType) -> Void)?
+    private let onDeleted: ((ItemType) -> Void)?
 
     @State private var needsRefresh = false
     @State private var diffData: DiffDataType = []
@@ -35,7 +37,9 @@ public struct RagiSmoothList<
         @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
-        onRefresh: (() -> Void)? = nil
+        onRefresh: (() -> Void)? = nil,
+        onDeleting: ((ItemType) -> Void)? = nil,
+        onDeleted: ((ItemType) -> Void)? = nil
     ) {
         self._data = data
         self.listConfiguration = listConfiguration
@@ -43,6 +47,8 @@ public struct RagiSmoothList<
         self.cellContent = cellContent
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
+        self.onDeleting = onDeleting
+        self.onDeleted = onDeleted
     }
 
     public var body: some View {
@@ -57,26 +63,36 @@ public struct RagiSmoothList<
             },
             onRefresh: {
                 onRefresh?()
+            },
+            onDelete: { [oldData = data] section, row, item in
+                onDeleting?(item)
+                let removedItem = data[section].items.remove(at: row)
+                assert(removedItem.value == item)
+                onDeleted?(item)
+
+                updateDiff(oldData: oldData, newData: data)
             }
         )
         .onAppear {
-            let diffData = try? Diff.differencesForSectionedView(
-                initialSections: [],
-                finalSections: data
-            )
-            self.diffData = diffData ?? []
-            needsRefresh = true
+            updateDiff(oldData: [], newData: data)
         }
         .onChange(of: data) { [oldData = data] newData in
-            // 参考の実装
-            // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/RxTableViewSectionedAnimatedDataSource.swift#L97
-            let diffData = try? Diff.differencesForSectionedView(
-                initialSections: oldData,
-                finalSections: newData
-            )
-            self.diffData = diffData ?? []
-            needsRefresh = true
+            updateDiff(oldData: oldData, newData: newData)
         }
+    }
+
+    private func updateDiff(oldData: ListDataType, newData: ListDataType) {
+        // 参考の実装
+        // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/RxTableViewSectionedAnimatedDataSource.swift#L97
+        guard let diffData = try? Diff.differencesForSectionedView(
+            initialSections: oldData,
+            finalSections: newData
+        ) else {
+            return
+        }
+
+        self.diffData = diffData
+        needsRefresh = true
     }
 }
 
