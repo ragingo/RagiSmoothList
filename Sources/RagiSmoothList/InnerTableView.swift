@@ -27,6 +27,7 @@ struct InnerTableView<
     private let sectionContent: (SectionType) -> Section
     private let cellContent: (ItemType) -> Cell
     @Binding private var needsRefresh: Bool
+    @Binding private var needsScrollToTop: Bool
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
     private let onDelete: DeleteCallback
@@ -42,7 +43,8 @@ struct InnerTableView<
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
-        onDelete: @escaping DeleteCallback
+        onDelete: @escaping DeleteCallback,
+        needsScrollToTop: Binding<Bool>
     ) {
         self._diffData = diffData
         self.listConfiguration = listConfiguration
@@ -52,6 +54,7 @@ struct InnerTableView<
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
         self.onDelete = onDelete
+        self._needsScrollToTop = needsScrollToTop
     }
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
@@ -107,6 +110,13 @@ struct InnerTableView<
 
             Task {
                 needsRefresh = false
+            }
+        }
+
+        if needsScrollToTop, let tableView = context.coordinator.tableView {
+            tableView.setContentOffset(.zero, animated: true)
+            Task {
+                needsScrollToTop = false
             }
         }
     }

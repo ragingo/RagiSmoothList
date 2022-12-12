@@ -16,6 +16,7 @@ struct SimpleListSampleView: View {
         }
     }
 
+    @State private var scrollToTop = false
     @State private var employees = (0..<10_000)
         .map {
             Employee(
@@ -27,45 +28,58 @@ struct SimpleListSampleView: View {
         .listEmptySectionModels()
 
     var body: some View {
-        RagiSmoothList(
-            data: $employees,
-            listConfiguration: .init(hasSeparator: false),
-            cellContent: { employee in
-                Button(
-                    action: {},
-                    label: {
-                        HStack {
-                            Text("id: \(String(employee.id))")
-                                .font(.title)
-                                .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 30)
-                                        .fill(.green)
-                                )
+        VStack {
+            Button {
+                scrollToTop = true
+            } label: {
+                Text("\(Image(systemName: "arrow.up.circle")) scroll to top")
+            }
 
-                            VStack(alignment: .leading) {
-                                Text("\(employee.name)")
-                                    .font(.largeTitle)
-                                    .foregroundColor(.blue)
+            RagiSmoothList(
+                data: $employees,
+                listConfiguration: .init(hasSeparator: false),
+                cellContent: { employee in
+                    makeCellContent(employee: employee)
+                }
+            )
+            .scrollToTop($scrollToTop)
+        }
+    }
 
-                                Text("hire date: \(employee.hireDate, style: .date)")
-                            }
-                            Spacer()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(16)
-                        .background(Color.yellow.opacity(0.2))
+    private func makeCellContent(employee: Employee) -> some View {
+        Button(
+            action: {},
+            label: {
+                HStack {
+                    Text("id: \(String(employee.id))")
+                        .font(.title)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 30)
+                                .fill(.green)
+                        )
+
+                    VStack(alignment: .leading) {
+                        Text("\(employee.name)")
+                            .font(.largeTitle)
+                            .foregroundColor(.blue)
+
+                        Text("hire date: \(employee.hireDate, style: .date)")
                     }
-                )
-                .buttonStyle(CellButtonStyle())
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(lineWidth: 1)
-                )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .padding(16)
+                .background(Color.yellow.opacity(0.2))
             }
         )
+        .buttonStyle(CellButtonStyle())
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(lineWidth: 1)
+        )
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
 

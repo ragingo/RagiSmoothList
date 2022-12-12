@@ -31,6 +31,8 @@ public struct RagiSmoothList<
     @State private var needsRefresh = false
     @State private var diffData: DiffDataType = []
 
+    private var needsScrollToTop: Binding<Bool>
+
     public init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
@@ -49,6 +51,8 @@ public struct RagiSmoothList<
         self.onRefresh = onRefresh
         self.onDeleting = onDeleting
         self.onDeleted = onDeleted
+
+        self.needsScrollToTop = .constant(false)
     }
 
     public var body: some View {
@@ -71,7 +75,8 @@ public struct RagiSmoothList<
                 onDeleted?(item)
 
                 updateDiff(oldData: oldData, newData: data)
-            }
+            },
+            needsScrollToTop: needsScrollToTop
         )
         .onAppear {
             updateDiff(oldData: [], newData: data)
@@ -79,6 +84,12 @@ public struct RagiSmoothList<
         .onChange(of: data) { [oldData = data] newData in
             updateDiff(oldData: oldData, newData: newData)
         }
+    }
+
+    public func scrollToTop(_ request: Binding<Bool>) -> Self {
+        var newInstance = self
+        newInstance.needsScrollToTop = request
+        return newInstance
     }
 
     private func updateDiff(oldData: ListDataType, newData: ListDataType) {
