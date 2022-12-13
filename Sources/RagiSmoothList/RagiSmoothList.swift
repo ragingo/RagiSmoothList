@@ -27,7 +27,7 @@ public struct RagiSmoothList<
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
-    private let onDeleted: ((ItemType) -> Void)?
+    private let onDeleted: (((sectionIndex: Int, rowIndex: Int, item: ItemType)) -> Void)?
 
     @State private var needsRefresh = false
     @State private var diffData: DiffDataType = []
@@ -42,7 +42,7 @@ public struct RagiSmoothList<
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil,
-        onDeleted: ((ItemType) -> Void)? = nil
+        onDeleted: (((sectionIndex: Int, rowIndex: Int, item: ItemType)) -> Void)? = nil
     ) {
         self._data = data
         self.listConfiguration = listConfiguration
@@ -70,8 +70,8 @@ public struct RagiSmoothList<
             onRefresh: {
                 onRefresh?()
             },
-            onDelete: { section, row, item in
-                onDeleted?(item)
+            onDelete: { sectionIndex, rowIndex, item in
+                onDeleted?((sectionIndex: sectionIndex, rowIndex: rowIndex, item: item))
             },
             needsScrollToTop: needsScrollToTop
         )
@@ -92,15 +92,17 @@ public struct RagiSmoothList<
     private func updateDiff(oldData: ListDataType, newData: ListDataType) {
         // 参考の実装
         // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/RxTableViewSectionedAnimatedDataSource.swift#L97
-        guard let diffData = try? Diff.differencesForSectionedView(
-            initialSections: oldData,
-            finalSections: newData
-        ) else {
-            return
-        }
+        do {
+            let diffData = try Diff.differencesForSectionedView(
+                initialSections: oldData,
+                finalSections: newData
+            )
 
-        self.diffData = diffData
-        needsRefresh = true
+            self.diffData = diffData
+            needsRefresh = true
+        } catch {
+            print(error)
+        }
     }
 }
 

@@ -80,10 +80,8 @@ struct InfiniteScrollSampleView: View {
                         await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
                     }
                 },
-                onDeleted: { employee in
-                    viewModel.delete(target: employee)
-                    alertInfo = .init(message: "[removed] id: \(employee.id)")
-                    showAlert = true
+                onDeleted: { sectionIndex, rowIndex, item in
+                    viewModel.delete(section: sectionIndex, row: rowIndex, employee: item)
                 }
             )
             .scrollToTop($scrollToTop)
