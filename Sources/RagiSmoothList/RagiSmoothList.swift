@@ -11,7 +11,8 @@ import SwiftUI
 public struct RagiSmoothList<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
-    Section: View,
+    SectionHeader: View,
+    SectionFooter: View,
     Cell: View
 >: View
 {
@@ -21,7 +22,8 @@ public struct RagiSmoothList<
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
-    private let sectionContent: (SectionType) -> Section
+    private let sectionHeaderContent: (SectionType) -> SectionHeader
+    private let sectionFooterContent: (SectionType) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
@@ -36,7 +38,8 @@ public struct RagiSmoothList<
     public init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
-        @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
+        @ViewBuilder sectionHeaderContent: @escaping (SectionType) -> SectionHeader,
+        @ViewBuilder sectionFooterContent: @escaping (SectionType) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil,
@@ -45,7 +48,8 @@ public struct RagiSmoothList<
     ) {
         self._data = data
         self.listConfiguration = listConfiguration
-        self.sectionContent = sectionContent
+        self.sectionHeaderContent = sectionHeaderContent
+        self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
@@ -59,7 +63,8 @@ public struct RagiSmoothList<
         InnerTableView(
             diffData: $diffData,
             listConfiguration: listConfiguration,
-            sectionContent: sectionContent,
+            sectionHeaderContent: sectionHeaderContent,
+            sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
             needsRefresh: $needsRefresh,
             onLoadMore: {
@@ -114,11 +119,12 @@ extension RagiSmoothList {
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil
-    ) where SectionType == RagiSmoothListEmptySection, Section == EmptyView {
+    ) where SectionHeader == EmptyView, SectionFooter == EmptyView {
         self.init(
             data: data,
             listConfiguration: listConfiguration,
-            sectionContent: { _ in EmptyView() },
+            sectionHeaderContent: { _ in EmptyView() },
+            sectionFooterContent: { _ in EmptyView() },
             cellContent: cellContent,
             onLoadMore: onLoadMore,
             onRefresh: onRefresh

@@ -12,7 +12,8 @@ import UIKit
 struct InnerTableView<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
-    Section: View,
+    SectionHeader: View,
+    SectionFooter: View,
     Cell: View
 >: UIViewControllerRepresentable
 {
@@ -24,7 +25,8 @@ struct InnerTableView<
 
     @Binding private var diffData: DiffDataType
     private let listConfiguration: RagiSmoothListConfiguration?
-    private let sectionContent: (SectionType) -> Section
+    private let sectionHeaderContent: (SectionType) -> SectionHeader
+    private let sectionFooterContent: (SectionType) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
     @Binding private var needsRefresh: Bool
     @Binding private var needsScrollToTop: Bool
@@ -33,12 +35,14 @@ struct InnerTableView<
     private let onDelete: DeleteCallback
 
     private let cellID = UUID().uuidString
-    private let sectionID = UUID().uuidString
+    private let sectionHeaderID = UUID().uuidString
+    private let sectionFooterID = UUID().uuidString
 
     init(
         diffData: Binding<DiffDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
-        @ViewBuilder sectionContent: @escaping (SectionType) -> Section,
+        @ViewBuilder sectionHeaderContent: @escaping (SectionType) -> SectionHeader,
+        @ViewBuilder sectionFooterContent: @escaping (SectionType) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
@@ -48,7 +52,8 @@ struct InnerTableView<
     ) {
         self._diffData = diffData
         self.listConfiguration = listConfiguration
-        self.sectionContent = sectionContent
+        self.sectionHeaderContent = sectionHeaderContent
+        self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
         self._needsRefresh = needsRefresh
         self.onLoadMore = onLoadMore
@@ -63,7 +68,8 @@ struct InnerTableView<
         let tableView = UITableView()
         tableView.dataSource = context.coordinator
         tableView.delegate = context.coordinator
-        tableView.register(InnerTableViewSection<Section>.self, forHeaderFooterViewReuseIdentifier: sectionID)
+        tableView.register(InnerTableViewSection<SectionHeader>.self, forHeaderFooterViewReuseIdentifier: sectionHeaderID)
+        tableView.register(InnerTableViewSection<SectionFooter>.self, forHeaderFooterViewReuseIdentifier: sectionFooterID)
         tableView.register(InnerTableViewCell<Cell>.self, forCellReuseIdentifier: cellID)
         configureTableView(tableView)
         viewController.view = tableView
@@ -174,21 +180,39 @@ struct InnerTableView<
 
         // MARK: - UITableViewDelegate
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionID) as? InnerTableViewSection<Section> else {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionHeaderID) as? InnerTableViewSection<SectionHeader> else {
                 return nil
             }
 
             let sectionData = data[section]
-            let content = parent.sectionContent(sectionData.model)
+            let content = parent.sectionHeaderContent(sectionData.model)
             headerView.set(content: content, parentController: viewController)
 
             return headerView
         }
 
+        func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+            guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionFooterID) as? InnerTableViewSection<SectionFooter> else {
+                return nil
+            }
+
+            let sectionData = data[section]
+            let content = parent.sectionFooterContent(sectionData.model)
+            footerView.set(content: content, parentController: viewController)
+
+            return footerView
+        }
+
         func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
             let sectionData = data[section]
-            let content = parent.sectionContent(sectionData.model)
-            return content is EmptyView ? .leastNormalMagnitude : -1
+            let content = parent.sectionHeaderContent(sectionData.model)
+            return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
+        }
+
+        func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+            let sectionData = data[section]
+            let content = parent.sectionFooterContent(sectionData.model)
+            return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
         }
 
         func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

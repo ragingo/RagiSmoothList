@@ -57,8 +57,11 @@ struct InfiniteScrollSampleView: View {
                     separatorColor: .red,
                     canRowDelete: true
                 ),
-                sectionContent: { section in
-                    makeSection(section: section)
+                sectionHeaderContent: { section in
+                    makeSectionHeader(section: section)
+                },
+                sectionFooterContent: { section in
+                    makeSectionFooter(section: section)
                 },
                 cellContent: { employee in
                     makeEmployeeCell(employee: employee)
@@ -150,7 +153,7 @@ struct InfiniteScrollSampleView: View {
     private let calendarIcon = Image(systemName: "calendar")
     private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
 
-    private func makeSection(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
+    private func makeSectionHeader(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
         Button {
         } label: {
             HStack {
@@ -165,6 +168,17 @@ struct InfiniteScrollSampleView: View {
             .padding(.vertical, 8)
             .background(Color(red: 176/255, green: 237/255, blue: 148/255))
         }
+    }
+
+    private func makeSectionFooter(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
+        HStack {
+            let subtotal = employees.first(where: { section.id == $0.identity })?.items.count ?? 0
+            Text("subtotal: \(subtotal)")
+                .font(.title2)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, 8)
+        .background(Color.yellow.opacity(0.2))
     }
 
     private static var dateFormatter: DateFormatter = {
