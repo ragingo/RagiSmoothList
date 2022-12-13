@@ -73,8 +73,9 @@ public struct RagiSmoothList<
             onRefresh: {
                 onRefresh?()
             },
-            onDelete: { [oldData = data] section, row, item in
+            onDelete: { section, row, item in
                 onDeleting?(item)
+                let oldData = data
                 let removedItem = data[section].items.remove(at: row)
                 assert(removedItem.value == item)
                 onDeleted?(item)
