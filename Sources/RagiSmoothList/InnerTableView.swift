@@ -234,7 +234,7 @@ struct InnerTableView<
         }
 
         diffData.forEach { changeset in
-            if changeset.originalSections.isEmpty {
+            if context.coordinator.data.isEmpty {
                 context.coordinator.data = changeset.finalSections
                 tableView.reloadData()
                 return

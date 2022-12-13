@@ -55,7 +55,8 @@ struct InfiniteScrollSampleView: View {
                     hasSeparator: true,
                     separatorInsets: EdgeInsets(),
                     separatorColor: .red,
-                    canRowDelete: true
+                    canRowDelete: true,
+                    deleteRowsAnimation: .fade
                 ),
                 sectionHeaderContent: { section in
                     makeSectionHeader(section: section)
@@ -78,8 +79,6 @@ struct InfiniteScrollSampleView: View {
                     Task {
                         await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
                     }
-                },
-                onDeleting: { employee in
                 },
                 onDeleted: { employee in
                     viewModel.delete(target: employee)
@@ -128,6 +127,11 @@ struct InfiniteScrollSampleView: View {
                     isFirstLoadFailed = false
                     isMoreLoadFailed = false
                 case .loaded(let employees):
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                    self.employees = employees
+                case .deleted(let employees):
                     isLoading = false
                     isFirstLoadFailed = false
                     isMoreLoadFailed = false

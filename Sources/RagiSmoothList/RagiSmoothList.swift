@@ -27,7 +27,6 @@ public struct RagiSmoothList<
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
-    private let onDeleting: ((ItemType) -> Void)?
     private let onDeleted: ((ItemType) -> Void)?
 
     @State private var needsRefresh = false
@@ -43,7 +42,6 @@ public struct RagiSmoothList<
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil,
-        onDeleting: ((ItemType) -> Void)? = nil,
         onDeleted: ((ItemType) -> Void)? = nil
     ) {
         self._data = data
@@ -53,7 +51,6 @@ public struct RagiSmoothList<
         self.cellContent = cellContent
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
-        self.onDeleting = onDeleting
         self.onDeleted = onDeleted
 
         self.needsScrollToTop = .constant(false)
@@ -74,13 +71,7 @@ public struct RagiSmoothList<
                 onRefresh?()
             },
             onDelete: { section, row, item in
-                onDeleting?(item)
-                let oldData = data
-                let removedItem = data[section].items.remove(at: row)
-                assert(removedItem.value == item)
                 onDeleted?(item)
-
-                updateDiff(oldData: oldData, newData: data)
             },
             needsScrollToTop: needsScrollToTop
         )

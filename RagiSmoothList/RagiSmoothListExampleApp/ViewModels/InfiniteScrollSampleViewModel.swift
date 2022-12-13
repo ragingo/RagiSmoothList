@@ -20,6 +20,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         case initial
         case loading
         case loaded(employees: [SectionModelType])
+        case deleted(employees: [SectionModelType])
         case unchanged
         case firstLoadFailed
         case moreLoadFailed
@@ -79,6 +80,8 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         if let index = employees.firstIndex(of: employee) {
             employees.remove(at: index)
         }
+
+        state = .deleted(employees: sections())
     }
 
     private static func request(offset: Int) async -> [Employee] {
