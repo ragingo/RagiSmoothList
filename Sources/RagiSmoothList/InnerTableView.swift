@@ -86,34 +86,8 @@ struct InnerTableView<
             context.coordinator.viewController = uiViewController
         }
 
-        if needsRefresh, let tableView = context.coordinator.tableView {
-            diffData.forEach { changeset in
-                if changeset.originalSections.isEmpty {
-                    context.coordinator.data = changeset.finalSections
-                    tableView.reloadData()
-                    return
-                }
-
-                tableView.performBatchUpdates {
-                    context.coordinator.data = changeset.finalSections
-
-                    // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
-                    // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
-                    // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
-                    tableView.deleteSections(.init(changeset.deletedSections), with: .automatic)
-                    tableView.insertSections(.init(changeset.insertedSections), with: .automatic)
-                    changeset.movedSections.forEach {
-                        tableView.moveSection($0.from, toSection: $0.to)
-                    }
-                    tableView.deleteRows(at: .init(changeset.deletedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
-                    tableView.insertRows(at: .init(changeset.insertedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
-                    tableView.reloadRows(at: .init(changeset.updatedItems.map { IndexPath(row: $0.itemIndex, section: $0.sectionIndex) }), with: .automatic)
-                    changeset.movedItems.forEach {
-                        tableView.moveRow(at: IndexPath(row: $0.from.itemIndex, section: $0.from.sectionIndex), to: IndexPath(row: $0.to.itemIndex, section: $0.to.sectionIndex))
-                    }
-                }
-            }
-
+        if needsRefresh {
+            updateDataSource(diffData: diffData, context: context)
             Task {
                 needsRefresh = false
             }
@@ -252,5 +226,44 @@ struct InnerTableView<
         if let separatorInsets = listConfiguration.separatorInsets {
             tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
         }
+    }
+
+    private func updateDataSource(diffData: DiffDataType, context: Context) {
+        guard let tableView = context.coordinator.tableView else {
+            return
+        }
+
+        diffData.forEach { changeset in
+            if changeset.originalSections.isEmpty {
+                context.coordinator.data = changeset.finalSections
+                tableView.reloadData()
+                return
+            }
+
+            tableView.performBatchUpdates {
+                context.coordinator.data = changeset.finalSections
+
+                // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
+                // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
+                // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
+                tableView.deleteSections(.init(changeset.deletedSections), with: listConfiguration?.deleteSectionAnimation ?? .automatic)
+                tableView.insertSections(.init(changeset.insertedSections), with: listConfiguration?.insertSectionAnimation ?? .automatic)
+                changeset.movedSections.forEach {
+                    tableView.moveSection($0.from, toSection: $0.to)
+                }
+                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: listConfiguration?.deleteRowsAnimation ?? .automatic)
+                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: listConfiguration?.insertRowsAnimation ?? .automatic)
+                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: listConfiguration?.updateRowsAnimation ?? .automatic)
+                changeset.movedItems.forEach {
+                    tableView.moveRow(at: $0.from.indexPath(), to: $0.to.indexPath())
+                }
+            }
+        }
+    }
+}
+
+private extension ItemPath {
+    func indexPath() -> IndexPath {
+        IndexPath(row: itemIndex, section: sectionIndex)
     }
 }
