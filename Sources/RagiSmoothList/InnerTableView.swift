@@ -93,13 +93,10 @@ struct InnerTableView<
         }
 
         if needsRefresh {
-            if let sections = diffData.first?.finalSections {
-                context.coordinator.data = sections
-            }
             if let dataSource = context.coordinator.dataSource {
                 var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-                snapshot.appendSections(context.coordinator.data.map { $0.model })
-                context.coordinator.data.forEach { section in
+                snapshot.appendSections(diffData.flatMap { $0.finalSections }.compactMap { $0.model })
+                diffData.flatMap { $0.finalSections }.forEach { section in
                     snapshot.appendItems(section.items.map { $0.value }, toSection: section.model)
                 }
                 dataSource.apply(snapshot)
@@ -123,7 +120,6 @@ struct InnerTableView<
 
     final class Coordinator: NSObject, UITableViewDelegate {
         private let parent: InnerTableView
-        fileprivate var data: ListDataType = []
         fileprivate var viewController: UIViewControllerType?
 
         fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
@@ -143,42 +139,53 @@ struct InnerTableView<
 
         // MARK: - UITableViewDelegate
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+            guard let dataSource else { return nil }
             guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionHeaderID) as? InnerTableViewSection<SectionHeader> else {
                 return nil
             }
 
-            let sectionData = data[section]
-            let content = parent.sectionHeaderContent(sectionData.model)
+            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
+            let content = parent.sectionHeaderContent(sectionData)
             headerView.configure(content: content)
 
             return headerView
         }
 
         func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+            guard let dataSource else { return nil }
             guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionFooterID) as? InnerTableViewSection<SectionFooter> else {
                 return nil
             }
 
-            let sectionData = data[section]
-            let content = parent.sectionFooterContent(sectionData.model)
+            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
+            let content = parent.sectionFooterContent(sectionData)
             footerView.configure(content: content)
 
             return footerView
         }
 
         func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-            let sectionData = data[section]
-            let content = parent.sectionHeaderContent(sectionData.model)
+            guard let dataSource else { return .leastNormalMagnitude }
+
+            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
+            let content = parent.sectionHeaderContent(sectionData)
+
             return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
         }
 
         func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-            let sectionData = data[section]
-            let content = parent.sectionFooterContent(sectionData.model)
+            guard let dataSource else { return .leastNormalMagnitude }
+
+            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
+            let content = parent.sectionFooterContent(sectionData)
+
             return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
         }
 
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+            guard let dataSource else { return nil }
+            let sectionData = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+
             let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, handler) in
                 guard let self = self else {
                     handler(false)
@@ -187,7 +194,7 @@ struct InnerTableView<
                 self.parent.onDelete((
                     section: indexPath.section,
                     row: indexPath.row,
-                    item: self.data[indexPath.section].items[indexPath.row].value
+                    item: dataSource.snapshot().itemIdentifiers(inSection: sectionData)[indexPath.row]
                 ))
                 handler(true)
             }
@@ -215,41 +222,6 @@ struct InnerTableView<
         }
         if let separatorInsets = listConfiguration.separator.insets {
             tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
-        }
-    }
-
-    private func updateDataSource(diffData: DiffDataType, context: Context) {
-        guard let tableView = context.coordinator.tableView else {
-            return
-        }
-
-        diffData.forEach { changeset in
-            if context.coordinator.data.isEmpty {
-                context.coordinator.data = changeset.finalSections
-                tableView.reloadData()
-                return
-            }
-
-            tableView.performBatchUpdates {
-                context.coordinator.data = changeset.finalSections
-
-                let animation = listConfiguration?.animation
-
-                // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
-                // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
-                // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
-                tableView.deleteSections(.init(changeset.deletedSections), with: animation?.deleteSection.uiTableViewRowAnimation ?? .automatic)
-                tableView.insertSections(.init(changeset.insertedSections), with: animation?.insertSection.uiTableViewRowAnimation ?? .automatic)
-                changeset.movedSections.forEach {
-                    tableView.moveSection($0.from, toSection: $0.to)
-                }
-                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: animation?.deleteRows.uiTableViewRowAnimation ?? .automatic)
-                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: animation?.insertSection.uiTableViewRowAnimation ?? .automatic)
-                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: animation?.updateRows.uiTableViewRowAnimation ?? .automatic)
-                changeset.movedItems.forEach {
-                    tableView.moveRow(at: $0.from.indexPath(), to: $0.to.indexPath())
-                }
-            }
         }
     }
 }
