@@ -52,11 +52,9 @@ struct InfiniteScrollSampleView: View {
             RagiSmoothList(
                 data: $employees,
                 listConfiguration: .init(
-                    hasSeparator: true,
-                    separatorInsets: EdgeInsets(),
-                    separatorColor: .red,
-                    canRowDelete: true,
-                    deleteRowsAnimation: .fade
+                    separator: .init(isVisible: true, insets: .init(), color: .red),
+                    edit: .init(canRowDelete: true),
+                    animation: .init(deleteRows: .fade)
                 ),
                 sectionHeaderContent: { section in
                     makeSectionHeader(section: section)

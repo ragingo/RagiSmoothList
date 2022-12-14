@@ -190,7 +190,7 @@ struct InnerTableView<
         }
 
         func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-            return parent.listConfiguration?.canRowDelete == true
+            return parent.listConfiguration?.edit.canRowDelete == true
         }
 
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -218,12 +218,12 @@ struct InnerTableView<
 
         guard let listConfiguration else { return }
 
-        tableView.separatorStyle = listConfiguration.hasSeparator ? .singleLine : .none
+        tableView.separatorStyle = listConfiguration.separator.isVisible ? .singleLine : .none
 
-        if let separatorColor = listConfiguration.separatorColor {
+        if let separatorColor = listConfiguration.separator.color {
             tableView.separatorColor = UIColor(separatorColor)
         }
-        if let separatorInsets = listConfiguration.separatorInsets {
+        if let separatorInsets = listConfiguration.separator.insets {
             tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
         }
     }
@@ -246,14 +246,14 @@ struct InnerTableView<
                 // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
                 // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
                 // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
-                tableView.deleteSections(.init(changeset.deletedSections), with: listConfiguration?.deleteSectionAnimation ?? .automatic)
-                tableView.insertSections(.init(changeset.insertedSections), with: listConfiguration?.insertSectionAnimation ?? .automatic)
+                tableView.deleteSections(.init(changeset.deletedSections), with: listConfiguration?.animation.deleteSection ?? .automatic)
+                tableView.insertSections(.init(changeset.insertedSections), with: listConfiguration?.animation.insertSection ?? .automatic)
                 changeset.movedSections.forEach {
                     tableView.moveSection($0.from, toSection: $0.to)
                 }
-                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: listConfiguration?.deleteRowsAnimation ?? .automatic)
-                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: listConfiguration?.insertRowsAnimation ?? .automatic)
-                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: listConfiguration?.updateRowsAnimation ?? .automatic)
+                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: listConfiguration?.animation.deleteRows ?? .automatic)
+                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: listConfiguration?.animation.insertSection ?? .automatic)
+                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: listConfiguration?.animation.updateRows ?? .automatic)
                 changeset.movedItems.forEach {
                     tableView.moveRow(at: $0.from.indexPath(), to: $0.to.indexPath())
                 }

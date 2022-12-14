@@ -37,7 +37,7 @@ struct SimpleListSampleView: View {
 
             RagiSmoothList(
                 data: $employees,
-                listConfiguration: .init(hasSeparator: false),
+                listConfiguration: .init(separator: .init(isVisible: false)),
                 cellContent: { employee in
                     makeCellContent(employee: employee)
                 }
