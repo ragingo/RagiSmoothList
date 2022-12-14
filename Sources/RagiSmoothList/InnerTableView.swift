@@ -77,7 +77,22 @@ struct InnerTableView<
             tableView: tableView,
             cellContent: cellContent,
             cellProvider: { tableView, indexPath, item -> UITableViewCell? in
-                makeCell(tableView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
+                guard let dataSource = context.coordinator.dataSource else {
+                    return nil
+                }
+                defer {
+                    let snapshot = dataSource.snapshot()
+                    let section = snapshot.sectionIdentifiers[indexPath.section]
+                    let lastSection = snapshot.sectionIdentifiers.last
+                    if lastSection == section {
+                        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+                        let lastItem = snapshot.itemIdentifiers(inSection: section).last
+                        if lastItem == item {
+                            self.onLoadMore()
+                        }
+                    }
+                }
+                return makeCell(tableView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
             })
 
         let refreshControl = UIRefreshControl()
