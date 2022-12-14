@@ -13,13 +13,6 @@ struct InfiniteScrollSampleView: View {
         let message: String
     }
 
-    struct CellButtonStyle: ButtonStyle {
-        func makeBody(configuration: Configuration) -> some View {
-            configuration.label
-                .background(configuration.isPressed ? Color.yellow : nil)
-        }
-    }
-
     @State private var employees: [InfiniteScrollSampleViewModel.SectionModelType] = []
     @State private var isLoading = false
     @State private var isFirstLoadFailed = false
@@ -40,7 +33,10 @@ struct InfiniteScrollSampleView: View {
 
     var body: some View {
         VStack {
-            debugView
+            DebugView(
+                forceFirstLoadError: $forceFirstLoadError,
+                forceMoreLoadError: $forceMoreLoadError
+            )
 
             Button {
                 scrollToTop = true
@@ -60,13 +56,17 @@ struct InfiniteScrollSampleView: View {
                     animation: .init(deleteRows: .fade)
                 ),
                 sectionHeaderContent: { section in
-                    makeSectionHeader(section: section)
+                    SectionHeader(hireYear: section.hireYear)
                 },
                 sectionFooterContent: { section in
-                    makeSectionFooter(section: section)
+                    let subtotal = employees.first(where: { section.id == $0.identity })?.items.count ?? 0
+                    SectionFooter(subtotal: subtotal)
                 },
                 cellContent: { employee in
-                    makeEmployeeCell(employee: employee)
+                    EmployeeCell(employee: employee) {
+                       alertInfo = .init(message: "id: \(employee.id)")
+                       showAlert = true
+                   }
                 },
                 onLoadMore: {
                     Task {
@@ -154,79 +154,6 @@ struct InfiniteScrollSampleView: View {
     }
 
     private let lightOrange = Color(red: 254.0/255.0, green: 216.0/255.0, blue: 177.0/255.0)
-    private let calendarIcon = Image(systemName: "calendar")
-    private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
-
-    private func makeSectionHeader(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
-        Button {
-        } label: {
-            HStack {
-                calendarIcon
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(.purple)
-                Text("hire year: \(section.hireYear)")
-                    .font(.title2)
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(.vertical, 8)
-            .background(Color(red: 176/255, green: 237/255, blue: 148/255))
-        }
-    }
-
-    private func makeSectionFooter(section: InfiniteScrollSampleViewModel.SectionType) -> some View {
-        HStack {
-            let subtotal = employees.first(where: { section.id == $0.identity })?.items.count ?? 0
-            Text("subtotal: \(subtotal)")
-                .font(.title2)
-        }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, 8)
-        .background(Color.yellow.opacity(0.2))
-    }
-
-    private static var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
-        return formatter
-    }()
-
-    private func makeEmployeeCell(employee: Employee) -> some View {
-        RagiSmoothListButtonCell(
-            label: {
-                HStack(spacing: 16) {
-                    Text("id: \(String(employee.id))")
-                        .font(.title3)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 30)
-                                .fill(.orange)
-                        )
-
-                    VStack(alignment: .leading) {
-                        Text("\(employee.name)")
-                            .font(.title2)
-                        Text("hire date: \(employee.hireDate, formatter: Self.dateFormatter)")
-                            .font(.subheadline)
-                    }
-
-                    Spacer()
-
-                    checkMarkIcon
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .foregroundColor(.green)
-                        .opacity(employee.id % 5 == 0 ? 1.0 : 0.0)
-                }
-                .padding()
-                .contentShape(Rectangle())
-            }
-        ) {
-            alertInfo = .init(message: "id: \(employee.id)")
-            showAlert = true
-        }
-        .buttonStyle(CellButtonStyle())
-    }
 
     private var moreLoadingState: some View {
         ProgressView()
@@ -253,35 +180,6 @@ struct InfiniteScrollSampleView: View {
             Text("エラー発生")
                 .font(.title)
         }
-    }
-
-    private var debugView: some View {
-        Expander(
-            isExpanded: $isDebugMenuExpanded,
-            header: { isExpanded in
-                ExpanderHeader(
-                    isExpanded: isExpanded,
-                    label: {
-                        Text("\(Image(systemName: "gearshape.fill")) Debug Menu")
-                    },
-                    toggleIcon: {
-                        Image(systemName: "chevron.right")
-                            .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
-                    }
-                )
-                .padding()
-            },
-            content: { _ in
-                VStack {
-                    Toggle("初回データ取得時にエラー", isOn: $forceFirstLoadError)
-                        .fixedSize()
-                    Toggle("追加データ取得時にエラー", isOn: $forceMoreLoadError)
-                        .fixedSize()
-                }
-                .padding()
-            }
-        )
-        .background(Color.blue.opacity(0.3))
     }
 }
 

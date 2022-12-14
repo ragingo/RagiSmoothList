@@ -33,6 +33,10 @@
 		52FF04652945F89C0044495F /* VerySlowStandardListSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04642945F89C0044495F /* VerySlowStandardListSampleView.swift */; };
 		52FF046F294609DA0044495F /* Expander.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF046D294609DA0044495F /* Expander.swift */; };
 		52FF0470294609DA0044495F /* ExpanderHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF046E294609DA0044495F /* ExpanderHeader.swift */; };
+		52FF047429499AF20044495F /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047329499AF20044495F /* DebugView.swift */; };
+		52FF047629499C410044495F /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047529499C410044495F /* SectionHeader.swift */; };
+		52FF047829499D010044495F /* SectionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047729499D010044495F /* SectionFooter.swift */; };
+		52FF047A29499DB50044495F /* EmployeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047929499DB50044495F /* EmployeeCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +90,10 @@
 		52FF04642945F89C0044495F /* VerySlowStandardListSampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerySlowStandardListSampleView.swift; sourceTree = "<group>"; };
 		52FF046D294609DA0044495F /* Expander.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expander.swift; sourceTree = "<group>"; };
 		52FF046E294609DA0044495F /* ExpanderHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpanderHeader.swift; sourceTree = "<group>"; };
+		52FF047329499AF20044495F /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
+		52FF047529499C410044495F /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		52FF047729499D010044495F /* SectionFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionFooter.swift; sourceTree = "<group>"; };
+		52FF047929499DB50044495F /* EmployeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,8 +217,8 @@
 		52FF044029421D150044495F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				52FF047129499AA10044495F /* InfiniteScrollSampleView */,
 				52D01E162941D19000103B11 /* ContentView.swift */,
-				52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */,
 				52FF045B2944B2890044495F /* SimpleListSampleView.swift */,
 				52FF04642945F89C0044495F /* VerySlowStandardListSampleView.swift */,
 			);
@@ -251,6 +259,26 @@
 				52FF046E294609DA0044495F /* ExpanderHeader.swift */,
 			);
 			path = Expander;
+			sourceTree = "<group>";
+		};
+		52FF047129499AA10044495F /* InfiniteScrollSampleView */ = {
+			isa = PBXGroup;
+			children = (
+				52FF047229499AC70044495F /* Components */,
+				52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */,
+			);
+			path = InfiniteScrollSampleView;
+			sourceTree = "<group>";
+		};
+		52FF047229499AC70044495F /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				52FF047329499AF20044495F /* DebugView.swift */,
+				52FF047529499C410044495F /* SectionHeader.swift */,
+				52FF047729499D010044495F /* SectionFooter.swift */,
+				52FF047929499DB50044495F /* EmployeeCell.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -390,14 +418,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52FF047829499D010044495F /* SectionFooter.swift in Sources */,
 				52FF046F294609DA0044495F /* Expander.swift in Sources */,
 				52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */,
 				52FF0470294609DA0044495F /* ExpanderHeader.swift in Sources */,
 				52D01E172941D19000103B11 /* ContentView.swift in Sources */,
 				52FF04652945F89C0044495F /* VerySlowStandardListSampleView.swift in Sources */,
 				52FF045C2944B2890044495F /* SimpleListSampleView.swift in Sources */,
+				52FF047629499C410044495F /* SectionHeader.swift in Sources */,
+				52FF047429499AF20044495F /* DebugView.swift in Sources */,
 				52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */,
 				52FF044629421DCF0044495F /* Employee.swift in Sources */,
+				52FF047A29499DB50044495F /* EmployeeCell.swift in Sources */,
 				52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
