@@ -26,10 +26,12 @@ final class InnerTableViewCell<Content: View>: UITableViewCell {
         if !subviews.contains(hostingView) {
             contentView.addSubview(hostingView)
             hostingView.translatesAutoresizingMaskIntoConstraints = false
-            hostingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-            hostingView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-            hostingView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-            hostingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                hostingView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+                hostingView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+                hostingView.topAnchor.constraint(equalTo: contentView.topAnchor),
+                hostingView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            ])
         }
     }
 }

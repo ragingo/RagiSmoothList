@@ -26,10 +26,12 @@ final class InnerTableViewSection<Content: View>: UITableViewHeaderFooterView {
         if !subviews.contains(hostingView) {
             addSubview(hostingView)
             hostingView.translatesAutoresizingMaskIntoConstraints = false
-            hostingView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-            hostingView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-            hostingView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            hostingView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            NSLayoutConstraint.activate([
+                hostingView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                hostingView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                hostingView.topAnchor.constraint(equalTo: topAnchor),
+                hostingView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            ])
         }
     }
 }
