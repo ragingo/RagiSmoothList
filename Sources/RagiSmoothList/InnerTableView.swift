@@ -73,6 +73,8 @@ struct InnerTableView<
         configureTableView(tableView)
         viewController.view = tableView
 
+        context.coordinator.tableView = tableView
+
         context.coordinator.dataSource = DataSource(
             tableView: tableView,
             cellContent: cellContent,
@@ -88,10 +90,6 @@ struct InnerTableView<
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        if context.coordinator.viewController != uiViewController {
-            context.coordinator.viewController = uiViewController
-        }
-
         if needsRefresh {
             if let dataSource = context.coordinator.dataSource {
                 var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
@@ -120,13 +118,8 @@ struct InnerTableView<
 
     final class Coordinator: NSObject, UITableViewDelegate {
         private let parent: InnerTableView
-        fileprivate var viewController: UIViewControllerType?
-
         fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
-
-        var tableView: UITableView? {
-            viewController?.view as? UITableView
-        }
+        fileprivate var tableView: UITableView?
 
         init(parent: InnerTableView) {
             self.parent = parent
