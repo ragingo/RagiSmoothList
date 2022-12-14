@@ -248,17 +248,19 @@ struct InnerTableView<
             tableView.performBatchUpdates {
                 context.coordinator.data = changeset.finalSections
 
+                let animation = listConfiguration?.animation
+
                 // RxDataSource モジュールを使ってないから tableView.batchUpdates() が使えない。
                 // 以下のリンク先の本家実装を参考に、最低限のコードで更新処理を実行
                 // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/UI+SectionedViewType.swift
-                tableView.deleteSections(.init(changeset.deletedSections), with: listConfiguration?.animation.deleteSection ?? .automatic)
-                tableView.insertSections(.init(changeset.insertedSections), with: listConfiguration?.animation.insertSection ?? .automatic)
+                tableView.deleteSections(.init(changeset.deletedSections), with: animation?.deleteSection.uiTableViewRowAnimation ?? .automatic)
+                tableView.insertSections(.init(changeset.insertedSections), with: animation?.insertSection.uiTableViewRowAnimation ?? .automatic)
                 changeset.movedSections.forEach {
                     tableView.moveSection($0.from, toSection: $0.to)
                 }
-                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: listConfiguration?.animation.deleteRows ?? .automatic)
-                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: listConfiguration?.animation.insertSection ?? .automatic)
-                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: listConfiguration?.animation.updateRows ?? .automatic)
+                tableView.deleteRows(at: .init(changeset.deletedItems.map { $0.indexPath() }), with: animation?.deleteRows.uiTableViewRowAnimation ?? .automatic)
+                tableView.insertRows(at: .init(changeset.insertedItems.map { $0.indexPath() }), with: animation?.insertSection.uiTableViewRowAnimation ?? .automatic)
+                tableView.reloadRows(at: .init(changeset.updatedItems.map { $0.indexPath() }), with: animation?.updateRows.uiTableViewRowAnimation ?? .automatic)
                 changeset.movedItems.forEach {
                     tableView.moveRow(at: $0.from.indexPath(), to: $0.to.indexPath())
                 }

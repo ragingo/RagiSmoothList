@@ -48,7 +48,6 @@ struct InfiniteScrollSampleView: View {
                 Text("\(Image(systemName: "arrow.up.circle")) scroll to top")
             }
 
-
             RagiSmoothList(
                 data: $employees,
                 listConfiguration: .init(

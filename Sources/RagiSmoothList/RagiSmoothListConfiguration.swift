@@ -60,18 +60,50 @@ extension RagiSmoothListConfiguration {
 // MARK: - Animation
 extension RagiSmoothListConfiguration {
     public struct Animation {
-        public var insertSection: UITableView.RowAnimation
-        public var deleteSection: UITableView.RowAnimation
-        public var insertRows: UITableView.RowAnimation
-        public var deleteRows: UITableView.RowAnimation
-        public var updateRows: UITableView.RowAnimation
+        public enum Mode: String, CaseIterable {
+            case fade
+            case right
+            case left
+            case top
+            case bottom
+            case none
+            case middle
+            case automatic
+
+            var uiTableViewRowAnimation: UITableView.RowAnimation {
+                switch self {
+                case .fade:
+                    return .fade
+                case .right:
+                    return .right
+                case .left:
+                    return .left
+                case .top:
+                    return .top
+                case .bottom:
+                    return .bottom
+                case .none:
+                    return .none
+                case .middle:
+                    return .middle
+                case .automatic:
+                    return .automatic
+                }
+            }
+        }
+
+        public var insertSection: Mode
+        public var deleteSection: Mode
+        public var insertRows: Mode
+        public var deleteRows: Mode
+        public var updateRows: Mode
 
         public init(
-            insertSection: UITableView.RowAnimation = .automatic,
-            deleteSection: UITableView.RowAnimation = .automatic,
-            insertRows: UITableView.RowAnimation = .automatic,
-            deleteRows: UITableView.RowAnimation = .automatic,
-            updateRows: UITableView.RowAnimation = .automatic
+            insertSection: Mode = .automatic,
+            deleteSection: Mode = .automatic,
+            insertRows: Mode = .automatic,
+            deleteRows: Mode = .automatic,
+            updateRows: Mode = .automatic
         ) {
             self.insertSection = insertSection
             self.deleteSection = deleteSection
