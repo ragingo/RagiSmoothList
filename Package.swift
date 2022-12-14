@@ -9,15 +9,9 @@ let package = Package(
     products: [
         .library(name: "RagiSmoothList", targets: ["RagiSmoothList"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/RxSwiftCommunity/RxDataSources", from: "5.0.2")
-    ],
     targets: [
         .target(
-            name: "RagiSmoothList",
-            dependencies: [
-                .product(name: "Differentiator", package: "RxDataSources")
-            ]
+            name: "RagiSmoothList"
         )
     ],
     swiftLanguageVersions: [.v5]

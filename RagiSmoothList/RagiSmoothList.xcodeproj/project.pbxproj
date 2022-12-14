@@ -18,7 +18,6 @@
 		52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E1B2941D19100103B11 /* Preview Assets.xcassets */; };
 		52FF04362942149F0044495F /* InnerTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04352942149F0044495F /* InnerTableView.swift */; };
 		52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */; };
-		52FF043D2942177F0044495F /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = 52FF043C2942177F0044495F /* Differentiator */; };
 		52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */; };
 		52FF044629421DCF0044495F /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044529421DCF0044495F /* Employee.swift */; };
 		52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */; };
@@ -101,7 +100,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52FF043D2942177F0044495F /* Differentiator in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,7 +308,6 @@
 			);
 			name = RagiSmoothList;
 			packageProductDependencies = (
-				52FF043C2942177F0044495F /* Differentiator */,
 			);
 			productName = RagiSmoothList;
 			productReference = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */;
@@ -364,7 +361,6 @@
 			);
 			mainGroup = 52D01DF22941CE4700103B11;
 			packageReferences = (
-				52FF043B2942177F0044495F /* XCRemoteSwiftPackageReference "RxDataSources" */,
 			);
 			productRefGroup = 52D01DFD2941CE4700103B11 /* Products */;
 			projectDirPath = "";
@@ -711,25 +707,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		52FF043B2942177F0044495F /* XCRemoteSwiftPackageReference "RxDataSources" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/RxSwiftCommunity/RxDataSources";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		52FF043C2942177F0044495F /* Differentiator */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 52FF043B2942177F0044495F /* XCRemoteSwiftPackageReference "RxDataSources" */;
-			productName = Differentiator;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 52D01DF32941CE4700103B11 /* Project object */;
 }

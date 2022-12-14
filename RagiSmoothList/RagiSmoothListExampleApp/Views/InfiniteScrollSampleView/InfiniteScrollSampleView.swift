@@ -59,7 +59,7 @@ struct InfiniteScrollSampleView: View {
                     SectionHeader(hireYear: section.hireYear)
                 },
                 sectionFooterContent: { section in
-                    let subtotal = employees.first(where: { section.id == $0.identity })?.items.count ?? 0
+                    let subtotal = employees.first(where: { section == $0.section })?.items.count ?? 0
                     SectionFooter(subtotal: subtotal)
                 },
                 cellContent: { employee in

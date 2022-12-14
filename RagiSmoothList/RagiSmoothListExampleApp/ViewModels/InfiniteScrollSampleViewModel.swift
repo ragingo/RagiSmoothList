@@ -14,7 +14,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         let hireYear: String
     }
 
-    typealias SectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<Employee>>
+    typealias SectionModelType = RagiSmoothListSectionModel<SectionType, Employee>
 
     enum State: Equatable {
         case initial

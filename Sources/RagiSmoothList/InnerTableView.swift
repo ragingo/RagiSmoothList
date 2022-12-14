@@ -5,7 +5,6 @@
 //  Created by ragingo on 2022/12/08.
 //
 
-import Differentiator
 import SwiftUI
 import UIKit
 
@@ -17,13 +16,12 @@ struct InnerTableView<
     Cell: View
 >: UIViewControllerRepresentable
 {
-    typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<ItemType>>
+    typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     typealias ListDataType = [ListSectionModelType]
-    typealias DiffDataType = [Changeset<ListSectionModelType>]
     typealias UIViewControllerType = UIViewController
     typealias DeleteCallback = ((section: Int, row: Int, item: ItemType)) -> Void
 
-    @Binding private var diffData: DiffDataType
+    @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
     private let sectionHeaderContent: (SectionType) -> SectionHeader
     private let sectionFooterContent: (SectionType) -> SectionFooter
@@ -39,7 +37,7 @@ struct InnerTableView<
     private let sectionFooterID = UUID().uuidString
 
     init(
-        diffData: Binding<DiffDataType>,
+        data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
         @ViewBuilder sectionHeaderContent: @escaping (SectionType) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType) -> SectionFooter,
@@ -50,7 +48,7 @@ struct InnerTableView<
         onDelete: @escaping DeleteCallback,
         needsScrollToTop: Binding<Bool>
     ) {
-        self._diffData = diffData
+        self._data = data
         self.listConfiguration = listConfiguration
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
@@ -93,9 +91,9 @@ struct InnerTableView<
         if needsRefresh {
             if let dataSource = context.coordinator.dataSource {
                 var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-                snapshot.appendSections(diffData.flatMap { $0.finalSections }.compactMap { $0.model })
-                diffData.flatMap { $0.finalSections }.forEach { section in
-                    snapshot.appendItems(section.items.map { $0.value }, toSection: section.model)
+                snapshot.appendSections(data.compactMap { $0.section })
+                data.forEach { section in
+                    snapshot.appendItems(section.items, toSection: section.section)
                 }
                 dataSource.apply(snapshot)
             }
@@ -216,12 +214,6 @@ struct InnerTableView<
         if let separatorInsets = listConfiguration.separator.insets {
             tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
         }
-    }
-}
-
-private extension ItemPath {
-    func indexPath() -> IndexPath {
-        IndexPath(row: itemIndex, section: sectionIndex)
     }
 }
 
