@@ -19,7 +19,7 @@ final class InnerTableViewCell<Content: View>: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func set(content: Content) {
+    func configure(content: Content) {
         hostingView.configure(content: content)
         hostingView.invalidateIntrinsicContentSize()
 

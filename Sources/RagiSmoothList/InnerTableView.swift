@@ -146,7 +146,7 @@ struct InnerTableView<
 
             let element = data[indexPath.section].items[indexPath.row]
             let content = parent.cellContent(element.value)
-            cell.set(content: content)
+            cell.configure(content: content)
             cell.selectionStyle = .none
 
             return cell
@@ -160,7 +160,7 @@ struct InnerTableView<
 
             let sectionData = data[section]
             let content = parent.sectionHeaderContent(sectionData.model)
-            headerView.set(content: content)
+            headerView.configure(content: content)
 
             return headerView
         }
@@ -172,7 +172,7 @@ struct InnerTableView<
 
             let sectionData = data[section]
             let content = parent.sectionFooterContent(sectionData.model)
-            footerView.set(content: content)
+            footerView.configure(content: content)
 
             return footerView
         }

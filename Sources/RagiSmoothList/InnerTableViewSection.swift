@@ -19,7 +19,7 @@ final class InnerTableViewSection<Content: View>: UITableViewHeaderFooterView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func set(content: Content) {
+    func configure(content: Content) {
         hostingView.configure(content: content)
         hostingView.invalidateIntrinsicContentSize()
 
