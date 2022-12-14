@@ -206,7 +206,12 @@ struct InnerTableView<
                 ))
                 handler(true)
             }
-            action.image = .init(systemName: "xmark.bin.fill")
+
+            if let backgroundColor = parent.listConfiguration?.edit.deleteButtonBackgroundColor {
+                action.backgroundColor = UIColor(backgroundColor)
+            }
+            action.image = parent.listConfiguration?.edit.deleteButtonImage
+
             return UISwipeActionsConfiguration(actions: [action])
         }
     }

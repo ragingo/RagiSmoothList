@@ -53,7 +53,11 @@ struct InfiniteScrollSampleView: View {
                 data: $employees,
                 listConfiguration: .init(
                     separator: .init(isVisible: true, insets: .init(), color: .red),
-                    edit: .init(canRowDelete: true),
+                    edit: .init(
+                        canRowDelete: true,
+                        deleteButtonBackgroundColor: lightOrange,
+                        deleteButtonImage: .remove
+                    ),
                     animation: .init(deleteRows: .fade)
                 ),
                 sectionHeaderContent: { section in
@@ -150,6 +154,7 @@ struct InfiniteScrollSampleView: View {
         }
     }
 
+    private let lightOrange = Color(red: 254.0/255.0, green: 216.0/255.0, blue: 177.0/255.0)
     private let calendarIcon = Image(systemName: "calendar")
     private let checkMarkIcon = Image(systemName: "checkmark.circle.fill")
 
