@@ -66,13 +66,19 @@ struct InnerTableView<
         let viewController = UIViewControllerType()
 
         let tableView = UITableView()
-        tableView.dataSource = context.coordinator
         tableView.delegate = context.coordinator
         tableView.register(InnerTableViewSection<SectionHeader>.self, forHeaderFooterViewReuseIdentifier: sectionHeaderID)
         tableView.register(InnerTableViewSection<SectionFooter>.self, forHeaderFooterViewReuseIdentifier: sectionFooterID)
         tableView.register(InnerTableViewCell<Cell>.self, forCellReuseIdentifier: cellID)
         configureTableView(tableView)
         viewController.view = tableView
+
+        context.coordinator.dataSource = DataSource(
+            tableView: tableView,
+            cellContent: cellContent,
+            cellProvider: { tableView, indexPath, item -> UITableViewCell? in
+                makeCell(tableView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
+            })
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
@@ -87,7 +93,17 @@ struct InnerTableView<
         }
 
         if needsRefresh {
-            updateDataSource(diffData: diffData, context: context)
+            if let sections = diffData.first?.finalSections {
+                context.coordinator.data = sections
+            }
+            if let dataSource = context.coordinator.dataSource {
+                var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
+                snapshot.appendSections(context.coordinator.data.map { $0.model })
+                context.coordinator.data.forEach { section in
+                    snapshot.appendItems(section.items.map { $0.value }, toSection: section.model)
+                }
+                dataSource.apply(snapshot)
+            }
             Task {
                 needsRefresh = false
             }
@@ -105,10 +121,13 @@ struct InnerTableView<
         return Coordinator(parent: self)
     }
 
-    final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
+    final class Coordinator: NSObject, UITableViewDelegate {
         private let parent: InnerTableView
         fileprivate var data: ListDataType = []
         fileprivate var viewController: UIViewControllerType?
+
+        fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
+
         var tableView: UITableView? {
             viewController?.view as? UITableView
         }
@@ -120,36 +139,6 @@ struct InnerTableView<
         @objc func onRefreshControlValueChanged(sender: UIRefreshControl) {
             parent.onRefresh()
             sender.endRefreshing()
-        }
-
-        // MARK: - UITableViewDataSource
-        func numberOfSections(in tableView: UITableView) -> Int {
-            return data.count
-        }
-
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return data[section].items.count
-        }
-
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            defer {
-                let isLastSection = data.last == data[indexPath.section]
-                let isLastItem = data[indexPath.section].items.last == data[indexPath.section].items[indexPath.row]
-                if isLastSection && isLastItem {
-                    parent.onLoadMore()
-                }
-            }
-
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: parent.cellID) as? InnerTableViewCell<Cell> else {
-                return UITableViewCell()
-            }
-
-            let element = data[indexPath.section].items[indexPath.row]
-            let content = parent.cellContent(element.value)
-            cell.configure(content: content)
-            cell.selectionStyle = .none
-
-            return cell
         }
 
         // MARK: - UITableViewDelegate
@@ -187,10 +176,6 @@ struct InnerTableView<
             let sectionData = data[section]
             let content = parent.sectionFooterContent(sectionData.model)
             return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
-        }
-
-        func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-            return parent.listConfiguration?.edit.canRowDelete == true
         }
 
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -273,4 +258,39 @@ private extension ItemPath {
     func indexPath() -> IndexPath {
         IndexPath(row: itemIndex, section: sectionIndex)
     }
+}
+
+final class DataSource<
+    SectionType: Hashable,
+    ItemType: Hashable,
+    Cell
+>: UITableViewDiffableDataSource<SectionType, ItemType> {
+    private let cellContent: (ItemType) -> Cell
+
+    init(
+        tableView: UITableView,
+        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
+        cellProvider: @escaping UITableViewDiffableDataSource<SectionType, ItemType>.CellProvider
+    ) {
+        self.cellContent = cellContent
+        super.init(tableView: tableView, cellProvider: cellProvider)
+    }
+}
+
+private func makeCell<Cell: View, Item: Hashable>(
+    _ tableView: UITableView,
+    cellID: String,
+    indexPath: IndexPath,
+    @ViewBuilder cellContent: (Item) -> Cell,
+    item: Item
+) -> UITableViewCell? {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? InnerTableViewCell<Cell> else {
+        return nil
+    }
+
+    let content = cellContent(item)
+    cell.configure(content: content)
+    cell.selectionStyle = .none
+
+    return cell
 }
