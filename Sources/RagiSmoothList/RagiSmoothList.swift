@@ -5,7 +5,6 @@
 //  Created by ragingo on 2022/12/08.
 //
 
-import Differentiator
 import SwiftUI
 
 public struct RagiSmoothList<
@@ -16,9 +15,8 @@ public struct RagiSmoothList<
     Cell: View
 >: View
 {
-    public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, RagiSmoothListSectionItemType<ItemType>>
+    public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     public typealias ListDataType = [ListSectionModelType]
-    public typealias DiffDataType = [Changeset<ListSectionModelType>]
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -30,7 +28,6 @@ public struct RagiSmoothList<
     private let onDeleted: (((sectionIndex: Int, rowIndex: Int, item: ItemType)) -> Void)?
 
     @State private var needsRefresh = false
-    @State private var diffData: DiffDataType = []
 
     private var needsScrollToTop: Binding<Bool>
 
@@ -58,7 +55,7 @@ public struct RagiSmoothList<
 
     public var body: some View {
         InnerTableView(
-            diffData: $diffData,
+            data: $data,
             listConfiguration: listConfiguration,
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
@@ -76,10 +73,10 @@ public struct RagiSmoothList<
             needsScrollToTop: needsScrollToTop
         )
         .onAppear {
-            updateDiff(oldData: [], newData: data)
+            needsRefresh = true
         }
-        .onChange(of: data) { [oldData = data] newData in
-            updateDiff(oldData: oldData, newData: newData)
+        .onChange(of: data) { _ in
+            needsRefresh = true
         }
     }
 
@@ -87,22 +84,6 @@ public struct RagiSmoothList<
         var newInstance = self
         newInstance.needsScrollToTop = request
         return newInstance
-    }
-
-    private func updateDiff(oldData: ListDataType, newData: ListDataType) {
-        // 参考の実装
-        // https://github.com/RxSwiftCommunity/RxDataSources/blob/5.0.2/Sources/RxDataSources/RxTableViewSectionedAnimatedDataSource.swift#L97
-        do {
-            let diffData = try Diff.differencesForSectionedView(
-                initialSections: oldData,
-                finalSections: newData
-            )
-
-            self.diffData = diffData
-            needsRefresh = true
-        } catch {
-            print(error)
-        }
     }
 }
 

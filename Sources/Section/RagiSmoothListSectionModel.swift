@@ -6,30 +6,13 @@
 //
 
 import Foundation
-import Differentiator
 
-public typealias IdentifiableType = Differentiator.IdentifiableType
+public struct RagiSmoothListSectionModel<Section: Identifiable & Hashable, ItemType: Identifiable & Hashable> {
+    public var section: Section
+    public var items: [ItemType]
 
-public struct RagiSmoothListSectionModel<Section: Identifiable & Hashable, ItemType: IdentifiableType & Hashable> {
-    public var model: Section
-    public var items: [Item]
-
-    public init(model: Section, items: [ItemType]) {
-        self.model = model
-        self.items = items
-    }
-}
-
-extension RagiSmoothListSectionModel: AnimatableSectionModelType {
-    public typealias Item = ItemType
-    public typealias Identity = Section.ID
-
-    public var identity: Section.ID {
-        return model.id
-    }
-
-    public init(original: RagiSmoothListSectionModel, items: [Item]) {
-        self.model = original.model
+    public init(section: Section, items: [ItemType]) {
+        self.section = section
         self.items = items
     }
 }
@@ -37,11 +20,11 @@ extension RagiSmoothListSectionModel: AnimatableSectionModelType {
 extension RagiSmoothListSectionModel: Hashable {}
 
 extension Array where Element: Identifiable & Hashable {
-    public func listEmptySectionModels() -> [RagiSmoothListSectionModel<RagiSmoothListEmptySection, RagiSmoothListSectionItemType<Element>>] {
+    public func listEmptySectionModels() -> [RagiSmoothListSectionModel<RagiSmoothListEmptySection, Element>] {
         [
             RagiSmoothListSectionModel(
-                model: RagiSmoothListEmptySection(),
-                items: self.map { RagiSmoothListSectionItemType(value: $0) }
+                section: RagiSmoothListEmptySection(),
+                items: self
             )
         ]
     }
@@ -51,12 +34,12 @@ extension Array {
     public func listSectionModels<
         Section: Identifiable & Hashable,
         ItemType: Identifiable & Hashable
-    >() -> [RagiSmoothListSectionModel<Section, RagiSmoothListSectionItemType<ItemType>>]
+    >() -> [RagiSmoothListSectionModel<Section, ItemType>]
     where Element == (section: Section, items: [ItemType]) {
         self.compactMap { pair in
             RagiSmoothListSectionModel(
-                model: pair.section,
-                items: pair.items.map { RagiSmoothListSectionItemType(value: $0) }
+                section: pair.section,
+                items: pair.items
             )
         }
     }
