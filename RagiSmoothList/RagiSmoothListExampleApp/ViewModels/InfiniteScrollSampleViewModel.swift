@@ -14,7 +14,8 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         let hireYear: String
     }
 
-    typealias SectionModelType = RagiSmoothListSectionModel<SectionType, Employee>
+    typealias ItemType = EditableEmployee
+    typealias SectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
 
     enum State: Equatable {
         case initial
@@ -32,7 +33,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
     private static let intiniteLoadEnabled = true
     private static let totalItemsCount = 1000
 
-    private var employees: [Employee] = []
+    private var employees: [ItemType] = []
     private var infiniteSequence = (1...).lazy
     private var offset = 1
 
@@ -63,7 +64,11 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
 
         let employees = await Self.request(offset: offset)
 
-        self.employees.append(contentsOf: employees)
+        self.employees.append(contentsOf: employees.map {
+            var employee = EditableEmployee(employee: $0)
+            employee.canEdit = $0.id % 2 == 0
+            return employee
+        })
         offset += Self.itemsPerPage
 
         state = .loaded(employees: sections())
@@ -76,7 +81,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         await loadMore(forceFirstLoadError: forceFirstLoadError)
     }
 
-    func delete(section: Int, row: Int, employee: Employee) {
+    func delete(section: Int, row: Int, employee: ItemType) {
         // 変換済みのデータを保持して効率よく削除できるようにしたい...
         // load more によって同一セクションが別タイミングで追加されることがあるので、変換済みのデータ同士を単純に結合することはできない
         // ※ 単純に結合してしまうと、 Differentiator の Diff.differencesForSectionedView を実行した際にセクション重複エラーが発生してしまう。

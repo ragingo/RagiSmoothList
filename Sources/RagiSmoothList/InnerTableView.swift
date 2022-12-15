@@ -247,6 +247,16 @@ final class DataSource<
         self.cellContent = cellContent
         super.init(tableView: tableView, cellProvider: cellProvider)
     }
+
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        let snapshot = snapshot()
+        let section = snapshot.sectionIdentifiers[indexPath.section]
+        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+        if let editable = item as? RagiSmoothListCellEditable {
+            return editable.canEdit
+        }
+        return false
+    }
 }
 
 private func makeCell<Cell: View, Item: Hashable>(

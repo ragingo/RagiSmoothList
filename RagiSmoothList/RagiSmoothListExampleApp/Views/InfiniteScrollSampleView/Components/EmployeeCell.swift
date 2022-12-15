@@ -17,7 +17,7 @@ extension InfiniteScrollSampleView {
             }
         }
 
-        let employee: Employee
+        let employee: EditableEmployee
         let action: () -> Void
 
         var body: some View {
@@ -41,11 +41,16 @@ extension InfiniteScrollSampleView {
 
                         Spacer()
 
-                        checkMarkIcon
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.green)
-                            .opacity(employee.id % 5 == 0 ? 1.0 : 0.0)
+                        VStack {
+                            Text("deletable")
+                                .font(.footnote)
+                                .foregroundColor(.red)
+                                .padding(2)
+                                .border(.red)
+                                .frame(minHeight: 0, maxHeight: employee.canEdit ? nil : 0)
+                                .clipped()
+                            Spacer()
+                        }
                     }
                     .padding()
                     .contentShape(Rectangle())
@@ -67,8 +72,19 @@ extension InfiniteScrollSampleView {
 
 struct EmployeeCell_Previews: PreviewProvider {
     static var previews: some View {
-        InfiniteScrollSampleView.EmployeeCell(
-            employee: .init(id: 1, name: "emp 1", hireDate: Date()), action: {}
-        )
+        VStack {
+            InfiniteScrollSampleView.EmployeeCell(
+                employee: .init(employee: .init(id: 1, name: "emp 1", hireDate: Date())), action: {}
+            )
+            .frame(height: 100)
+            .border(.gray)
+
+            InfiniteScrollSampleView.EmployeeCell(
+                employee: .init(employee: .init(id: 2, name: "emp 2", hireDate: Date())), action: {}
+            )
+            .frame(height: 100)
+            .border(.gray)
+
+        }
     }
 }

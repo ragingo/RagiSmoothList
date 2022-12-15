@@ -49,7 +49,6 @@ struct InfiniteScrollSampleView: View {
                 listConfiguration: .init(
                     separator: .init(isVisible: true, insets: .init(), color: .red),
                     edit: .init(
-                        canRowDelete: true,
                         deleteButtonBackgroundColor: lightOrange,
                         deleteButtonImage: .remove
                     ),

@@ -36,6 +36,8 @@
 		52FF047629499C410044495F /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047529499C410044495F /* SectionHeader.swift */; };
 		52FF047829499D010044495F /* SectionFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047729499D010044495F /* SectionFooter.swift */; };
 		52FF047A29499DB50044495F /* EmployeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047929499DB50044495F /* EmployeeCell.swift */; };
+		52FF047C294AE8990044495F /* EditableEmployee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047B294AE8990044495F /* EditableEmployee.swift */; };
+		52FF047E294AE8FD0044495F /* RagiSmoothListCellEditable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF047D294AE8FD0044495F /* RagiSmoothListCellEditable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +95,8 @@
 		52FF047529499C410044495F /* SectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		52FF047729499D010044495F /* SectionFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionFooter.swift; sourceTree = "<group>"; };
 		52FF047929499DB50044495F /* EmployeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeeCell.swift; sourceTree = "<group>"; };
+		52FF047B294AE8990044495F /* EditableEmployee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableEmployee.swift; sourceTree = "<group>"; };
+		52FF047D294AE8FD0044495F /* RagiSmoothListCellEditable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListCellEditable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +211,7 @@
 		52FF043F29421D0A0044495F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				52FF047B294AE8990044495F /* EditableEmployee.swift */,
 				52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */,
 			);
 			path = ViewModels;
@@ -238,6 +243,7 @@
 			children = (
 				52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */,
 				52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */,
+				52FF047D294AE8FD0044495F /* RagiSmoothListCellEditable.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -404,6 +410,7 @@
 				52FF045E29459D760044495F /* RagiSmoothListConfiguration.swift in Sources */,
 				52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */,
 				52FF046229459E170044495F /* RagiSmoothListSectionModel.swift in Sources */,
+				52FF047E294AE8FD0044495F /* RagiSmoothListCellEditable.swift in Sources */,
 				52FF04362942149F0044495F /* InnerTableView.swift in Sources */,
 				52FF045629435A980044495F /* InnerTableViewSection.swift in Sources */,
 				52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */,
@@ -415,6 +422,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52FF047829499D010044495F /* SectionFooter.swift in Sources */,
+				52FF047C294AE8990044495F /* EditableEmployee.swift in Sources */,
 				52FF046F294609DA0044495F /* Expander.swift in Sources */,
 				52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */,
 				52FF0470294609DA0044495F /* ExpanderHeader.swift in Sources */,

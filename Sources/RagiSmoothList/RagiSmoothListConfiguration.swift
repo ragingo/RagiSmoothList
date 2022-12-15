@@ -41,16 +41,13 @@ extension RagiSmoothListConfiguration {
 // MARK: - Edit
 extension RagiSmoothListConfiguration {
     public struct Edit {
-        public var canRowDelete: Bool
         public var deleteButtonBackgroundColor: Color?
         public var deleteButtonImage: UIImage?
 
         public init(
-            canRowDelete: Bool = false,
             deleteButtonBackgroundColor: Color? = nil,
             deleteButtonImage: UIImage? = nil
         ) {
-            self.canRowDelete = canRowDelete
             self.deleteButtonBackgroundColor = deleteButtonBackgroundColor
             self.deleteButtonImage = deleteButtonImage
         }
