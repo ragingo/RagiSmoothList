@@ -19,7 +19,7 @@ struct InnerTableView<
     typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
-    typealias DeleteCallback = ((section: Int, row: Int, item: ItemType)) -> Void
+    typealias DeleteCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -198,8 +198,9 @@ struct InnerTableView<
                     return
                 }
                 self.parent.onDelete((
-                    section: indexPath.section,
-                    row: indexPath.row,
+                    sectionIndex: indexPath.section,
+                    itemIndex: indexPath.row,
+                    section: sectionData,
                     item: dataSource.snapshot().itemIdentifiers(inSection: sectionData)[indexPath.row]
                 ))
                 handler(true)

@@ -8,10 +8,11 @@
 import Foundation
 
 public struct RagiSmoothListSectionModel<Section: Identifiable & Hashable, ItemType: Identifiable & Hashable> {
+    public typealias ItemsType = [ItemType]
     public var section: Section
-    public var items: [ItemType]
+    public var items: ItemsType
 
-    public init(section: Section, items: [ItemType]) {
+    public init(section: Section, items: ItemsType) {
         self.section = section
         self.items = items
     }
@@ -35,7 +36,7 @@ extension Array {
         Section: Identifiable & Hashable,
         ItemType: Identifiable & Hashable
     >() -> [RagiSmoothListSectionModel<Section, ItemType>]
-    where Element == (section: Section, items: [ItemType]) {
+    where Element == (section: Section, items: RagiSmoothListSectionModel<Section, ItemType>.ItemsType) {
         self.compactMap { pair in
             RagiSmoothListSectionModel(
                 section: pair.section,

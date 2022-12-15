@@ -81,13 +81,8 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         await loadMore(forceFirstLoadError: forceFirstLoadError)
     }
 
-    func delete(section: Int, row: Int, employee: ItemType) {
-        // 変換済みのデータを保持して効率よく削除できるようにしたい...
-        // load more によって同一セクションが別タイミングで追加されることがあるので、変換済みのデータ同士を単純に結合することはできない
-        // ※ 単純に結合してしまうと、 Differentiator の Diff.differencesForSectionedView を実行した際にセクション重複エラーが発生してしまう。
-        //sectionedEmployees[section].items.remove(at: row)
-
-        if let index = employees.firstIndex(of: employee) {
+    func delete(section: SectionType, item: ItemType) {
+        if let index = employees.firstIndex(of: item) {
             employees.remove(at: index)
         }
         state = .deleted(employees: sections())
