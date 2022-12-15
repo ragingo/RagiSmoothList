@@ -54,12 +54,11 @@ struct InfiniteScrollSampleView: View {
                     ),
                     animation: .init(mode: .fade)
                 ),
-                sectionHeaderContent: { section in
+                sectionHeaderContent: { section, _ in
                     SectionHeader(hireYear: section.hireYear)
                 },
-                sectionFooterContent: { section in
-                    let subtotal = employees.first(where: { section == $0.section })?.items.count ?? 0
-                    SectionFooter(subtotal: subtotal)
+                sectionFooterContent: { _, items in
+                    SectionFooter(subtotal: items.count)
                 },
                 cellContent: { employee in
                     EmployeeCell(employee: employee) {

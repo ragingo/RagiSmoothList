@@ -20,8 +20,8 @@ public struct RagiSmoothList<
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
-    private let sectionHeaderContent: (SectionType) -> SectionHeader
-    private let sectionFooterContent: (SectionType) -> SectionFooter
+    private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
+    private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
     private let onLoadMore: (() -> Void)?
     private let onRefresh: (() -> Void)?
@@ -34,8 +34,8 @@ public struct RagiSmoothList<
     public init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
-        @ViewBuilder sectionHeaderContent: @escaping (SectionType) -> SectionHeader,
-        @ViewBuilder sectionFooterContent: @escaping (SectionType) -> SectionFooter,
+        @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
+        @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         onLoadMore: (() -> Void)? = nil,
         onRefresh: (() -> Void)? = nil,
@@ -98,8 +98,8 @@ extension RagiSmoothList {
         self.init(
             data: data,
             listConfiguration: listConfiguration,
-            sectionHeaderContent: { _ in EmptyView() },
-            sectionFooterContent: { _ in EmptyView() },
+            sectionHeaderContent: { _, _ in EmptyView() },
+            sectionFooterContent: { _, _ in EmptyView() },
             cellContent: cellContent,
             onLoadMore: onLoadMore,
             onRefresh: onRefresh

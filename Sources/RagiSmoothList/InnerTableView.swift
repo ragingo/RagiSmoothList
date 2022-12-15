@@ -23,8 +23,8 @@ struct InnerTableView<
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
-    private let sectionHeaderContent: (SectionType) -> SectionHeader
-    private let sectionFooterContent: (SectionType) -> SectionFooter
+    private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
+    private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
     @Binding private var needsRefresh: Bool
     @Binding private var needsScrollToTop: Bool
@@ -39,8 +39,8 @@ struct InnerTableView<
     init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
-        @ViewBuilder sectionHeaderContent: @escaping (SectionType) -> SectionHeader,
-        @ViewBuilder sectionFooterContent: @escaping (SectionType) -> SectionFooter,
+        @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
+        @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
@@ -154,8 +154,10 @@ struct InnerTableView<
                 return nil
             }
 
-            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
-            let content = parent.sectionHeaderContent(sectionData)
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+            let content = parent.sectionHeaderContent(sectionData, itemsData)
             headerView.configure(content: content)
 
             return headerView
@@ -167,8 +169,10 @@ struct InnerTableView<
                 return nil
             }
 
-            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
-            let content = parent.sectionFooterContent(sectionData)
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+            let content = parent.sectionFooterContent(sectionData, itemsData)
             footerView.configure(content: content)
 
             return footerView
@@ -176,9 +180,10 @@ struct InnerTableView<
 
         func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
             guard let dataSource else { return .leastNormalMagnitude }
-
-            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
-            let content = parent.sectionHeaderContent(sectionData)
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+            let content = parent.sectionHeaderContent(sectionData, itemsData)
 
             return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
         }
@@ -186,8 +191,10 @@ struct InnerTableView<
         func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
             guard let dataSource else { return .leastNormalMagnitude }
 
-            let sectionData = dataSource.snapshot().sectionIdentifiers[section]
-            let content = parent.sectionFooterContent(sectionData)
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+            let content = parent.sectionFooterContent(sectionData, itemsData)
 
             return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
         }
