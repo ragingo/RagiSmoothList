@@ -52,7 +52,7 @@ struct InfiniteScrollSampleView: View {
                         deleteButtonBackgroundColor: lightOrange,
                         deleteButtonImage: .remove
                     ),
-                    animation: .init(deleteRows: .fade)
+                    animation: .init(mode: .fade)
                 ),
                 sectionHeaderContent: { section in
                     SectionHeader(hireYear: section.hireYear)

@@ -89,24 +89,10 @@ extension RagiSmoothListConfiguration {
             }
         }
 
-        public var insertSection: Mode
-        public var deleteSection: Mode
-        public var insertRows: Mode
-        public var deleteRows: Mode
-        public var updateRows: Mode
+        public var mode: Mode
 
-        public init(
-            insertSection: Mode = .automatic,
-            deleteSection: Mode = .automatic,
-            insertRows: Mode = .automatic,
-            deleteRows: Mode = .automatic,
-            updateRows: Mode = .automatic
-        ) {
-            self.insertSection = insertSection
-            self.deleteSection = deleteSection
-            self.insertRows = insertRows
-            self.deleteRows = deleteRows
-            self.updateRows = updateRows
+        public init(mode: Mode = .automatic) {
+            self.mode = mode
         }
     }
 }

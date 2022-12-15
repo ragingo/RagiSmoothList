@@ -72,7 +72,6 @@ struct InnerTableView<
         viewController.view = tableView
 
         context.coordinator.tableView = tableView
-
         context.coordinator.dataSource = DataSource(
             tableView: tableView,
             cellContent: cellContent,
@@ -80,20 +79,23 @@ struct InnerTableView<
                 guard let dataSource = context.coordinator.dataSource else {
                     return nil
                 }
-                defer {
-                    let snapshot = dataSource.snapshot()
-                    let section = snapshot.sectionIdentifiers[indexPath.section]
-                    let lastSection = snapshot.sectionIdentifiers.last
-                    if lastSection == section {
-                        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-                        let lastItem = snapshot.itemIdentifiers(inSection: section).last
-                        if lastItem == item {
-                            self.onLoadMore()
-                        }
+
+                let snapshot = dataSource.snapshot()
+                let section = snapshot.sectionIdentifiers[indexPath.section]
+                let lastSection = snapshot.sectionIdentifiers.last
+                if lastSection == section {
+                    let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+                    let lastItem = snapshot.itemIdentifiers(inSection: section).last
+                    if lastItem == item {
+                        self.onLoadMore()
                     }
                 }
+
                 return makeCell(tableView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
             })
+        if let animationMode = listConfiguration?.animation.mode {
+            context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
+        }
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
@@ -106,11 +108,13 @@ struct InnerTableView<
         if needsRefresh {
             if let dataSource = context.coordinator.dataSource {
                 var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-                snapshot.appendSections(data.compactMap { $0.section })
+                snapshot.appendSections(data.map { $0.section })
+
                 data.forEach { section in
                     snapshot.appendItems(section.items, toSection: section.section)
                 }
-                dataSource.apply(snapshot)
+                let isInitialApply = dataSource.snapshot().sectionIdentifiers.isEmpty
+                dataSource.apply(snapshot, animatingDifferences: !isInitialApply)
             }
             Task {
                 needsRefresh = false
@@ -190,10 +194,11 @@ struct InnerTableView<
 
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
             guard let dataSource else { return nil }
-            let sectionData = dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
 
             let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, handler) in
-                guard let self = self else {
+                guard let self else {
                     handler(false)
                     return
                 }
@@ -201,7 +206,7 @@ struct InnerTableView<
                     sectionIndex: indexPath.section,
                     itemIndex: indexPath.row,
                     section: sectionData,
-                    item: dataSource.snapshot().itemIdentifiers(inSection: sectionData)[indexPath.row]
+                    item: snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
                 ))
                 handler(true)
             }
