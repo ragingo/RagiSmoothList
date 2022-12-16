@@ -17,34 +17,33 @@ public struct RagiSmoothList<
 {
     public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     public typealias ListDataType = [ListSectionModelType]
+    public typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
-    private let onDeleted: (((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void)?
 
     @State private var needsRefresh = false
 
     private var needsScrollToTop: Binding<Bool>
     private var onLoadMore: (() -> Void)?
     private var onRefresh: (() -> Void)?
+    private var onRowDeleted: RowDeletedCallback?
 
     public init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
-        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        onDeleted: (((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void)? = nil
+        @ViewBuilder cellContent: @escaping (ItemType) -> Cell
     ) {
         self._data = data
         self.listConfiguration = listConfiguration
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
-        self.onDeleted = onDeleted
 
         self.needsScrollToTop = .constant(false)
     }
@@ -63,8 +62,8 @@ public struct RagiSmoothList<
             onRefresh: {
                 onRefresh?()
             },
-            onDelete: { sectionIndex, itemIndex, section, item in
-                onDeleted?((sectionIndex: sectionIndex, itemIndex: itemIndex, section: section, item: item))
+            onRowDeleted: { sectionIndex, itemIndex, section, item in
+                onRowDeleted?((sectionIndex: sectionIndex, itemIndex: itemIndex, section: section, item: item))
             },
             needsScrollToTop: needsScrollToTop
         )
@@ -93,6 +92,12 @@ public struct RagiSmoothList<
     public func onLoadMore(_ action: @escaping () -> Void) -> Self {
         var newInstance = self
         newInstance.onLoadMore = action
+        return newInstance
+    }
+
+    public func onRowDeleted(_ action: @escaping RowDeletedCallback) -> Self {
+        var newInstance = self
+        newInstance.onRowDeleted = action
         return newInstance
     }
 }

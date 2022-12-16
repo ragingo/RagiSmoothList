@@ -65,9 +65,6 @@ struct InfiniteScrollSampleView: View {
                        alertInfo = .init(message: "id: \(employee.id)")
                        showAlert = true
                    }
-                },
-                onDeleted: { _, _, section, item in
-                    viewModel.delete(section: section, item: item)
                 }
             )
             .scrollToTop($scrollToTop)
@@ -83,6 +80,9 @@ struct InfiniteScrollSampleView: View {
                         forceMoreLoadError: forceMoreLoadError
                     )
                 }
+            }
+            .onRowDeleted { _, _, section, item in
+                viewModel.delete(section: section, item: item)
             }
             .alert(isPresented: $showAlert) {
                 if let alertInfo {

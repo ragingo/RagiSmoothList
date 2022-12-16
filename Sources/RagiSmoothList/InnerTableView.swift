@@ -19,7 +19,7 @@ struct InnerTableView<
     typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
-    typealias DeleteCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
+    typealias RowDeleteCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -30,7 +30,7 @@ struct InnerTableView<
     @Binding private var needsScrollToTop: Bool
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
-    private let onDelete: DeleteCallback
+    private let onRowDeleted: RowDeleteCallback
 
     private let cellID = UUID().uuidString
     private let sectionHeaderID = UUID().uuidString
@@ -45,7 +45,7 @@ struct InnerTableView<
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
-        onDelete: @escaping DeleteCallback,
+        onRowDeleted: @escaping RowDeleteCallback,
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
@@ -56,7 +56,7 @@ struct InnerTableView<
         self._needsRefresh = needsRefresh
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
-        self.onDelete = onDelete
+        self.onRowDeleted = onRowDeleted
         self._needsScrollToTop = needsScrollToTop
     }
 
@@ -209,7 +209,7 @@ struct InnerTableView<
                     handler(false)
                     return
                 }
-                self.parent.onDelete((
+                self.parent.onRowDeleted((
                     sectionIndex: indexPath.section,
                     itemIndex: indexPath.row,
                     section: sectionData,
