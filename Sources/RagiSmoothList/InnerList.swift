@@ -92,17 +92,30 @@ struct InnerList<
 //        if let animationMode = listConfiguration?.animation.mode {
 //            //context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
 //        }
-        let headerRegistration = UICollectionView.SupplementaryRegistration<InnerListSection<SectionHeader>>(elementKind: UICollectionView.elementKindSectionHeader) { view, elementKind, indexPath in
-        }
         dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
             let snapshot = dataSource.snapshot()
             let sectionData = snapshot.sectionIdentifiers[indexPath.section]
             let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-            let content = sectionHeaderContent(sectionData, itemsData)
 
-            let headerView = collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
-            headerView.configure(content: content)
-            return headerView
+            if elementKind == UICollectionView.elementKindSectionHeader {
+                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID, for: indexPath) as? InnerListSection<SectionHeader> else {
+                    return nil
+                }
+                let content = sectionHeaderContent(sectionData, itemsData)
+                view.configure(content: content)
+                return view
+            }
+
+            if elementKind == UICollectionView.elementKindSectionFooter {
+                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID, for: indexPath) as? InnerListSection<SectionFooter> else {
+                    return nil
+                }
+                let content = sectionFooterContent(sectionData, itemsData)
+                view.configure(content: content)
+                return view
+            }
+
+            return nil
         }
 
         let refreshControl = UIRefreshControl()
@@ -239,6 +252,7 @@ struct InnerList<
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
             var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
             configuration.headerMode = .supplementary
+            configuration.footerMode = .supplementary
             return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
         }
 
