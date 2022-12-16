@@ -63,20 +63,11 @@ struct InnerList<
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
 
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
-        }
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        //collectionView.delegate = context.coordinator
-        collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
-        collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
-        collectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
-        //configureTableView(collectionView)
+        let collectionView = makeCollectionView()
         viewController.view = collectionView
 
         context.coordinator.collectionView = collectionView
-        context.coordinator.dataSource = DataSource(
+        let dataSource: DataSource<SectionType, ItemType, Cell> = DataSource(
             collectionView: collectionView,
             cellContent: cellContent,
             cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
@@ -97,9 +88,22 @@ struct InnerList<
 
                 return makeCell(collectionView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
             })
+        context.coordinator.dataSource = dataSource
 //        if let animationMode = listConfiguration?.animation.mode {
 //            //context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
 //        }
+        let headerRegistration = UICollectionView.SupplementaryRegistration<InnerListSection<SectionHeader>>(elementKind: UICollectionView.elementKindSectionHeader) { view, elementKind, indexPath in
+        }
+        dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+            let content = sectionHeaderContent(sectionData, itemsData)
+
+            let headerView = collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+            headerView.configure(content: content)
+            return headerView
+        }
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
@@ -231,21 +235,38 @@ struct InnerList<
         }
     }
 
-    private func configureTableView(_ tableView: UITableView) {
-        if #available(iOS 15.0, *) {
-            tableView.sectionHeaderTopPadding = 0
+    private func makeCollectionView() -> UICollectionView {
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            configuration.headerMode = .supplementary
+            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
         }
 
-        guard let listConfiguration else { return }
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        //collectionView.delegate = context.coordinator
+        collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
+        collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
+        collectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
+        //configureCollectionView(collectionView)
 
-        tableView.separatorStyle = listConfiguration.separator.isVisible ? .singleLine : .none
+        return collectionView
+    }
 
-        if let separatorColor = listConfiguration.separator.color {
-            tableView.separatorColor = UIColor(separatorColor)
-        }
-        if let separatorInsets = listConfiguration.separator.insets {
-            tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
-        }
+    private func configureCollectionView(_ collectionView: UICollectionView) {
+//        if #available(iOS 15.0, *) {
+//            tableView.sectionHeaderTopPadding = 0
+//        }
+//
+//        guard let listConfiguration else { return }
+//
+//        tableView.separatorStyle = listConfiguration.separator.isVisible ? .singleLine : .none
+//
+//        if let separatorColor = listConfiguration.separator.color {
+//            tableView.separatorColor = UIColor(separatorColor)
+//        }
+//        if let separatorInsets = listConfiguration.separator.insets {
+//            tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
+//        }
     }
 }
 
