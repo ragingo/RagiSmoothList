@@ -63,19 +63,23 @@ struct InnerList<
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
 
-        let tableView = UITableView()
-        tableView.delegate = context.coordinator
-        tableView.register(InnerListSection<SectionHeader>.self, forHeaderFooterViewReuseIdentifier: sectionHeaderID)
-        tableView.register(InnerListSection<SectionFooter>.self, forHeaderFooterViewReuseIdentifier: sectionFooterID)
-        tableView.register(InnerListCell<Cell>.self, forCellReuseIdentifier: cellID)
-        configureTableView(tableView)
-        viewController.view = tableView
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+        }
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        //collectionView.delegate = context.coordinator
+        collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
+        collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
+        collectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
+        //configureTableView(collectionView)
+        viewController.view = collectionView
 
-        context.coordinator.tableView = tableView
+        context.coordinator.collectionView = collectionView
         context.coordinator.dataSource = DataSource(
-            tableView: tableView,
+            collectionView: collectionView,
             cellContent: cellContent,
-            cellProvider: { tableView, indexPath, item -> UITableViewCell? in
+            cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
                 guard let dataSource = context.coordinator.dataSource else {
                     return nil
                 }
@@ -91,15 +95,15 @@ struct InnerList<
                     }
                 }
 
-                return makeCell(tableView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
+                return makeCell(collectionView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
             })
-        if let animationMode = listConfiguration?.animation.mode {
-            context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
-        }
+//        if let animationMode = listConfiguration?.animation.mode {
+//            //context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
+//        }
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
-        tableView.refreshControl = refreshControl
+        collectionView.refreshControl = refreshControl
 
         return viewController
     }
@@ -121,8 +125,8 @@ struct InnerList<
             }
         }
 
-        if needsScrollToTop, let tableView = context.coordinator.tableView {
-            tableView.setContentOffset(.zero, animated: true)
+        if needsScrollToTop, let collectionView = context.coordinator.collectionView {
+            collectionView.setContentOffset(.zero, animated: true)
             Task {
                 needsScrollToTop = false
             }
@@ -136,7 +140,7 @@ struct InnerList<
     final class Coordinator: NSObject, UITableViewDelegate {
         private let parent: InnerList
         fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
-        fileprivate var tableView: UITableView?
+        fileprivate var collectionView: UICollectionView?
 
         init(parent: InnerList) {
             self.parent = parent
@@ -249,43 +253,42 @@ final class DataSource<
     SectionType: Hashable,
     ItemType: Hashable,
     Cell
->: UITableViewDiffableDataSource<SectionType, ItemType> {
+>: UICollectionViewDiffableDataSource<SectionType, ItemType> {
     private let cellContent: (ItemType) -> Cell
 
     init(
-        tableView: UITableView,
+        collectionView: UICollectionView,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        cellProvider: @escaping UITableViewDiffableDataSource<SectionType, ItemType>.CellProvider
+        cellProvider: @escaping UICollectionViewDiffableDataSource<SectionType, ItemType>.CellProvider
     ) {
         self.cellContent = cellContent
-        super.init(tableView: tableView, cellProvider: cellProvider)
+        super.init(collectionView: collectionView, cellProvider: cellProvider)
     }
 
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let snapshot = snapshot()
-        let section = snapshot.sectionIdentifiers[indexPath.section]
-        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-        if let editable = item as? RagiSmoothListCellEditable {
-            return editable.canEdit
-        }
-        return false
-    }
+//    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+//        let snapshot = snapshot()
+//        let section = snapshot.sectionIdentifiers[indexPath.section]
+//        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+//        if let editable = item as? RagiSmoothListCellEditable {
+//            return editable.canEdit
+//        }
+//        return false
+//    }
 }
 
 private func makeCell<Cell: View, Item: Hashable>(
-    _ tableView: UITableView,
+    _ collectionView: UICollectionView,
     cellID: String,
     indexPath: IndexPath,
     @ViewBuilder cellContent: (Item) -> Cell,
     item: Item
-) -> UITableViewCell? {
-    guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
+) -> UICollectionViewCell? {
+    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
         return nil
     }
 
     let content = cellContent(item)
     cell.configure(content: content)
-    cell.selectionStyle = .none
 
     return cell
 }
