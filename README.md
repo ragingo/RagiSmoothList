@@ -55,20 +55,29 @@ dependencies: [
 RagiSmoothList(
     data: $shops,
     listConfiguration: .init(
-        hasSeparator: false,
-        canRowDelete: true,
-        separatorColor: .red,
-        separatorInsets: .init()
+        separator: .init(isVisible: true, insets: .init(), color: .red),
+        edit: .init(
+            deleteButtonBackgroundColor: .yellow,
+            deleteButtonImage: .remove
+        ),
+        animation: .init(mode: .fade)
     ),
-    sectionContent: { section in Text(section.genre) },
-    cellContent: { shop in Text(shop.name) },
-    onLoadMore: {
-        loadMore()
+    sectionHeaderContent: { section, items in
+        Text("section header")
     },
-    onRefresh: {
-        refresh()
+    sectionFooterContent: { section, items in
+        Text("section footer")
+    },
+    cellContent: { shop in
+        Text(shop.name)
     }
 )
+.refreshable {
+    refresh()
+}
+.onLoadMore {
+    loadMore()
+}
 ```
 
 ## Examples
