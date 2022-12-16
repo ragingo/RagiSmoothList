@@ -49,7 +49,7 @@ public struct RagiSmoothList<
     }
 
     public var body: some View {
-        InnerTableView(
+        InnerList(
             data: $data,
             listConfiguration: listConfiguration,
             sectionHeaderContent: sectionHeaderContent,

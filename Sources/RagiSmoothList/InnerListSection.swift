@@ -1,5 +1,5 @@
 //
-//  InnerTableViewSection.swift
+//  InnerListSection.swift
 //  RagiSmoothList
 //
 //  Created by ragingo on 2022/12/09.
@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-final class InnerTableViewSection<Content: View>: UITableViewHeaderFooterView {
+final class InnerListSection<Content: View>: UITableViewHeaderFooterView {
     private var hostingView = HostingView<Content>()
 
     override init(reuseIdentifier: String?) {

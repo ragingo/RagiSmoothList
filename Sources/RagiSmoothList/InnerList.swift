@@ -1,5 +1,5 @@
 //
-//  InnerTableView.swift
+//  InnerList.swift
 //  RagiSmoothList
 //
 //  Created by ragingo on 2022/12/08.
@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-struct InnerTableView<
+struct InnerList<
     SectionType: Identifiable & Hashable,
     ItemType: Identifiable & Hashable,
     SectionHeader: View,
@@ -65,9 +65,9 @@ struct InnerTableView<
 
         let tableView = UITableView()
         tableView.delegate = context.coordinator
-        tableView.register(InnerTableViewSection<SectionHeader>.self, forHeaderFooterViewReuseIdentifier: sectionHeaderID)
-        tableView.register(InnerTableViewSection<SectionFooter>.self, forHeaderFooterViewReuseIdentifier: sectionFooterID)
-        tableView.register(InnerTableViewCell<Cell>.self, forCellReuseIdentifier: cellID)
+        tableView.register(InnerListSection<SectionHeader>.self, forHeaderFooterViewReuseIdentifier: sectionHeaderID)
+        tableView.register(InnerListSection<SectionFooter>.self, forHeaderFooterViewReuseIdentifier: sectionFooterID)
+        tableView.register(InnerListCell<Cell>.self, forCellReuseIdentifier: cellID)
         configureTableView(tableView)
         viewController.view = tableView
 
@@ -134,11 +134,11 @@ struct InnerTableView<
     }
 
     final class Coordinator: NSObject, UITableViewDelegate {
-        private let parent: InnerTableView
+        private let parent: InnerList
         fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
         fileprivate var tableView: UITableView?
 
-        init(parent: InnerTableView) {
+        init(parent: InnerList) {
             self.parent = parent
         }
 
@@ -150,7 +150,7 @@ struct InnerTableView<
         // MARK: - UITableViewDelegate
         func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
             guard let dataSource else { return nil }
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionHeaderID) as? InnerTableViewSection<SectionHeader> else {
+            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionHeaderID) as? InnerListSection<SectionHeader> else {
                 return nil
             }
 
@@ -165,7 +165,7 @@ struct InnerTableView<
 
         func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
             guard let dataSource else { return nil }
-            guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionFooterID) as? InnerTableViewSection<SectionFooter> else {
+            guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionFooterID) as? InnerListSection<SectionFooter> else {
                 return nil
             }
 
@@ -279,7 +279,7 @@ private func makeCell<Cell: View, Item: Hashable>(
     @ViewBuilder cellContent: (Item) -> Cell,
     item: Item
 ) -> UITableViewCell? {
-    guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? InnerTableViewCell<Cell> else {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
         return nil
     }
 

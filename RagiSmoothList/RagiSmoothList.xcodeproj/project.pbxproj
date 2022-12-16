@@ -9,21 +9,21 @@
 /* Begin PBXBuildFile section */
 		524ABCE62941D67800205599 /* RagiSmoothList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; };
 		524ABCE72941D67800205599 /* RagiSmoothList.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		524ABCEC29420F0000205599 /* InnerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524ABCEB29420F0000205599 /* InnerTableViewCell.swift */; };
+		524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524ABCEB29420F0000205599 /* InnerListCell.swift */; };
 		52D01E002941CE4700103B11 /* RagiSmoothList.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D01DFF2941CE4700103B11 /* RagiSmoothList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E0C2941D05900103B11 /* RagiSmoothList.swift */; };
 		52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */; };
 		52D01E172941D19000103B11 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E162941D19000103B11 /* ContentView.swift */; };
 		52D01E192941D19100103B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E182941D19100103B11 /* Assets.xcassets */; };
 		52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E1B2941D19100103B11 /* Preview Assets.xcassets */; };
-		52FF04362942149F0044495F /* InnerTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04352942149F0044495F /* InnerTableView.swift */; };
+		52FF04362942149F0044495F /* InnerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04352942149F0044495F /* InnerList.swift */; };
 		52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */; };
 		52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */; };
 		52FF044629421DCF0044495F /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044529421DCF0044495F /* Employee.swift */; };
 		52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */; };
 		52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */; };
 		52FF04542943583F0044495F /* HostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0452294357F50044495F /* HostingView.swift */; };
-		52FF045629435A980044495F /* InnerTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045529435A980044495F /* InnerTableViewSection.swift */; };
+		52FF045629435A980044495F /* InnerListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045529435A980044495F /* InnerListSection.swift */; };
 		52FF045A2944B0700044495F /* InfiniteScrollSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */; };
 		52FF045C2944B2890044495F /* SimpleListSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045B2944B2890044495F /* SimpleListSampleView.swift */; };
 		52FF045E29459D760044495F /* RagiSmoothListConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF045D29459D760044495F /* RagiSmoothListConfiguration.swift */; };
@@ -65,7 +65,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		524ABCEB29420F0000205599 /* InnerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTableViewCell.swift; sourceTree = "<group>"; };
+		524ABCEB29420F0000205599 /* InnerListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerListCell.swift; sourceTree = "<group>"; };
 		52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RagiSmoothList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D01DFF2941CE4700103B11 /* RagiSmoothList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RagiSmoothList.h; sourceTree = "<group>"; };
 		52D01E0C2941D05900103B11 /* RagiSmoothList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothList.swift; sourceTree = "<group>"; };
@@ -75,14 +75,14 @@
 		52D01E182941D19100103B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		52D01E1B2941D19100103B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		52D01E212941D1C600103B11 /* RagiSmoothList */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RagiSmoothList; path = ..; sourceTree = "<group>"; };
-		52FF04352942149F0044495F /* InnerTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTableView.swift; sourceTree = "<group>"; };
+		52FF04352942149F0044495F /* InnerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerList.swift; sourceTree = "<group>"; };
 		52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListSectionItemType.swift; sourceTree = "<group>"; };
 		52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteScrollSampleViewModel.swift; sourceTree = "<group>"; };
 		52FF044529421DCF0044495F /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListTextCell.swift; sourceTree = "<group>"; };
 		52FF044C29421FE90044495F /* RagiSmoothListButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListButtonCell.swift; sourceTree = "<group>"; };
 		52FF0452294357F50044495F /* HostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostingView.swift; sourceTree = "<group>"; };
-		52FF045529435A980044495F /* InnerTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerTableViewSection.swift; sourceTree = "<group>"; };
+		52FF045529435A980044495F /* InnerListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerListSection.swift; sourceTree = "<group>"; };
 		52FF04592944B0700044495F /* InfiniteScrollSampleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfiniteScrollSampleView.swift; sourceTree = "<group>"; };
 		52FF045B2944B2890044495F /* SimpleListSampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleListSampleView.swift; sourceTree = "<group>"; };
 		52FF045D29459D760044495F /* RagiSmoothListConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListConfiguration.swift; sourceTree = "<group>"; };
@@ -163,9 +163,9 @@
 			isa = PBXGroup;
 			children = (
 				52FF0452294357F50044495F /* HostingView.swift */,
-				52FF04352942149F0044495F /* InnerTableView.swift */,
-				524ABCEB29420F0000205599 /* InnerTableViewCell.swift */,
-				52FF045529435A980044495F /* InnerTableViewSection.swift */,
+				52FF04352942149F0044495F /* InnerList.swift */,
+				524ABCEB29420F0000205599 /* InnerListCell.swift */,
+				52FF045529435A980044495F /* InnerListSection.swift */,
 				52D01E0C2941D05900103B11 /* RagiSmoothList.swift */,
 				52FF045D29459D760044495F /* RagiSmoothListConfiguration.swift */,
 			);
@@ -403,7 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */,
-				524ABCEC29420F0000205599 /* InnerTableViewCell.swift in Sources */,
+				524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */,
 				52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */,
 				52FF046029459DB20044495F /* RagiSmoothListEmptySection.swift in Sources */,
 				52FF04542943583F0044495F /* HostingView.swift in Sources */,
@@ -411,8 +411,8 @@
 				52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */,
 				52FF046229459E170044495F /* RagiSmoothListSectionModel.swift in Sources */,
 				52FF047E294AE8FD0044495F /* RagiSmoothListCellEditable.swift in Sources */,
-				52FF04362942149F0044495F /* InnerTableView.swift in Sources */,
-				52FF045629435A980044495F /* InnerTableViewSection.swift in Sources */,
+				52FF04362942149F0044495F /* InnerList.swift in Sources */,
+				52FF045629435A980044495F /* InnerListSection.swift in Sources */,
 				52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
