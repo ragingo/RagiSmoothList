@@ -104,14 +104,15 @@ struct InnerList<
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         if needsRefresh {
             if let dataSource = context.coordinator.dataSource {
-                var snapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-                snapshot.appendSections(data.map { $0.section })
+                var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
+                newSnapshot.appendSections(data.map { $0.section })
 
                 data.forEach { section in
-                    snapshot.appendItems(section.items, toSection: section.section)
+                    newSnapshot.appendItems(section.items, toSection: section.section)
                 }
+
                 let isInitialApply = dataSource.snapshot().sectionIdentifiers.isEmpty
-                dataSource.apply(snapshot, animatingDifferences: !isInitialApply)
+                dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
             }
             Task {
                 needsRefresh = false
@@ -175,10 +176,7 @@ struct InnerList<
 
     private func makeCollectionView() -> UICollectionView {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-            configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
-            configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
-            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+            return NSCollectionLayoutSection.list(using: configureCollectionView(), layoutEnvironment: layoutEnvironment)
         }
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -191,21 +189,40 @@ struct InnerList<
         return collectionView
     }
 
-    private func configureCollectionView(_ collectionView: UICollectionView) {
-//        if #available(iOS 15.0, *) {
-//            tableView.sectionHeaderTopPadding = 0
-//        }
-//
-//        guard let listConfiguration else { return }
-//
-//        tableView.separatorStyle = listConfiguration.separator.isVisible ? .singleLine : .none
-//
-//        if let separatorColor = listConfiguration.separator.color {
-//            tableView.separatorColor = UIColor(separatorColor)
-//        }
-//        if let separatorInsets = listConfiguration.separator.insets {
-//            tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
-//        }
+    private func configureCollectionView() -> UICollectionLayoutListConfiguration {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+
+        configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
+        configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
+
+        if #available(iOS 15.0, *) {
+            configuration.headerTopPadding = 0
+        }
+
+        guard let listConfiguration else { return configuration }
+
+        configuration.showsSeparators = listConfiguration.separator.isVisible
+
+        if let separatorColor = listConfiguration.separator.color {
+            if #available(iOS 14.5, *) {
+                configuration.separatorConfiguration.color = UIColor(separatorColor)
+            }
+        }
+
+        if let separatorInsets = listConfiguration.separator.insets {
+            if #available(iOS 14.5, *) {
+                let insets = NSDirectionalEdgeInsets(
+                    top: separatorInsets.top,
+                    leading: separatorInsets.leading,
+                    bottom: separatorInsets.bottom,
+                    trailing: separatorInsets.trailing
+                )
+                configuration.separatorConfiguration.topSeparatorInsets = insets
+                configuration.separatorConfiguration.bottomSeparatorInsets = insets
+            }
+        }
+
+        return configuration
     }
 
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
