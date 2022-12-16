@@ -92,31 +92,7 @@ struct InnerList<
 //        if let animationMode = listConfiguration?.animation.mode {
 //            //context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
 //        }
-        dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-
-            if elementKind == UICollectionView.elementKindSectionHeader {
-                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID, for: indexPath) as? InnerListSection<SectionHeader> else {
-                    return nil
-                }
-                let content = sectionHeaderContent(sectionData, itemsData)
-                view.configure(content: content)
-                return view
-            }
-
-            if elementKind == UICollectionView.elementKindSectionFooter {
-                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID, for: indexPath) as? InnerListSection<SectionFooter> else {
-                    return nil
-                }
-                let content = sectionFooterContent(sectionData, itemsData)
-                view.configure(content: content)
-                return view
-            }
-
-            return nil
-        }
+        dataSource.supplementaryViewProvider = supplementaryViewProvider(dataSource: dataSource)
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
@@ -154,7 +130,7 @@ struct InnerList<
         return Coordinator(parent: self)
     }
 
-    final class Coordinator: NSObject, UITableViewDelegate {
+    final class Coordinator: NSObject {
         private let parent: InnerList
         fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
         fileprivate var collectionView: UICollectionView?
@@ -169,57 +145,6 @@ struct InnerList<
         }
 
         // MARK: - UITableViewDelegate
-        func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-            guard let dataSource else { return nil }
-            guard let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionHeaderID) as? InnerListSection<SectionHeader> else {
-                return nil
-            }
-
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-            let content = parent.sectionHeaderContent(sectionData, itemsData)
-            headerView.configure(content: content)
-
-            return headerView
-        }
-
-        func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-            guard let dataSource else { return nil }
-            guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: parent.sectionFooterID) as? InnerListSection<SectionFooter> else {
-                return nil
-            }
-
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-            let content = parent.sectionFooterContent(sectionData, itemsData)
-            footerView.configure(content: content)
-
-            return footerView
-        }
-
-        func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-            guard let dataSource else { return .leastNormalMagnitude }
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-            let content = parent.sectionHeaderContent(sectionData, itemsData)
-
-            return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
-        }
-
-        func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-            guard let dataSource else { return .leastNormalMagnitude }
-
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-            let content = parent.sectionFooterContent(sectionData, itemsData)
-
-            return content is EmptyView ? .leastNormalMagnitude : UITableView.automaticDimension
-        }
-
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
             guard let dataSource else { return nil }
             let snapshot = dataSource.snapshot()
@@ -251,8 +176,8 @@ struct InnerList<
     private func makeCollectionView() -> UICollectionView {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
             var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-            configuration.headerMode = .supplementary
-            configuration.footerMode = .supplementary
+            configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
+            configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
             return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
         }
 
@@ -281,6 +206,38 @@ struct InnerList<
 //        if let separatorInsets = listConfiguration.separator.insets {
 //            tableView.separatorInset = UIEdgeInsets(top: separatorInsets.top, left: separatorInsets.leading, bottom: separatorInsets.bottom, right: separatorInsets.trailing)
 //        }
+    }
+
+    typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
+
+    func supplementaryViewProvider(dataSource: DataSource<SectionType, ItemType, Cell>) -> SupplementaryViewProvider? {
+        let provider: SupplementaryViewProvider = { collectionView, elementKind, indexPath in
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+
+            if elementKind == UICollectionView.elementKindSectionHeader {
+                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID, for: indexPath) as? InnerListSection<SectionHeader> else {
+                    return nil
+                }
+                let content = sectionHeaderContent(sectionData, itemsData)
+                view.configure(content: content)
+                return view
+            }
+
+            if elementKind == UICollectionView.elementKindSectionFooter {
+                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID, for: indexPath) as? InnerListSection<SectionFooter> else {
+                    return nil
+                }
+                let content = sectionFooterContent(sectionData, itemsData)
+                view.configure(content: content)
+                return view
+            }
+
+            return nil
+        }
+
+        return provider
     }
 }
 
