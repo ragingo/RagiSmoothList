@@ -66,24 +66,24 @@ struct InfiniteScrollSampleView: View {
                        showAlert = true
                    }
                 },
-                onLoadMore: {
-                    Task {
-                        await viewModel.loadMore(
-                            forceFirstLoadError: forceFirstLoadError,
-                            forceMoreLoadError: forceMoreLoadError
-                        )
-                    }
-                },
-                onRefresh: {
-                    Task {
-                        await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
-                    }
-                },
                 onDeleted: { _, _, section, item in
                     viewModel.delete(section: section, item: item)
                 }
             )
             .scrollToTop($scrollToTop)
+            .refreshable {
+                Task {
+                    await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
+                }
+            }
+            .onLoadMore {
+                Task {
+                    await viewModel.loadMore(
+                        forceFirstLoadError: forceFirstLoadError,
+                        forceMoreLoadError: forceMoreLoadError
+                    )
+                }
+            }
             .alert(isPresented: $showAlert) {
                 if let alertInfo {
                     return Alert(title: Text(alertInfo.message))

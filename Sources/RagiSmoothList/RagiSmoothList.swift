@@ -23,13 +23,13 @@ public struct RagiSmoothList<
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
-    private let onLoadMore: (() -> Void)?
-    private let onRefresh: (() -> Void)?
     private let onDeleted: (((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void)?
 
     @State private var needsRefresh = false
 
     private var needsScrollToTop: Binding<Bool>
+    private var onLoadMore: (() -> Void)?
+    private var onRefresh: (() -> Void)?
 
     public init(
         data: Binding<ListDataType>,
@@ -37,8 +37,6 @@ public struct RagiSmoothList<
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        onLoadMore: (() -> Void)? = nil,
-        onRefresh: (() -> Void)? = nil,
         onDeleted: (((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void)? = nil
     ) {
         self._data = data
@@ -46,8 +44,6 @@ public struct RagiSmoothList<
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
-        self.onLoadMore = onLoadMore
-        self.onRefresh = onRefresh
         self.onDeleted = onDeleted
 
         self.needsScrollToTop = .constant(false)
@@ -85,24 +81,34 @@ public struct RagiSmoothList<
         newInstance.needsScrollToTop = request
         return newInstance
     }
+
+    // iOS 15 未満のサポートを切ったら、以下のページの方法で独自 View の refreshable 対応ができる
+    // https://developer.apple.com/documentation/swiftui/refreshaction
+    public func refreshable(_ action: @escaping () -> Void) -> Self {
+        var newInstance = self
+        newInstance.onRefresh = action
+        return newInstance
+    }
+
+    public func onLoadMore(_ action: @escaping () -> Void) -> Self {
+        var newInstance = self
+        newInstance.onLoadMore = action
+        return newInstance
+    }
 }
 
 extension RagiSmoothList {
     public init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
-        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        onLoadMore: (() -> Void)? = nil,
-        onRefresh: (() -> Void)? = nil
+        @ViewBuilder cellContent: @escaping (ItemType) -> Cell
     ) where SectionHeader == EmptyView, SectionFooter == EmptyView {
         self.init(
             data: data,
             listConfiguration: listConfiguration,
             sectionHeaderContent: { _, _ in EmptyView() },
             sectionFooterContent: { _, _ in EmptyView() },
-            cellContent: cellContent,
-            onLoadMore: onLoadMore,
-            onRefresh: onRefresh
+            cellContent: cellContent
         )
     }
 }
