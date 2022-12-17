@@ -89,9 +89,7 @@ struct InnerList<
                 return makeCell(collectionView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
             })
         context.coordinator.dataSource = dataSource
-//        if let animationMode = listConfiguration?.animation.mode {
-//            //context.coordinator.dataSource?.defaultRowAnimation = animationMode.uiTableViewRowAnimation
-//        }
+
         dataSource.supplementaryViewProvider = supplementaryViewProvider(dataSource: dataSource)
 
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
@@ -154,44 +152,13 @@ struct InnerList<
             parent.onRefresh()
             sender.endRefreshing()
         }
-
-        // MARK: - UITableViewDelegate
-        func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-            guard let dataSource else { return nil }
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-
-            let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, handler) in
-                guard let self else {
-                    handler(false)
-                    return
-                }
-                self.parent.onRowDeleted((
-                    sectionIndex: indexPath.section,
-                    itemIndex: indexPath.row,
-                    section: sectionData,
-                    item: snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
-                ))
-                handler(true)
-            }
-
-            if let backgroundColor = parent.listConfiguration?.edit.deleteButtonBackgroundColor {
-                action.backgroundColor = UIColor(backgroundColor)
-            }
-            action.image = parent.listConfiguration?.edit.deleteButtonImage
-
-            return UISwipeActionsConfiguration(actions: [action])
-        }
     }
 
     private func makeCollectionView() -> UICollectionView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        //collectionView.delegate = context.coordinator
         collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
         collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
         collectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
-        //configureCollectionView(collectionView)
-
         return collectionView
     }
 
@@ -231,58 +198,96 @@ struct InnerList<
         let provider: UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider = { indexPath -> UISwipeActionsConfiguration? in
             let snapshot = dataSource.snapshot()
             let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+            let item = snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
 
-            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
-                onRowDeleted((
-                    sectionIndex: indexPath.section,
-                    itemIndex: indexPath.row,
-                    section: sectionData,
-                    item: snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
-                ))
-                handler(true)
+            var actions: [UIContextualAction] = []
+
+            if let editableItem = item as? RagiSmoothListCellEditable, editableItem.canEdit {
+                let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+                    onRowDeleted((
+                        sectionIndex: indexPath.section,
+                        itemIndex: indexPath.row,
+                        section: sectionData,
+                        item: item
+                    ))
+                    handler(true)
+                }
+
+                if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
+                    deleteAction.backgroundColor = UIColor(backgroundColor)
+                }
+                deleteAction.image = listConfiguration?.edit.deleteButtonImage
+
+                actions.append(deleteAction)
             }
 
-            if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
-                action.backgroundColor = UIColor(backgroundColor)
-            }
-            action.image = listConfiguration?.edit.deleteButtonImage
-
-            return UISwipeActionsConfiguration(actions: [action])
+            return UISwipeActionsConfiguration(actions: actions)
         }
 
         return provider
     }
+}
 
+// MARK: - SupplementaryViewProvider
+extension InnerList {
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
 
     func supplementaryViewProvider(dataSource: DataSource<SectionType, ItemType, Cell>) -> SupplementaryViewProvider? {
         let provider: SupplementaryViewProvider = { collectionView, elementKind, indexPath in
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-            let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-
-            if elementKind == UICollectionView.elementKindSectionHeader {
-                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID, for: indexPath) as? InnerListSection<SectionHeader> else {
-                    return nil
-                }
-                let content = sectionHeaderContent(sectionData, itemsData)
-                view.configure(content: content)
-                return view
+            switch elementKind {
+            case UICollectionView.elementKindSectionHeader:
+                return makeSectionHeader(collectionView, indexPath: indexPath, dataSource: dataSource)
+            case UICollectionView.elementKindSectionFooter:
+                return makeSectionFooter(collectionView, indexPath: indexPath, dataSource: dataSource)
+            default:
+                return nil
             }
-
-            if elementKind == UICollectionView.elementKindSectionFooter {
-                guard let view = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID, for: indexPath) as? InnerListSection<SectionFooter> else {
-                    return nil
-                }
-                let content = sectionFooterContent(sectionData, itemsData)
-                view.configure(content: content)
-                return view
-            }
-
-            return nil
         }
-
         return provider
+    }
+
+    private func dequeueSectionHeader(_ collectionView: UICollectionView, indexPath: IndexPath) -> InnerListSection<SectionHeader>? {
+        return collectionView.dequeueReusableSupplementaryView(
+            ofKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: sectionHeaderID,
+            for: indexPath
+        ) as? InnerListSection<SectionHeader>
+    }
+
+    private func dequeueSectionFooter(_ collectionView: UICollectionView, indexPath: IndexPath) -> InnerListSection<SectionFooter>? {
+        return collectionView.dequeueReusableSupplementaryView(
+            ofKind: UICollectionView.elementKindSectionFooter,
+            withReuseIdentifier: sectionFooterID,
+            for: indexPath
+        ) as? InnerListSection<SectionFooter>
+    }
+
+    private func makeSectionHeader(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        dataSource: DataSource<SectionType, ItemType, Cell>
+    ) -> UICollectionReusableView? {
+        guard let view = dequeueSectionHeader(collectionView, indexPath: indexPath) else { return nil }
+        let snapshot = dataSource.snapshot()
+        let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+        let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+        let content = sectionHeaderContent(sectionData, itemsData)
+        view.configure(content: content)
+        return view
+    }
+
+    private func makeSectionFooter(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath,
+        dataSource: DataSource<SectionType, ItemType, Cell>
+    ) -> UICollectionReusableView? {
+        guard let view = dequeueSectionFooter(collectionView, indexPath: indexPath) else { return nil }
+        let snapshot = dataSource.snapshot()
+        let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+        let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
+        let content = sectionFooterContent(sectionData, itemsData)
+        view.configure(content: content)
+        return view
     }
 }
 
@@ -301,16 +306,6 @@ final class DataSource<
         self.cellContent = cellContent
         super.init(collectionView: collectionView, cellProvider: cellProvider)
     }
-
-//    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-//        let snapshot = snapshot()
-//        let section = snapshot.sectionIdentifiers[indexPath.section]
-//        let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-//        if let editable = item as? RagiSmoothListCellEditable {
-//            return editable.canEdit
-//        }
-//        return false
-//    }
 }
 
 private func makeCell<Cell: View, Item: Hashable>(
