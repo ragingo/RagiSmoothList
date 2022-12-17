@@ -32,10 +32,6 @@ struct InnerList<
     private let onRefresh: () -> Void
     private let onRowDeleted: RowDeleteCallback
 
-    private let cellID = UUID().uuidString
-    private let sectionHeaderID = UUID().uuidString
-    private let sectionFooterID = UUID().uuidString
-
     init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
@@ -63,55 +59,23 @@ struct InnerList<
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
 
-        let collectionView = makeCollectionView()
-        viewController.view = collectionView
-
-        context.coordinator.collectionView = collectionView
-        let dataSource: DataSource<SectionType, ItemType, Cell> = DataSource(
-            collectionView: collectionView,
+        let collectionView = CollectionView(
+            sectionHeaderContent: sectionHeaderContent,
+            sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
-            cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
-                guard let dataSource = context.coordinator.dataSource else {
-                    return nil
-                }
-
-                let snapshot = dataSource.snapshot()
-                let section = snapshot.sectionIdentifiers[indexPath.section]
-                let lastSection = snapshot.sectionIdentifiers.last
-                if lastSection == section {
-                    let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-                    let lastItem = snapshot.itemIdentifiers(inSection: section).last
-                    if lastItem == item {
-                        self.onLoadMore()
-                    }
-                }
-
-                return makeCell(collectionView, cellID: cellID, indexPath: indexPath, cellContent: cellContent, item: item)
-            })
-        context.coordinator.dataSource = dataSource
-
-        dataSource.supplementaryViewProvider = supplementaryViewProvider(dataSource: dataSource)
-
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-            configureCollectionViewStyles(&configuration)
-            configuration.trailingSwipeActionsConfigurationProvider = trailingSwipeActionsConfigurationProvider(dataSource: dataSource)
-
-            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+            onRefresh: onRefresh
+        ) { uiCollectionView in
+            viewController.view = uiCollectionView
         }
 
-        collectionView.collectionViewLayout = layout
-
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
-        collectionView.refreshControl = refreshControl
+        context.coordinator.collectionView = collectionView
 
         return viewController
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         if needsRefresh {
-            if let dataSource = context.coordinator.dataSource {
+            if let dataSource = context.coordinator.collectionView?.dataSource {
                 var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
                 newSnapshot.appendSections(data.map { $0.section })
 
@@ -128,7 +92,7 @@ struct InnerList<
         }
 
         if needsScrollToTop, let collectionView = context.coordinator.collectionView {
-            collectionView.setContentOffset(.zero, animated: true)
+            collectionView.scrollToTop()
             Task {
                 needsScrollToTop = false
             }
@@ -141,56 +105,10 @@ struct InnerList<
 
     final class Coordinator: NSObject {
         private let parent: InnerList
-        fileprivate var dataSource: DataSource<SectionType, ItemType, Cell>?
-        fileprivate var collectionView: UICollectionView?
+        fileprivate var collectionView: CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>?
 
         init(parent: InnerList) {
             self.parent = parent
-        }
-
-        @objc func onRefreshControlValueChanged(sender: UIRefreshControl) {
-            parent.onRefresh()
-            sender.endRefreshing()
-        }
-    }
-
-    private func makeCollectionView() -> UICollectionView {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
-        collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
-        collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
-        collectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
-        return collectionView
-    }
-
-    private func configureCollectionViewStyles(_ configuration: inout UICollectionLayoutListConfiguration) {
-        configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
-        configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
-
-        if #available(iOS 15.0, *) {
-            configuration.headerTopPadding = 0
-        }
-
-        guard let listConfiguration else { return }
-
-        configuration.showsSeparators = listConfiguration.separator.isVisible
-
-        if let separatorColor = listConfiguration.separator.color {
-            if #available(iOS 14.5, *) {
-                configuration.separatorConfiguration.color = UIColor(separatorColor)
-            }
-        }
-
-        if let separatorInsets = listConfiguration.separator.insets {
-            if #available(iOS 14.5, *) {
-                let insets = NSDirectionalEdgeInsets(
-                    top: separatorInsets.top,
-                    leading: separatorInsets.leading,
-                    bottom: separatorInsets.bottom,
-                    trailing: separatorInsets.trailing
-                )
-                configuration.separatorConfiguration.topSeparatorInsets = insets
-                configuration.separatorConfiguration.bottomSeparatorInsets = insets
-            }
         }
     }
 
@@ -226,101 +144,4 @@ struct InnerList<
 
         return provider
     }
-}
-
-// MARK: - SupplementaryViewProvider
-extension InnerList {
-    typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
-
-    func supplementaryViewProvider(dataSource: DataSource<SectionType, ItemType, Cell>) -> SupplementaryViewProvider? {
-        let provider: SupplementaryViewProvider = { collectionView, elementKind, indexPath in
-            switch elementKind {
-            case UICollectionView.elementKindSectionHeader:
-                return makeSectionHeader(collectionView, indexPath: indexPath, dataSource: dataSource)
-            case UICollectionView.elementKindSectionFooter:
-                return makeSectionFooter(collectionView, indexPath: indexPath, dataSource: dataSource)
-            default:
-                return nil
-            }
-        }
-        return provider
-    }
-
-    private func dequeueSectionHeader(_ collectionView: UICollectionView, indexPath: IndexPath) -> InnerListSection<SectionHeader>? {
-        return collectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: sectionHeaderID,
-            for: indexPath
-        ) as? InnerListSection<SectionHeader>
-    }
-
-    private func dequeueSectionFooter(_ collectionView: UICollectionView, indexPath: IndexPath) -> InnerListSection<SectionFooter>? {
-        return collectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionFooter,
-            withReuseIdentifier: sectionFooterID,
-            for: indexPath
-        ) as? InnerListSection<SectionFooter>
-    }
-
-    private func makeSectionHeader(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        dataSource: DataSource<SectionType, ItemType, Cell>
-    ) -> UICollectionReusableView? {
-        guard let view = dequeueSectionHeader(collectionView, indexPath: indexPath) else { return nil }
-        let snapshot = dataSource.snapshot()
-        let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-        let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-        let content = sectionHeaderContent(sectionData, itemsData)
-        view.configure(content: content)
-        return view
-    }
-
-    private func makeSectionFooter(
-        _ collectionView: UICollectionView,
-        indexPath: IndexPath,
-        dataSource: DataSource<SectionType, ItemType, Cell>
-    ) -> UICollectionReusableView? {
-        guard let view = dequeueSectionFooter(collectionView, indexPath: indexPath) else { return nil }
-        let snapshot = dataSource.snapshot()
-        let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-        let itemsData = snapshot.itemIdentifiers(inSection: sectionData)
-        let content = sectionFooterContent(sectionData, itemsData)
-        view.configure(content: content)
-        return view
-    }
-}
-
-final class DataSource<
-    SectionType: Hashable,
-    ItemType: Hashable,
-    Cell
->: UICollectionViewDiffableDataSource<SectionType, ItemType> {
-    private let cellContent: (ItemType) -> Cell
-
-    init(
-        collectionView: UICollectionView,
-        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        cellProvider: @escaping UICollectionViewDiffableDataSource<SectionType, ItemType>.CellProvider
-    ) {
-        self.cellContent = cellContent
-        super.init(collectionView: collectionView, cellProvider: cellProvider)
-    }
-}
-
-private func makeCell<Cell: View, Item: Hashable>(
-    _ collectionView: UICollectionView,
-    cellID: String,
-    indexPath: IndexPath,
-    @ViewBuilder cellContent: (Item) -> Cell,
-    item: Item
-) -> UICollectionViewCell? {
-    guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
-        return nil
-    }
-
-    let content = cellContent(item)
-    cell.configure(content: content)
-
-    return cell
 }
