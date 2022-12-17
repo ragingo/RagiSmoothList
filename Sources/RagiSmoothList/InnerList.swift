@@ -94,6 +94,16 @@ struct InnerList<
 //        }
         dataSource.supplementaryViewProvider = supplementaryViewProvider(dataSource: dataSource)
 
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            configureCollectionViewStyles(&configuration)
+            configuration.trailingSwipeActionsConfigurationProvider = trailingSwipeActionsConfigurationProvider(dataSource: dataSource)
+
+            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+        }
+
+        collectionView.collectionViewLayout = layout
+
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(context.coordinator, action: #selector(Coordinator.onRefreshControlValueChanged(sender:)), for: .valueChanged)
         collectionView.refreshControl = refreshControl
@@ -175,11 +185,7 @@ struct InnerList<
     }
 
     private func makeCollectionView() -> UICollectionView {
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            return NSCollectionLayoutSection.list(using: configureCollectionView(), layoutEnvironment: layoutEnvironment)
-        }
-
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
         //collectionView.delegate = context.coordinator
         collectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
         collectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
@@ -189,9 +195,7 @@ struct InnerList<
         return collectionView
     }
 
-    private func configureCollectionView() -> UICollectionLayoutListConfiguration {
-        var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-
+    private func configureCollectionViewStyles(_ configuration: inout UICollectionLayoutListConfiguration) {
         configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
         configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
 
@@ -199,7 +203,7 @@ struct InnerList<
             configuration.headerTopPadding = 0
         }
 
-        guard let listConfiguration else { return configuration }
+        guard let listConfiguration else { return }
 
         configuration.showsSeparators = listConfiguration.separator.isVisible
 
@@ -221,8 +225,32 @@ struct InnerList<
                 configuration.separatorConfiguration.bottomSeparatorInsets = insets
             }
         }
+    }
 
-        return configuration
+    private func trailingSwipeActionsConfigurationProvider(dataSource: DataSource<SectionType, ItemType, Cell>) -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider? {
+        let provider: UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider = { indexPath -> UISwipeActionsConfiguration? in
+            let snapshot = dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+
+            let action = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+                onRowDeleted((
+                    sectionIndex: indexPath.section,
+                    itemIndex: indexPath.row,
+                    section: sectionData,
+                    item: snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
+                ))
+                handler(true)
+            }
+
+            if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
+                action.backgroundColor = UIColor(backgroundColor)
+            }
+            action.image = listConfiguration?.edit.deleteButtonImage
+
+            return UISwipeActionsConfiguration(actions: [action])
+        }
+
+        return provider
     }
 
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
