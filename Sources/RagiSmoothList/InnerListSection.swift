@@ -8,16 +8,8 @@
 import SwiftUI
 import UIKit
 
-final class InnerListSection<Content: View>: UITableViewHeaderFooterView {
+final class InnerListSection<Content: View>: UICollectionReusableView {
     private var hostingView = HostingView<Content>()
-
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     func configure(content: Content) {
         hostingView.configure(content: content)

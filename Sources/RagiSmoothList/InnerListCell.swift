@@ -8,16 +8,8 @@
 import SwiftUI
 import UIKit
 
-final class InnerListCell<Content: View>: UITableViewCell {
+final class InnerListCell<Content: View>: UICollectionViewCell {
     private var hostingView = HostingView<Content>()
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     func configure(content: Content) {
         hostingView.configure(content: content)
