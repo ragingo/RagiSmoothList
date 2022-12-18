@@ -15,41 +15,39 @@ final class CollectionView<
     SectionFooter: View,
     Cell: View
 > {
+    typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
+    typealias SwipeActionProvider = UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider
+
     private(set) var dataSource: DataSource<SectionType, ItemType, Cell>
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
-    private let listConfiguration: RagiSmoothListConfiguration?
     private let onRefresh: () -> Void
-    
+
     private let uiCollectionView: UICollectionView
     private let sectionHeaderID = UUID().uuidString
     private let sectionFooterID = UUID().uuidString
-    
+    private var layoutListConfiguration: UICollectionLayoutListConfiguration
+
     init(
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        listConfiguration: RagiSmoothListConfiguration?,
         onRefresh: @escaping () -> Void,
         onInitialized: @escaping (UICollectionView) -> Void
     ) {
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
-        self.listConfiguration = listConfiguration
         self.onRefresh = onRefresh
-        
+
+        let layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
+        self.layoutListConfiguration = layoutListConfiguration
+
         let cellID = UUID().uuidString
         let collectionView = UICollectionView(
             frame: .zero,
-            collectionViewLayout: UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-                var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
-                if let listConfiguration {
-                    Self.configureStyles(&configuration, listConfiguration: listConfiguration)
-                }
-                return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
-            }
+            collectionViewLayout: Self.createLayout(layoutListConfiguration: layoutListConfiguration)
         )
 
         uiCollectionView = collectionView
@@ -78,23 +76,59 @@ final class CollectionView<
         onInitialized(uiCollectionView)
     }
 
+    private static func createLayout(layoutListConfiguration: UICollectionLayoutListConfiguration) -> UICollectionViewLayout {
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+            return NSCollectionLayoutSection.list(using: layoutListConfiguration, layoutEnvironment: layoutEnvironment)
+        }
+        return layout
+    }
+
+    func updateLayout(listConfiguration: RagiSmoothListConfiguration?) {
+        Self.configureStyles(listConfiguration: listConfiguration, layoutListConfiguration: &layoutListConfiguration)
+        uiCollectionView.collectionViewLayout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
+    }
+
+    public enum SwipeStartEdge {
+        case leading
+        case trailing
+    }
+
+    func swipeActions(edge: SwipeStartEdge, allowFullSwipe: Bool = true, actions: @escaping (IndexPath) -> [UIContextualAction]) {
+        let provider: SwipeActionProvider = { indexPath -> UISwipeActionsConfiguration? in
+            UISwipeActionsConfiguration(actions: actions(indexPath))
+        }
+
+        switch edge {
+        case .leading:
+            layoutListConfiguration.leadingSwipeActionsConfigurationProvider = provider
+
+        case .trailing:
+            layoutListConfiguration.trailingSwipeActionsConfigurationProvider = provider
+        }
+
+        let layout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
+        uiCollectionView.collectionViewLayout = layout
+    }
+
     func scrollToTop(animated: Bool = true) {
         uiCollectionView.scrollToItem(at: .init(row: 0, section: 0), at: .top, animated: animated)
     }
 
-    private static func configureStyles(_ configuration: inout UICollectionLayoutListConfiguration, listConfiguration: RagiSmoothListConfiguration) {
-        configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
-        configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
+    private static func configureStyles(listConfiguration: RagiSmoothListConfiguration?, layoutListConfiguration: inout UICollectionLayoutListConfiguration) {
+        layoutListConfiguration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
+        layoutListConfiguration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
 
         if #available(iOS 15.0, *) {
-            configuration.headerTopPadding = 0
+            layoutListConfiguration.headerTopPadding = 0
         }
 
-        configuration.showsSeparators = listConfiguration.separator.isVisible
+        guard let listConfiguration else { return }
+
+        layoutListConfiguration.showsSeparators = listConfiguration.separator.isVisible
         
         if let separatorColor = listConfiguration.separator.color {
             if #available(iOS 14.5, *) {
-                configuration.separatorConfiguration.color = UIColor(separatorColor)
+                layoutListConfiguration.separatorConfiguration.color = UIColor(separatorColor)
             }
         }
 
@@ -106,8 +140,8 @@ final class CollectionView<
                     bottom: separatorInsets.bottom,
                     trailing: separatorInsets.trailing
                 )
-                configuration.separatorConfiguration.topSeparatorInsets = insets
-                configuration.separatorConfiguration.bottomSeparatorInsets = insets
+                layoutListConfiguration.separatorConfiguration.topSeparatorInsets = insets
+                layoutListConfiguration.separatorConfiguration.bottomSeparatorInsets = insets
             }
         }
     }
@@ -120,8 +154,6 @@ final class CollectionView<
 
 // MARK: - Section Header/Footer
 private extension CollectionView {
-    typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
-
     func supplementaryViewProvider() -> SupplementaryViewProvider? {
         let provider: SupplementaryViewProvider = { [weak self] collectionView, elementKind, indexPath in
             guard let self else { return nil }
@@ -175,9 +207,4 @@ private extension CollectionView {
 
         return view
     }
-}
-
-// MARK: - Swipe Actions
-extension CollectionView {
-    
 }

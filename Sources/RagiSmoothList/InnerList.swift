@@ -63,13 +63,42 @@ struct InnerList<
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
-            listConfiguration: listConfiguration,
             onRefresh: onRefresh
         ) { uiCollectionView in
             viewController.view = uiCollectionView
         }
 
         context.coordinator.collectionView = collectionView
+
+        collectionView.updateLayout(listConfiguration: listConfiguration)
+        collectionView.swipeActions(edge: .trailing) { indexPath in
+            var actions: [UIContextualAction] = []
+
+            let snapshot = collectionView.dataSource.snapshot()
+            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
+            let item = snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
+
+            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, handler in
+                onRowDeleted((
+                    sectionIndex: indexPath.section,
+                    itemIndex: indexPath.row,
+                    section: sectionData,
+                    item: item
+                ))
+
+                handler(true)
+            }
+            if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
+                deleteAction.backgroundColor = UIColor(backgroundColor)
+            }
+            deleteAction.image = listConfiguration?.edit.deleteButtonImage
+
+            if let editableCell = item as? RagiSmoothListCellEditable, editableCell.canEdit {
+                actions += [deleteAction]
+            }
+
+            return actions
+        }
 
         return viewController
     }
@@ -111,38 +140,5 @@ struct InnerList<
         init(parent: InnerList) {
             self.parent = parent
         }
-    }
-
-    private func trailingSwipeActionsConfigurationProvider(dataSource: DataSource<SectionType, ItemType, Cell>) -> UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider? {
-        let provider: UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider = { indexPath -> UISwipeActionsConfiguration? in
-            let snapshot = dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-            let item = snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
-
-            var actions: [UIContextualAction] = []
-
-            if let editableItem = item as? RagiSmoothListCellEditable, editableItem.canEdit {
-                let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
-                    onRowDeleted((
-                        sectionIndex: indexPath.section,
-                        itemIndex: indexPath.row,
-                        section: sectionData,
-                        item: item
-                    ))
-                    handler(true)
-                }
-
-                if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
-                    deleteAction.backgroundColor = UIColor(backgroundColor)
-                }
-                deleteAction.image = listConfiguration?.edit.deleteButtonImage
-
-                actions.append(deleteAction)
-            }
-
-            return UISwipeActionsConfiguration(actions: actions)
-        }
-
-        return provider
     }
 }
