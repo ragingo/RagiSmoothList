@@ -19,6 +19,7 @@ final class CollectionView<
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
+    private let listConfiguration: RagiSmoothListConfiguration?
     private let onRefresh: () -> Void
     
     private let uiCollectionView: UICollectionView
@@ -29,19 +30,24 @@ final class CollectionView<
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
+        listConfiguration: RagiSmoothListConfiguration?,
         onRefresh: @escaping () -> Void,
         onInitialized: @escaping (UICollectionView) -> Void
     ) {
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
+        self.listConfiguration = listConfiguration
         self.onRefresh = onRefresh
         
         let cellID = UUID().uuidString
         let collectionView = UICollectionView(
             frame: .zero,
             collectionViewLayout: UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-                let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+                var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+                if let listConfiguration {
+                    Self.configureStyles(&configuration, listConfiguration: listConfiguration)
+                }
                 return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
             }
         )
@@ -75,17 +81,15 @@ final class CollectionView<
     func scrollToTop(animated: Bool = true) {
         uiCollectionView.scrollToItem(at: .init(row: 0, section: 0), at: .top, animated: animated)
     }
-    
-    func configureStyles(_ configuration: inout UICollectionLayoutListConfiguration, listConfiguration: RagiSmoothListConfiguration?) {
+
+    private static func configureStyles(_ configuration: inout UICollectionLayoutListConfiguration, listConfiguration: RagiSmoothListConfiguration) {
         configuration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
         configuration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
-        
+
         if #available(iOS 15.0, *) {
             configuration.headerTopPadding = 0
         }
-        
-        guard let listConfiguration else { return }
-        
+
         configuration.showsSeparators = listConfiguration.separator.isVisible
         
         if let separatorColor = listConfiguration.separator.color {
@@ -93,7 +97,7 @@ final class CollectionView<
                 configuration.separatorConfiguration.color = UIColor(separatorColor)
             }
         }
-        
+
         if let separatorInsets = listConfiguration.separator.insets {
             if #available(iOS 14.5, *) {
                 let insets = NSDirectionalEdgeInsets(
