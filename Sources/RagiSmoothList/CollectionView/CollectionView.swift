@@ -18,7 +18,7 @@ final class CollectionView<
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
     typealias SwipeActionProvider = UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider
 
-    private(set) var dataSource: DataSource<SectionType, ItemType, Cell>
+    private(set) var dataSource: DataSource<SectionType, ItemType>
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
@@ -33,6 +33,7 @@ final class CollectionView<
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
+        onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
         onInitialized: @escaping (UICollectionView) -> Void
     ) {
@@ -57,11 +58,17 @@ final class CollectionView<
 
         self.dataSource = DataSource(
             collectionView: uiCollectionView,
-            cellContent: cellContent,
             cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
                     return nil
                 }
+
+                let isLastSection = collectionView.numberOfSections == indexPath.section + 1
+                let isLastItem = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
+                if isLastSection && isLastItem {
+                    onLoadMore()
+                }
+
                 let content = cellContent(item)
                 cell.configure(content: content)
                 return cell}

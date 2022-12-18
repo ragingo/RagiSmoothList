@@ -63,6 +63,7 @@ struct InnerList<
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
+            onLoadMore: onLoadMore,
             onRefresh: onRefresh
         ) { uiCollectionView in
             viewController.view = uiCollectionView

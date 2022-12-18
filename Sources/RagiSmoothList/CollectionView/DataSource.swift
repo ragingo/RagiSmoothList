@@ -10,17 +10,6 @@ import SwiftUI
 
 final class DataSource<
     SectionType: Hashable,
-    ItemType: Hashable,
-    Cell: View
+    ItemType: Hashable
 >: UICollectionViewDiffableDataSource<SectionType, ItemType> {
-    private let cellContent: (ItemType) -> Cell
-
-    init(
-        collectionView: UICollectionView,
-        @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
-        cellProvider: @escaping UICollectionViewDiffableDataSource<SectionType, ItemType>.CellProvider
-    ) {
-        self.cellContent = cellContent
-        super.init(collectionView: collectionView, cellProvider: cellProvider)
-    }
 }
