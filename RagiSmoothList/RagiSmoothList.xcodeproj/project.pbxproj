@@ -19,7 +19,6 @@
 		52D01E192941D19100103B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E182941D19100103B11 /* Assets.xcassets */; };
 		52D01E1C2941D19100103B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52D01E1B2941D19100103B11 /* Preview Assets.xcassets */; };
 		52FF04362942149F0044495F /* InnerList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF04352942149F0044495F /* InnerList.swift */; };
-		52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */; };
 		52FF044429421D9D0044495F /* InfiniteScrollSampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */; };
 		52FF044629421DCF0044495F /* Employee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044529421DCF0044495F /* Employee.swift */; };
 		52FF044B29421F810044495F /* RagiSmoothListTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */; };
@@ -80,7 +79,6 @@
 		52D01E1B2941D19100103B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		52D01E212941D1C600103B11 /* RagiSmoothList */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = RagiSmoothList; path = ..; sourceTree = "<group>"; };
 		52FF04352942149F0044495F /* InnerList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerList.swift; sourceTree = "<group>"; };
-		52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListSectionItemType.swift; sourceTree = "<group>"; };
 		52FF044329421D9D0044495F /* InfiniteScrollSampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfiniteScrollSampleViewModel.swift; sourceTree = "<group>"; };
 		52FF044529421DCF0044495F /* Employee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Employee.swift; sourceTree = "<group>"; };
 		52FF044929421F7C0044495F /* RagiSmoothListTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListTextCell.swift; sourceTree = "<group>"; };
@@ -246,7 +244,6 @@
 			isa = PBXGroup;
 			children = (
 				52FF045F29459DB20044495F /* RagiSmoothListEmptySection.swift */,
-				52FF0439294216DA0044495F /* RagiSmoothListSectionItemType.swift */,
 				52FF046129459E170044495F /* RagiSmoothListSectionModel.swift */,
 			);
 			path = Section;
@@ -424,7 +421,6 @@
 				52FF046029459DB20044495F /* RagiSmoothListEmptySection.swift in Sources */,
 				52FF04542943583F0044495F /* HostingView.swift in Sources */,
 				52FF045E29459D760044495F /* RagiSmoothListConfiguration.swift in Sources */,
-				52FF043A294216DA0044495F /* RagiSmoothListSectionItemType.swift in Sources */,
 				52FF046229459E170044495F /* RagiSmoothListSectionModel.swift in Sources */,
 				52FF047E294AE8FD0044495F /* RagiSmoothListCellEditable.swift in Sources */,
 				52FF04362942149F0044495F /* InnerList.swift in Sources */,
