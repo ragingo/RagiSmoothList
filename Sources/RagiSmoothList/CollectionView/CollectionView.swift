@@ -118,7 +118,7 @@ final class CollectionView<
     }
 
     func scrollToTop(animated: Bool = true) {
-        uiCollectionView.scrollToItem(at: .init(row: 0, section: 0), at: .top, animated: animated)
+        uiCollectionView.setContentOffset(.zero, animated: animated)
     }
 
     private static func configureStyles(listConfiguration: RagiSmoothListConfiguration?, layoutListConfiguration: inout UICollectionLayoutListConfiguration) {
