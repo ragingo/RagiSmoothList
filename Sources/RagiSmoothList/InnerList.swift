@@ -19,7 +19,7 @@ struct InnerList<
     typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
-    typealias RowDeleteCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
+    typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -30,7 +30,7 @@ struct InnerList<
     @Binding private var needsScrollToTop: Bool
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
-    private let onRowDeleted: RowDeleteCallback
+    private let onRowDeleted: RowDeletedCallback
 
     init(
         data: Binding<ListDataType>,
@@ -41,7 +41,7 @@ struct InnerList<
         needsRefresh: Binding<Bool>,
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
-        onRowDeleted: @escaping RowDeleteCallback,
+        onRowDeleted: @escaping RowDeletedCallback,
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
@@ -72,29 +72,14 @@ struct InnerList<
 
         collectionView.updateLayout(listConfiguration: listConfiguration)
         collectionView.swipeActions(edge: .trailing) { indexPath in
+            let snapshot = collectionView.dataSource.snapshot()
+            let section = snapshot.sectionIdentifiers[indexPath.section]
+            let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+
             var actions: [UIContextualAction] = []
 
-            let snapshot = collectionView.dataSource.snapshot()
-            let sectionData = snapshot.sectionIdentifiers[indexPath.section]
-            let item = snapshot.itemIdentifiers(inSection: sectionData)[indexPath.row]
-
-            let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, handler in
-                onRowDeleted((
-                    sectionIndex: indexPath.section,
-                    itemIndex: indexPath.row,
-                    section: sectionData,
-                    item: item
-                ))
-
-                handler(true)
-            }
-            if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
-                deleteAction.backgroundColor = UIColor(backgroundColor)
-            }
-            deleteAction.image = listConfiguration?.edit.deleteButtonImage
-
             if let editableCell = item as? RagiSmoothListCellEditable, editableCell.canEdit {
-                actions += [deleteAction]
+                actions += [makeDeleteAction(indexPath: indexPath, section: section, item: item)]
             }
 
             return actions
@@ -140,5 +125,32 @@ struct InnerList<
         init(parent: InnerList) {
             self.parent = parent
         }
+    }
+
+    private func makeDeleteAction(
+        style: UIContextualAction.Style = .destructive,
+        title: String = "Delete",
+        indexPath: IndexPath,
+        section: SectionType,
+        item: ItemType
+    ) -> UIContextualAction {
+        let action = UIContextualAction(style: .destructive, title: title) { _, view, handler in
+            onRowDeleted((
+                sectionIndex: indexPath.section,
+                itemIndex: indexPath.row,
+                section: section,
+                item: item
+            ))
+
+            handler(true)
+        }
+
+        if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
+            action.backgroundColor = UIColor(backgroundColor)
+        }
+
+        action.image = listConfiguration?.edit.deleteButtonImage
+
+        return action
     }
 }
