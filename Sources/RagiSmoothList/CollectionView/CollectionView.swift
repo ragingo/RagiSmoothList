@@ -58,7 +58,7 @@ final class CollectionView<
             InnerListSection<SectionHeader>.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: sectionHeaderID
-            )
+        )
         uiCollectionView.register(
             InnerListSection<SectionFooter>.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
