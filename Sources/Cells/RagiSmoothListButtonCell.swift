@@ -30,8 +30,8 @@ struct RagiSmoothListButtonCell_Previews: PreviewProvider {
             label: {
                 Image(systemName: "exclamationmark.triangle.fill")
                 Text("warning!")
-            }
-        ) {
-        }
+            },
+            action: {}
+        )
     }
 }

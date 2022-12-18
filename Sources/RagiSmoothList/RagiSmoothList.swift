@@ -16,6 +16,7 @@ public struct RagiSmoothList<
 >: View {
     public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     public typealias ListDataType = [ListSectionModelType]
+    // swiftlint:disable:next line_length
     public typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
     @Binding private var data: ListDataType
@@ -101,8 +102,8 @@ public struct RagiSmoothList<
     }
 }
 
-extension RagiSmoothList {
-    public init(
+public extension RagiSmoothList {
+    init(
         data: Binding<ListDataType>,
         listConfiguration: RagiSmoothListConfiguration? = nil,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell

@@ -15,6 +15,7 @@ final class CollectionView<
     SectionFooter: View,
     Cell: View
 > {
+    // swiftlint:disable:next line_length
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
     typealias SwipeActionProvider = UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider
 
@@ -53,15 +54,26 @@ final class CollectionView<
 
         uiCollectionView = collectionView
         uiCollectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
-        uiCollectionView.register(InnerListSection<SectionHeader>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: sectionHeaderID)
-        uiCollectionView.register(InnerListSection<SectionFooter>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: sectionFooterID)
+        uiCollectionView.register(
+            InnerListSection<SectionHeader>.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: sectionHeaderID
+            )
+        uiCollectionView.register(
+            InnerListSection<SectionFooter>.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+            withReuseIdentifier: sectionFooterID
+        )
 
         self.dataSource = DataSource(
             collectionView: uiCollectionView,
             cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
-                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as? InnerListCell<Cell> else {
-                    return nil
-                }
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: cellID,
+                    for: indexPath
+                ) as? InnerListCell<Cell>
+
+                guard let cell else { return nil }
 
                 let isLastSection = collectionView.numberOfSections == indexPath.section + 1
                 let isLastItem = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
@@ -84,7 +96,9 @@ final class CollectionView<
         onInitialized(uiCollectionView)
     }
 
-    private static func createLayout(layoutListConfiguration: UICollectionLayoutListConfiguration) -> UICollectionViewLayout {
+    private static func createLayout(
+        layoutListConfiguration: UICollectionLayoutListConfiguration
+    ) -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
             return NSCollectionLayoutSection.list(using: layoutListConfiguration, layoutEnvironment: layoutEnvironment)
         }
@@ -101,7 +115,11 @@ final class CollectionView<
         case trailing
     }
 
-    func swipeActions(edge: SwipeStartEdge, allowFullSwipe: Bool = true, actions: @escaping (IndexPath) -> [UIContextualAction]) {
+    func swipeActions(
+        edge: SwipeStartEdge,
+        allowFullSwipe: Bool = true,
+        actions: @escaping (IndexPath) -> [UIContextualAction]
+    ) {
         let provider: SwipeActionProvider = { indexPath -> UISwipeActionsConfiguration? in
             UISwipeActionsConfiguration(actions: actions(indexPath))
         }
@@ -122,7 +140,10 @@ final class CollectionView<
         uiCollectionView.setContentOffset(.zero, animated: animated)
     }
 
-    private static func configureStyles(listConfiguration: RagiSmoothListConfiguration?, layoutListConfiguration: inout UICollectionLayoutListConfiguration) {
+    private static func configureStyles(
+        listConfiguration: RagiSmoothListConfiguration?,
+        layoutListConfiguration: inout UICollectionLayoutListConfiguration
+    ) {
         layoutListConfiguration.headerMode = SectionHeader.self is EmptyView.Type ? .none : .supplementary
         layoutListConfiguration.footerMode = SectionFooter.self is EmptyView.Type ? .none : .supplementary
 
@@ -154,7 +175,8 @@ final class CollectionView<
         }
     }
 
-    @objc private func onRefreshControlValueChanged(sender: UIRefreshControl) {
+    @objc
+    private func onRefreshControlValueChanged(sender: UIRefreshControl) {
         onRefresh()
         sender.endRefreshing()
     }

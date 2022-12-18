@@ -24,7 +24,10 @@ struct ContentView: View {
                 )
                 makeLink(
                     destination: { VerySlowStandardListSampleView() },
-                    description: "標準コンポーネントを使った超低速なリストUIの動作確認用画面\n※古い iOS/iPadOS デバイスだとスクロールが滑らかではない(例えば iPad mini 4th gen など)",
+                    description: """
+                    標準コンポーネントを使った超低速なリストUIの動作確認用画面
+                    ※古い iOS/iPadOS デバイスだとスクロールが滑らかではない(例えば iPad mini 4th gen など)
+                    """,
                     iconColor: .red
                 )
             }

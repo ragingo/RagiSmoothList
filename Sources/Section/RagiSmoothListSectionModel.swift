@@ -20,8 +20,8 @@ public struct RagiSmoothListSectionModel<Section: Identifiable & Hashable, ItemT
 
 extension RagiSmoothListSectionModel: Hashable {}
 
-extension Array where Element: Identifiable & Hashable {
-    public func listEmptySectionModels() -> [RagiSmoothListSectionModel<RagiSmoothListEmptySection, Element>] {
+public extension Array where Element: Identifiable & Hashable {
+    func listEmptySectionModels() -> [RagiSmoothListSectionModel<RagiSmoothListEmptySection, Element>] {
         [
             RagiSmoothListSectionModel(
                 section: RagiSmoothListEmptySection(),
@@ -31,8 +31,8 @@ extension Array where Element: Identifiable & Hashable {
     }
 }
 
-extension Array {
-    public func listSectionModels<
+public extension Array {
+    func listSectionModels<
         Section: Identifiable & Hashable,
         ItemType: Identifiable & Hashable
     >() -> [RagiSmoothListSectionModel<Section, ItemType>]

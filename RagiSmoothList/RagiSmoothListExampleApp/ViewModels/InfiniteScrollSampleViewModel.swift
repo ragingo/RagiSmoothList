@@ -66,7 +66,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
 
         self.employees.append(contentsOf: employees.map {
             var employee = EditableEmployee(employee: $0)
-            employee.canEdit = $0.id % 2 == 0
+            employee.canEdit = $0.id.isMultiple(of: 2)
             return employee
         })
         offset += Self.itemsPerPage

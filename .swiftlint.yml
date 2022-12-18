@@ -76,12 +76,13 @@ opt_in_rules:
   - xct_specific_matcher
   - yoda_condition
 
+function_body_length: 60
 identifier_name:
   excluded:
     - id
-large_tuple: 3
+large_tuple: 4
 number_separator:
   minimum_length: 5
-
-function_body_length: 60
+nesting:
+  type_level: 3
 type_body_length: 400

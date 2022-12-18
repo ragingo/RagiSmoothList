@@ -24,8 +24,8 @@ public struct RagiSmoothListConfiguration {
 }
 
 // MARK: - Separator
-extension RagiSmoothListConfiguration {
-    public struct Separator {
+public extension RagiSmoothListConfiguration {
+    struct Separator {
         public var isVisible: Bool
         public var insets: EdgeInsets?
         public var color: Color?
@@ -39,8 +39,8 @@ extension RagiSmoothListConfiguration {
 }
 
 // MARK: - Edit
-extension RagiSmoothListConfiguration {
-    public struct Edit {
+public extension RagiSmoothListConfiguration {
+    struct Edit {
         public var deleteButtonBackgroundColor: Color?
         public var deleteButtonImage: UIImage?
 
@@ -55,38 +55,17 @@ extension RagiSmoothListConfiguration {
 }
 
 // MARK: - Animation
-extension RagiSmoothListConfiguration {
-    public struct Animation {
+public extension RagiSmoothListConfiguration {
+    struct Animation {
         public enum Mode: String, CaseIterable {
             case fade
             case right
             case left
             case top
             case bottom
-            case none
+            case disable
             case middle
             case automatic
-
-            var uiTableViewRowAnimation: UITableView.RowAnimation {
-                switch self {
-                case .fade:
-                    return .fade
-                case .right:
-                    return .right
-                case .left:
-                    return .left
-                case .top:
-                    return .top
-                case .bottom:
-                    return .bottom
-                case .none:
-                    return .none
-                case .middle:
-                    return .middle
-                case .automatic:
-                    return .automatic
-                }
-            }
         }
 
         public var mode: Mode

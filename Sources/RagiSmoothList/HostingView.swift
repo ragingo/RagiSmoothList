@@ -16,6 +16,7 @@ final class HostingView<Content: View>: UIView {
         hostingController.view.backgroundColor = .clear
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
