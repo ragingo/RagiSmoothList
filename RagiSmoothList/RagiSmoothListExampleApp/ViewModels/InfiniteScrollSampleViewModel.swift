@@ -9,9 +9,10 @@ import Foundation
 import RagiSmoothList
 
 final class InfiniteScrollSampleViewModel: ObservableObject {
-    struct SectionType: Identifiable, Hashable {
+    struct SectionType: Identifiable, Hashable, CustomStringConvertible {
         var id: String { hireYear }
         let hireYear: String
+        var description: String { hireYear }
     }
 
     typealias ItemType = EditableEmployee
