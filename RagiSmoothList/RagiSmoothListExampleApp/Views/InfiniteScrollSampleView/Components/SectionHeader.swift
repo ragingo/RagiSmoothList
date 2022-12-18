@@ -24,7 +24,7 @@ extension InfiniteScrollSampleView {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 8)
-                .background(Color(red: 176/255, green: 237/255, blue: 148/255))
+                .background(Color(red: 176 / 255, green: 237 / 255, blue: 148 / 255))
             }
         }
 

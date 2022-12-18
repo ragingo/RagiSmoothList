@@ -13,8 +13,7 @@ public struct RagiSmoothList<
     SectionHeader: View,
     SectionFooter: View,
     Cell: View
->: View
-{
+>: View {
     public typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     public typealias ListDataType = [ListSectionModelType]
     public typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void

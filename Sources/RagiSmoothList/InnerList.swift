@@ -14,8 +14,7 @@ struct InnerList<
     SectionHeader: View,
     SectionFooter: View,
     Cell: View
->: UIViewControllerRepresentable
-{
+>: UIViewControllerRepresentable {
     typealias ListSectionModelType = RagiSmoothListSectionModel<SectionType, ItemType>
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
@@ -135,7 +134,7 @@ struct InnerList<
         section: SectionType,
         item: ItemType
     ) -> UIContextualAction {
-        let action = UIContextualAction(style: .destructive, title: title) { _, view, handler in
+        let action = UIContextualAction(style: .destructive, title: title) { _, _, handler in
             onRowDeleted((
                 sectionIndex: indexPath.section,
                 itemIndex: indexPath.row,

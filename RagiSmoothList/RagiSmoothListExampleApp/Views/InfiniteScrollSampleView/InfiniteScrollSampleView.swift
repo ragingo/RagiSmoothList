@@ -5,8 +5,8 @@
 //  Created by ragingo on 2022/12/08.
 //
 
-import SwiftUI
 import RagiSmoothList
+import SwiftUI
 
 struct InfiniteScrollSampleView: View {
     struct AlertInfo {
@@ -64,7 +64,7 @@ struct InfiniteScrollSampleView: View {
                     EmployeeCell(employee: employee) {
                        alertInfo = .init(message: "id: \(employee.id)")
                        showAlert = true
-                   }
+                    }
                 }
             )
             .scrollToTop($scrollToTop)
@@ -151,7 +151,7 @@ struct InfiniteScrollSampleView: View {
         }
     }
 
-    private let lightOrange = Color(red: 254.0/255.0, green: 216.0/255.0, blue: 177.0/255.0)
+    private let lightOrange = Color(red: 254.0 / 255.0, green: 216.0 / 255.0, blue: 177.0 / 255.0)
 
     private var moreLoadingState: some View {
         ProgressView()

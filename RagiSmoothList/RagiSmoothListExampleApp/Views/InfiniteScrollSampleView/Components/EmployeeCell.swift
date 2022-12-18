@@ -5,8 +5,8 @@
 //  Created by ragingo on 2022/12/14.
 //
 
-import SwiftUI
 import RagiSmoothList
+import SwiftUI
 
 extension InfiniteScrollSampleView {
     struct EmployeeCell: View {
@@ -84,7 +84,6 @@ struct EmployeeCell_Previews: PreviewProvider {
             )
             .frame(height: 100)
             .border(.gray)
-
         }
     }
 }

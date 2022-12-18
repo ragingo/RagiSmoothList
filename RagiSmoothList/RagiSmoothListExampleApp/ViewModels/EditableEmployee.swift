@@ -14,7 +14,7 @@ struct EditableEmployee: Identifiable, Hashable, RagiSmoothListCellEditable {
     var id: Int { employee.id }
     var name: String { employee.name }
     var hireDate: Date { employee.hireDate }
-    var canEdit: Bool = false
+    var canEdit = false
 
     init(employee: Employee) {
         self.employee = employee

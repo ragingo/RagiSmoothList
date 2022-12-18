@@ -5,8 +5,8 @@
 //  Created by ragingo on 2022/12/10.
 //
 
-import SwiftUI
 import RagiSmoothList
+import SwiftUI
 
 struct SimpleListSampleView: View {
     struct CellButtonStyle: ButtonStyle {

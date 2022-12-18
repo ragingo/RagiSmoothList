@@ -5,8 +5,8 @@
 //  Created by ragingo on 2022/12/17.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 final class CollectionView<
     SectionType: Hashable,
@@ -71,7 +71,8 @@ final class CollectionView<
 
                 let content = cellContent(item)
                 cell.configure(content: content)
-                return cell}
+                return cell
+            }
         )
 
         self.dataSource.supplementaryViewProvider = supplementaryViewProvider()
@@ -84,7 +85,7 @@ final class CollectionView<
     }
 
     private static func createLayout(layoutListConfiguration: UICollectionLayoutListConfiguration) -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
+        let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
             return NSCollectionLayoutSection.list(using: layoutListConfiguration, layoutEnvironment: layoutEnvironment)
         }
         return layout
@@ -132,7 +133,7 @@ final class CollectionView<
         guard let listConfiguration else { return }
 
         layoutListConfiguration.showsSeparators = listConfiguration.separator.isVisible
-        
+
         if let separatorColor = listConfiguration.separator.color {
             if #available(iOS 14.5, *) {
                 layoutListConfiguration.separatorConfiguration.color = UIColor(separatorColor)
@@ -162,7 +163,7 @@ final class CollectionView<
 // MARK: - Section Header/Footer
 private extension CollectionView {
     func supplementaryViewProvider() -> SupplementaryViewProvider? {
-        let provider: SupplementaryViewProvider = { [weak self] collectionView, elementKind, indexPath in
+        let provider: SupplementaryViewProvider = { [weak self] _, elementKind, indexPath in
             guard let self else { return nil }
 
             switch elementKind {
