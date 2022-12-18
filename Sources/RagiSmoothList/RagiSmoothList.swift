@@ -31,6 +31,7 @@ public struct RagiSmoothList<
     private var onLoadMore: (() -> Void)?
     private var onRefresh: (() -> Void)?
     private var onRowDeleted: RowDeletedCallback?
+    private var onSearchTextChanged: ((String) -> Void)?
 
     public init(
         data: Binding<ListDataType>,
@@ -65,6 +66,9 @@ public struct RagiSmoothList<
             onRowDeleted: { sectionIndex, itemIndex, section, item in
                 onRowDeleted?((sectionIndex: sectionIndex, itemIndex: itemIndex, section: section, item: item))
             },
+            onSearchTextChanged: { text in
+                onSearchTextChanged?(text)
+            },
             needsScrollToTop: needsScrollToTop
         )
         .onAppear {
@@ -98,6 +102,14 @@ public struct RagiSmoothList<
     public func onRowDeleted(_ action: @escaping RowDeletedCallback) -> Self {
         var newInstance = self
         newInstance.onRowDeleted = action
+        return newInstance
+    }
+
+    public func searchable(text: Binding<String>) -> Self {
+        var newInstance = self
+        newInstance.onSearchTextChanged = {
+            text.wrappedValue = $0
+        }
         return newInstance
     }
 }

@@ -21,6 +21,7 @@ struct InfiniteScrollSampleView: View {
     @State private var showAlert = false
     @State private var alertInfo: AlertInfo?
     @State private var scrollToTop = false
+    @State private var searchText = ""
 
     // MARK: - デバッグ用
     @State private var isDebugMenuExpanded = false
@@ -43,6 +44,19 @@ struct InfiniteScrollSampleView: View {
             } label: {
                 Text("\(Image(systemName: "arrow.up.circle")) scroll to top")
             }
+
+            HStack {
+                Text("search text:")
+                    .foregroundColor(.gray)
+                    .font(.subheadline)
+                Text(searchText)
+                    .font(.title3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(2)
+            }
+            .padding(.horizontal, 8)
+            .frame(minHeight: 0, maxHeight: 0) // // 一旦無効化しておく
+            .clipped()
 
             RagiSmoothList(
                 data: $employees,
@@ -73,6 +87,7 @@ struct InfiniteScrollSampleView: View {
                     await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
                 }
             }
+            .searchable(text: $searchText)
             .onLoadMore {
                 Task {
                     await viewModel.loadMore(

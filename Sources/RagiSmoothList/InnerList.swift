@@ -19,6 +19,7 @@ struct InnerList<
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
     typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
+    typealias CollectionViewType = CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
 
     @Binding private var data: ListDataType
     private let listConfiguration: RagiSmoothListConfiguration?
@@ -30,6 +31,7 @@ struct InnerList<
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
     private let onRowDeleted: RowDeletedCallback
+    private let onSearchTextChanged: (String) -> Void
 
     init(
         data: Binding<ListDataType>,
@@ -41,6 +43,7 @@ struct InnerList<
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
         onRowDeleted: @escaping RowDeletedCallback,
+        onSearchTextChanged: @escaping (String) -> Void,
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
@@ -52,11 +55,17 @@ struct InnerList<
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
         self.onRowDeleted = onRowDeleted
+        self.onSearchTextChanged = onSearchTextChanged
         self._needsScrollToTop = needsScrollToTop
     }
 
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
+
+        let searchBar = UISearchBar()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.delegate = context.coordinator
+        viewController.view.addSubview(searchBar)
 
         let collectionView = CollectionView(
             sectionHeaderContent: sectionHeaderContent,
@@ -65,8 +74,25 @@ struct InnerList<
             onLoadMore: onLoadMore,
             onRefresh: onRefresh
         ) { uiCollectionView in
-            viewController.view = uiCollectionView
+            uiCollectionView.translatesAutoresizingMaskIntoConstraints = false
+            viewController.view.addSubview(uiCollectionView)
+
+            NSLayoutConstraint.activate([
+                // searchBar
+                viewController.view.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
+                viewController.view.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+                viewController.view.topAnchor.constraint(equalTo: searchBar.topAnchor),
+                // collection view
+                viewController.view.leadingAnchor.constraint(equalTo: uiCollectionView.leadingAnchor),
+                viewController.view.trailingAnchor.constraint(equalTo: uiCollectionView.trailingAnchor),
+                searchBar.bottomAnchor.constraint(equalTo: uiCollectionView.topAnchor),
+                viewController.view.bottomAnchor.constraint(equalTo: uiCollectionView.bottomAnchor)
+            ])
         }
+
+        // 検索UIは一旦無効化しておく
+        // ※ 利用者側から表示切り替えできるようにする (searchable が使われた場合のみ表示されるようにする)
+        searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = true
 
         context.coordinator.collectionView = collectionView
 
@@ -89,18 +115,8 @@ struct InnerList<
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        if needsRefresh {
-            if let dataSource = context.coordinator.collectionView?.dataSource {
-                var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-                newSnapshot.appendSections(data.map { $0.section })
-
-                data.forEach { section in
-                    newSnapshot.appendItems(section.items, toSection: section.section)
-                }
-
-                let isInitialApply = dataSource.snapshot().sectionIdentifiers.isEmpty
-                dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
-            }
+        if needsRefresh, let collectionView = context.coordinator.collectionView {
+            refreshData(collectionView)
             Task {
                 needsRefresh = false
             }
@@ -114,16 +130,33 @@ struct InnerList<
         }
     }
 
+    private func refreshData(_ collectionView: CollectionViewType) {
+        var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
+        newSnapshot.appendSections(data.map { $0.section })
+
+        data.forEach { section in
+            newSnapshot.appendItems(section.items, toSection: section.section)
+        }
+
+        let isInitialApply = collectionView.dataSource.snapshot().sectionIdentifiers.isEmpty
+        collectionView.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
+    }
+
     func makeCoordinator() -> Coordinator {
         return Coordinator(parent: self)
     }
 
-    final class Coordinator: NSObject {
+    final class Coordinator: NSObject, UISearchBarDelegate {
         private let parent: InnerList
-        fileprivate var collectionView: CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>?
+        fileprivate var collectionView: CollectionViewType?
 
         init(parent: InnerList) {
             self.parent = parent
+        }
+
+        // MARK: - UISearchBarDelegate
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            parent.onSearchTextChanged(searchText)
         }
     }
 
