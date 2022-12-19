@@ -31,7 +31,7 @@ struct InnerList<
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
     private let onRowDeleted: RowDeletedCallback
-    private let onSearchTextChanged: (String) -> Void
+    private var searchable: Binding<String>?
 
     init(
         data: Binding<ListDataType>,
@@ -43,7 +43,7 @@ struct InnerList<
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
         onRowDeleted: @escaping RowDeletedCallback,
-        onSearchTextChanged: @escaping (String) -> Void,
+        searchable: Binding<String>?,
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
@@ -55,7 +55,7 @@ struct InnerList<
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
         self.onRowDeleted = onRowDeleted
-        self.onSearchTextChanged = onSearchTextChanged
+        self.searchable = searchable
         self._needsScrollToTop = needsScrollToTop
     }
 
@@ -66,6 +66,8 @@ struct InnerList<
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.delegate = context.coordinator
         viewController.view.addSubview(searchBar)
+        searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
+        context.coordinator.searchBar = searchBar
 
         let collectionView = CollectionView(
             sectionHeaderContent: sectionHeaderContent,
@@ -89,10 +91,6 @@ struct InnerList<
                 viewController.view.bottomAnchor.constraint(equalTo: uiCollectionView.bottomAnchor)
             ])
         }
-
-        // 検索UIは一旦無効化しておく
-        // ※ 利用者側から表示切り替えできるようにする (searchable が使われた場合のみ表示されるようにする)
-        searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = true
 
         context.coordinator.collectionView = collectionView
 
@@ -149,6 +147,7 @@ struct InnerList<
     final class Coordinator: NSObject, UISearchBarDelegate {
         private let parent: InnerList
         fileprivate var collectionView: CollectionViewType?
+        fileprivate var searchBar: UISearchBar?
 
         init(parent: InnerList) {
             self.parent = parent
@@ -156,7 +155,7 @@ struct InnerList<
 
         // MARK: - UISearchBarDelegate
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            parent.onSearchTextChanged(searchText)
+            parent.searchable?.wrappedValue = searchText
         }
     }
 

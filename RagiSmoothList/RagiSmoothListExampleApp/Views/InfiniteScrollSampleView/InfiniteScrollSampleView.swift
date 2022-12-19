@@ -55,8 +55,6 @@ struct InfiniteScrollSampleView: View {
                     .lineLimit(2)
             }
             .padding(.horizontal, 8)
-            .frame(minHeight: 0, maxHeight: 0) // // 一旦無効化しておく
-            .clipped()
 
             RagiSmoothList(
                 data: $employees,
