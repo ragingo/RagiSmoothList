@@ -9,8 +9,9 @@
 できること
 
 - Smooth Scroll
-- Pull to Refresh
-- Pagenation
+- Pull to Refresh (refreshable)
+- Pagenation (load more)
+- Search UI (searchable)
 
 <details>
 <summary>MEMO</summary>
@@ -38,6 +39,11 @@
     - `List` and iOS 15 未満だと `listRowSeparatorTint` が使えない
 
 </details>
+
+## Requirements
+
+- iOS 14+
+- Xcode 14.x
 
 ## Installation
 
@@ -83,8 +89,3 @@ RagiSmoothList(
 ## Examples
 
 このリポジトリにある `RagiSmoothListExampleApp` を参照してください
-
-## Requirements
-
-- iOS 14+
-- Xcode 14.x
