@@ -11,7 +11,8 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "RagiSmoothList"
+            name: "RagiSmoothList",
+            path: "Sources"
         )
     ],
     swiftLanguageVersions: [.v5]
