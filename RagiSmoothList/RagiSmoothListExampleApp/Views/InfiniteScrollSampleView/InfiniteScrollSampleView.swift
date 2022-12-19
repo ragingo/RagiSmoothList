@@ -46,7 +46,7 @@ struct InfiniteScrollSampleView: View {
             }
 
             HStack {
-                Text("search text:")
+                Text("filter text:")
                     .foregroundColor(.gray)
                     .font(.subheadline)
                 Text(searchText)
@@ -97,6 +97,9 @@ struct InfiniteScrollSampleView: View {
             .onRowDeleted { _, _, section, item in
                 viewModel.delete(section: section, item: item)
             }
+            .onChange(of: searchText) { _ in
+                viewModel.filter(text: searchText)
+            }
             .alert(isPresented: $showAlert) {
                 if let alertInfo {
                     return Alert(title: Text(alertInfo.message))
@@ -142,6 +145,11 @@ struct InfiniteScrollSampleView: View {
                     isMoreLoadFailed = false
                     self.employees = employees
                 case .deleted(let employees):
+                    isLoading = false
+                    isFirstLoadFailed = false
+                    isMoreLoadFailed = false
+                    self.employees = employees
+                case .filtered(let employees):
                     isLoading = false
                     isFirstLoadFailed = false
                     isMoreLoadFailed = false

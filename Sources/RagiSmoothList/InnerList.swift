@@ -65,6 +65,7 @@ struct InnerList<
         let searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.delegate = context.coordinator
+        searchBar.autocapitalizationType = .none
         viewController.view.addSubview(searchBar)
         searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
         context.coordinator.searchBar = searchBar

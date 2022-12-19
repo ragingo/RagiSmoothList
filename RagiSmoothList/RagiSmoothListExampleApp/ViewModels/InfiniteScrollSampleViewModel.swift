@@ -23,6 +23,7 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
         case loading
         case loaded(employees: [SectionModelType])
         case deleted(employees: [SectionModelType])
+        case filtered(employees: [SectionModelType])
         case unchanged
         case firstLoadFailed
         case moreLoadFailed
@@ -44,6 +45,10 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
 
     @MainActor
     func loadMore(forceFirstLoadError: Bool = false, forceMoreLoadError: Bool = false) async {
+        if case .filtered = state {
+            return
+        }
+
         state = .loading
 
         if forceFirstLoadError, offset == 1 {
@@ -87,6 +92,25 @@ final class InfiniteScrollSampleViewModel: ObservableObject {
             employees.remove(at: index)
         }
         state = .deleted(employees: sections())
+    }
+
+    func filter(text: String) {
+        if text.isEmpty {
+            state = .loaded(employees: sections())
+            return
+        }
+
+        let filteredEmployees = sections()
+            .compactMap { model -> (section: SectionType, items: [ItemType])? in
+                let filteredItems = model.items.filter { $0.name.contains(text) }
+                if filteredItems.isEmpty {
+                    return nil
+                }
+                return (section: model.section, items: filteredItems)
+            }
+            .listSectionModels()
+
+        state = .filtered(employees: filteredEmployees)
     }
 
     private static func request(offset: Int) async -> [Employee] {
