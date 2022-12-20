@@ -85,7 +85,7 @@ struct InfiniteScrollSampleView: View {
                     await viewModel.refresh(forceFirstLoadError: forceFirstLoadError)
                 }
             }
-            .searchable(text: $searchText)
+            .searchable(text: $searchText, placeholder: "search employees")
             .onLoadMore {
                 Task {
                     await viewModel.loadMore(

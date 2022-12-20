@@ -31,7 +31,7 @@ struct InnerList<
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
     private let onRowDeleted: RowDeletedCallback
-    private var searchable: Binding<String>?
+    private var searchable: (bindableText: Binding<String>?, placeholder: String)?
 
     init(
         data: Binding<ListDataType>,
@@ -43,7 +43,7 @@ struct InnerList<
         onLoadMore: @escaping () -> Void,
         onRefresh: @escaping () -> Void,
         onRowDeleted: @escaping RowDeletedCallback,
-        searchable: Binding<String>?,
+        searchable: (bindableText: Binding<String>?, placeholder: String)?,
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
@@ -66,6 +66,7 @@ struct InnerList<
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.delegate = context.coordinator
         searchBar.autocapitalizationType = .none
+        searchBar.placeholder = searchable?.placeholder
         viewController.view.addSubview(searchBar)
         searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
         context.coordinator.searchBar = searchBar
@@ -156,7 +157,7 @@ struct InnerList<
 
         // MARK: - UISearchBarDelegate
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            parent.searchable?.wrappedValue = searchText
+            parent.searchable?.bindableText?.wrappedValue = searchText
         }
 
         func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

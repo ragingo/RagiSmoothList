@@ -31,7 +31,7 @@ public struct RagiSmoothList<
     private var onLoadMore: (() -> Void)?
     private var onRefresh: (() -> Void)?
     private var onRowDeleted: RowDeletedCallback?
-    private var searchable: Binding<String>?
+    private var searchable: (bindableText: Binding<String>?, placeholder: String)?
 
     public init(
         data: Binding<ListDataType>,
@@ -103,9 +103,9 @@ public struct RagiSmoothList<
         return newInstance
     }
 
-    public func searchable(text: Binding<String>) -> Self {
+    public func searchable(text: Binding<String>, placeholder: String = "") -> Self {
         var newInstance = self
-        newInstance.searchable = text
+        newInstance.searchable = (bindableText: text, placeholder: placeholder)
         return newInstance
     }
 }
