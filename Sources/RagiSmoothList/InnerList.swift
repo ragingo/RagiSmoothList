@@ -158,6 +158,10 @@ struct InnerList<
         func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
             parent.searchable?.wrappedValue = searchText
         }
+
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.endEditing(true)
+        }
     }
 
     private func makeDeleteAction(
