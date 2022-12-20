@@ -19,6 +19,7 @@ extension InfiniteScrollSampleView {
 
         let employee: EditableEmployee
         let action: () -> Void
+        private let randomText = String(repeating: UUID().uuidString, count: Int.random(in: 1...5))
 
         var body: some View {
             RagiSmoothListButtonCell(
@@ -37,6 +38,12 @@ extension InfiniteScrollSampleView {
                                 .font(.title2)
                             Text("hire date: \(employee.hireDate, formatter: Self.dateFormatter)")
                                 .font(.subheadline)
+                            Text("random text:")
+                            Text("=== START ===")
+                            Text(randomText)
+                                .font(.subheadline)
+                                .multilineTextAlignment(.leading)
+                            Text("=== END ===")
                         }
 
                         Spacer()
@@ -49,7 +56,6 @@ extension InfiniteScrollSampleView {
                                 .border(.red)
                                 .frame(minHeight: 0, maxHeight: employee.canEdit ? nil : 0)
                                 .clipped()
-                            Spacer()
                         }
                     }
                     .padding()
@@ -72,18 +78,15 @@ extension InfiniteScrollSampleView {
 
 struct EmployeeCell_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            InfiniteScrollSampleView.EmployeeCell(
-                employee: .init(employee: .init(id: 1, name: "emp 1", hireDate: Date())), action: {}
-            )
-            .frame(height: 100)
-            .border(.gray)
+        let emp1 = EditableEmployee(employee: .init(id: 1, name: "emp 1", hireDate: Date()), canEdit: true)
+        let emp2 = EditableEmployee(employee: .init(id: 2, name: "emp 2", hireDate: Date()))
 
-            InfiniteScrollSampleView.EmployeeCell(
-                employee: .init(employee: .init(id: 2, name: "emp 2", hireDate: Date())), action: {}
-            )
-            .frame(height: 100)
-            .border(.gray)
+        VStack {
+            InfiniteScrollSampleView.EmployeeCell(employee: emp1, action: {})
+                .border(.gray)
+
+            InfiniteScrollSampleView.EmployeeCell(employee: emp2, action: {})
+                .border(.gray)
         }
     }
 }

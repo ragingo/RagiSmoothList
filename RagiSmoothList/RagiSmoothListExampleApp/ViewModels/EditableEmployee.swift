@@ -9,14 +9,15 @@ import Foundation
 import RagiSmoothList
 
 struct EditableEmployee: Identifiable, Hashable, RagiSmoothListCellEditable {
-    private let employee: Employee
+    var id: Int
+    var name: String
+    var hireDate: Date
+    var canEdit: Bool
 
-    var id: Int { employee.id }
-    var name: String { employee.name }
-    var hireDate: Date { employee.hireDate }
-    var canEdit = false
-
-    init(employee: Employee) {
-        self.employee = employee
+    init(employee: Employee, canEdit: Bool = false) {
+        self.id = employee.id
+        self.name = employee.name
+        self.hireDate = employee.hireDate
+        self.canEdit = canEdit
     }
 }
