@@ -53,6 +53,7 @@ final class CollectionView<
         )
 
         uiCollectionView = collectionView
+        uiCollectionView.keyboardDismissMode = .onDragWithAccessory
         uiCollectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
         uiCollectionView.register(
             InnerListSection<SectionHeader>.self,
