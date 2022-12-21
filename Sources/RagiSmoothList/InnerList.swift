@@ -100,7 +100,8 @@ struct InnerList<
         context.coordinator.collectionView = collectionView
 
         collectionView.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
-        collectionView.swipeActions(edge: .trailing) { indexPath in
+        collectionView.swipeActions(edge: .trailing) { [weak collectionView] indexPath in
+            guard let collectionView else { return [] }
             let snapshot = collectionView.dataSource.snapshot()
             let section = snapshot.sectionIdentifiers[indexPath.section]
             let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
