@@ -23,6 +23,11 @@ struct ContentView: View {
                     iconColor: .green
                 )
                 makeLink(
+                    destination: { ListStyleSampleView() },
+                    description: "リストスタイルの動作確認用画面",
+                    iconColor: .orange
+                )
+                makeLink(
                     destination: { VerySlowStandardListSampleView() },
                     description: """
                     標準コンポーネントを使った超低速なリストUIの動作確認用画面

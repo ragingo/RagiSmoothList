@@ -22,7 +22,8 @@ struct InnerList<
     typealias CollectionViewType = CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
 
     @Binding private var data: ListDataType
-    private let listConfiguration: RagiSmoothListConfiguration?
+    private let listStyle: any RagiSmoothListStyle
+    @Binding private var listConfiguration: RagiSmoothListConfiguration
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
@@ -35,7 +36,8 @@ struct InnerList<
 
     init(
         data: Binding<ListDataType>,
-        listConfiguration: RagiSmoothListConfiguration? = nil,
+        listStyle: any RagiSmoothListStyle,
+        listConfiguration: Binding<RagiSmoothListConfiguration>,
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell,
@@ -47,7 +49,8 @@ struct InnerList<
         needsScrollToTop: Binding<Bool>
     ) {
         self._data = data
-        self.listConfiguration = listConfiguration
+        self.listStyle = listStyle
+        self._listConfiguration = listConfiguration
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
@@ -96,7 +99,7 @@ struct InnerList<
 
         context.coordinator.collectionView = collectionView
 
-        collectionView.updateLayout(listConfiguration: listConfiguration)
+        collectionView.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
         collectionView.swipeActions(edge: .trailing) { indexPath in
             let snapshot = collectionView.dataSource.snapshot()
             let section = snapshot.sectionIdentifiers[indexPath.section]
@@ -183,11 +186,11 @@ struct InnerList<
             handler(true)
         }
 
-        if let backgroundColor = listConfiguration?.edit.deleteButtonBackgroundColor {
+        if let backgroundColor = listConfiguration.edit.deleteButtonBackgroundColor {
             action.backgroundColor = UIColor(backgroundColor)
         }
 
-        action.image = listConfiguration?.edit.deleteButtonImage
+        action.image = listConfiguration.edit.deleteButtonImage
 
         return action
     }

@@ -19,8 +19,10 @@ public struct RagiSmoothList<
     // swiftlint:disable:next line_length
     public typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
 
+    @Environment(\.ragiSmoothListStyle) var listStyle
+
     @Binding private var data: ListDataType
-    private let listConfiguration: RagiSmoothListConfiguration?
+    @State private var listConfiguration: RagiSmoothListConfiguration
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
@@ -35,13 +37,13 @@ public struct RagiSmoothList<
 
     public init(
         data: Binding<ListDataType>,
-        listConfiguration: RagiSmoothListConfiguration? = nil,
+        listConfiguration: RagiSmoothListConfiguration = .init(),
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
         @ViewBuilder sectionFooterContent: @escaping (SectionType, [ItemType]) -> SectionFooter,
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell
     ) {
         self._data = data
-        self.listConfiguration = listConfiguration
+        self._listConfiguration = .init(initialValue: listConfiguration)
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
@@ -52,7 +54,8 @@ public struct RagiSmoothList<
     public var body: some View {
         InnerList(
             data: $data,
-            listConfiguration: listConfiguration,
+            listStyle: listStyle,
+            listConfiguration: $listConfiguration,
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
@@ -113,7 +116,7 @@ public struct RagiSmoothList<
 public extension RagiSmoothList {
     init(
         data: Binding<ListDataType>,
-        listConfiguration: RagiSmoothListConfiguration? = nil,
+        listConfiguration: RagiSmoothListConfiguration = .init(),
         @ViewBuilder cellContent: @escaping (ItemType) -> Cell
     ) where SectionHeader == EmptyView, SectionFooter == EmptyView {
         self.init(

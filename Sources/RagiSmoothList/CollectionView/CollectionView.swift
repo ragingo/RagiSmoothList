@@ -47,10 +47,7 @@ final class CollectionView<
         self.layoutListConfiguration = layoutListConfiguration
 
         let cellID = UUID().uuidString
-        let collectionView = UICollectionView(
-            frame: .zero,
-            collectionViewLayout: Self.createLayout(layoutListConfiguration: layoutListConfiguration)
-        )
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
 
         uiCollectionView = collectionView
         uiCollectionView.keyboardDismissMode = .onDragWithAccessory
@@ -106,7 +103,32 @@ final class CollectionView<
         return layout
     }
 
-    func updateLayout(listConfiguration: RagiSmoothListConfiguration?) {
+    func updateLayout(listStyle: any RagiSmoothListStyle, listConfiguration: RagiSmoothListConfiguration?) {
+        let appearance: UICollectionLayoutListConfiguration.Appearance
+        switch listStyle {
+        case is PlainListStyle:
+            appearance = .plain
+        case is GroupedListStyle:
+            appearance = .grouped
+        case is InsetListStyle:
+            appearance = .insetGrouped // MEMO: UICollectionView に .inset は存在しない
+        case is InsetGroupedListStyle:
+            appearance = .insetGrouped
+        case is SidebarListStyle:
+            appearance = .sidebar
+        case is DefaultListStyle:
+            appearance = .plain
+        default:
+            appearance = .plain
+        }
+        self.layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: appearance)
+
+        let oldConfiguration = self.layoutListConfiguration
+        // MEMO: もっといい方法あるかも？
+        self.layoutListConfiguration.leadingSwipeActionsConfigurationProvider =
+            oldConfiguration.leadingSwipeActionsConfigurationProvider
+        self.layoutListConfiguration.trailingSwipeActionsConfigurationProvider =
+            oldConfiguration.trailingSwipeActionsConfigurationProvider
         Self.configureStyles(listConfiguration: listConfiguration, layoutListConfiguration: &layoutListConfiguration)
         uiCollectionView.collectionViewLayout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
     }
