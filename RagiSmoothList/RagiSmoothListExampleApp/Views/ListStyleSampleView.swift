@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ListStyleSampleView: View {
     @State private var scrollToTop = false
+    @Environment(\.colorScheme) var colorScheme
 
     private static let employees = (0..<100)
         .map {
@@ -59,7 +60,8 @@ struct ListStyleSampleView: View {
                 cellContent: { employee in
                     Text(employee.name)
                         .frame(maxWidth: .infinity)
-                        .background(Color.white)
+                        .foregroundColor(colorScheme == .light ? .black : .white)
+                        .background(colorScheme == .light ? Color.white : Color.gray)
                 }
             )
             .scrollToTop($scrollToTop)
