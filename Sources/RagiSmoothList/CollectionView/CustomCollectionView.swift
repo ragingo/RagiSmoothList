@@ -13,9 +13,9 @@ final class CustomCollectionView<
     SectionHeader: View,
     SectionFooter: View
 >: UICollectionView {
-    let cellID = UUID().uuidString
-    let sectionHeaderID = UUID().uuidString
-    let sectionFooterID = UUID().uuidString
+    private let cellID = UUID().uuidString
+    private let sectionHeaderID = UUID().uuidString
+    private let sectionFooterID = UUID().uuidString
 
     private let onRefresh: () -> Void
 
