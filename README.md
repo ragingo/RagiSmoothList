@@ -81,6 +81,7 @@ RagiSmoothList(
 .refreshable {
     refresh()
 }
+.searchable(text: $searchText, placeholder: "...")
 .onLoadMore {
     loadMore()
 }
