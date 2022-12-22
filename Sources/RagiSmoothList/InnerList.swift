@@ -19,7 +19,7 @@ struct InnerList<
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
     typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
-    typealias CollectionViewType = CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
+    typealias CollectionViewType = CollectionViewHolder<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
 
     @Binding private var data: ListDataType
     private let listStyle: any RagiSmoothListStyle
@@ -74,7 +74,7 @@ struct InnerList<
         searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
         context.coordinator.searchBar = searchBar
 
-        let collectionView = CollectionView(
+        let collectionView = CollectionViewHolder(
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,

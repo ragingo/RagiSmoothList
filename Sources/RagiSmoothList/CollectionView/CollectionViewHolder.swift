@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-final class CollectionView<
+final class CollectionViewHolder<
     SectionType: Hashable,
     ItemType: Hashable,
     SectionHeader: View,
@@ -18,17 +18,17 @@ final class CollectionView<
     // swiftlint:disable:next line_length
     typealias SupplementaryViewProvider = UICollectionViewDiffableDataSource<SectionType, ItemType>.SupplementaryViewProvider
     typealias SwipeActionProvider = UICollectionLayoutListConfiguration.SwipeActionsConfigurationProvider
+    typealias DataSourceType = DataSource<SectionType, ItemType>
 
-    private(set) var dataSource: DataSource<SectionType, ItemType>
+    private(set) lazy var dataSource: DataSourceType = createDataSource()
     private let sectionHeaderContent: (SectionType, [ItemType]) -> SectionHeader
     private let sectionFooterContent: (SectionType, [ItemType]) -> SectionFooter
     private let cellContent: (ItemType) -> Cell
+    private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
 
-    private let uiCollectionView: UICollectionView
-    private let sectionHeaderID = UUID().uuidString
-    private let sectionFooterID = UUID().uuidString
-    private var layoutListConfiguration: UICollectionLayoutListConfiguration
+    private let uiCollectionView: CustomCollectionView<Cell, SectionHeader, SectionFooter>
+    private var layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
 
     init(
         @ViewBuilder sectionHeaderContent: @escaping (SectionType, [ItemType]) -> SectionHeader,
@@ -41,57 +41,37 @@ final class CollectionView<
         self.sectionHeaderContent = sectionHeaderContent
         self.sectionFooterContent = sectionFooterContent
         self.cellContent = cellContent
+        self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
 
-        let layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
-        self.layoutListConfiguration = layoutListConfiguration
+        uiCollectionView = .init(onRefresh: onRefresh)
 
-        let cellID = UUID().uuidString
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
+        self.dataSource.supplementaryViewProvider = supplementaryViewProvider()
 
-        uiCollectionView = collectionView
-        uiCollectionView.keyboardDismissMode = .onDragWithAccessory
-        uiCollectionView.register(InnerListCell<Cell>.self, forCellWithReuseIdentifier: cellID)
-        uiCollectionView.register(
-            InnerListSection<SectionHeader>.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: sectionHeaderID
-        )
-        uiCollectionView.register(
-            InnerListSection<SectionFooter>.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-            withReuseIdentifier: sectionFooterID
-        )
+        onInitialized(uiCollectionView)
+    }
 
-        self.dataSource = DataSource(
+    private func createDataSource() -> DataSourceType {
+        DataSource(
             collectionView: uiCollectionView,
-            cellProvider: { collectionView, indexPath, item -> UICollectionViewCell? in
-                let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: cellID,
-                    for: indexPath
-                ) as? InnerListCell<Cell>
+            cellProvider: { [weak self] collectionView, indexPath, item -> UICollectionViewCell? in
+                guard let self else { return nil }
 
-                guard let cell else { return nil }
+                guard let cell = self.uiCollectionView.dequeueCell(for: indexPath) else {
+                    return nil
+                }
 
                 let isLastSection = collectionView.numberOfSections == indexPath.section + 1
                 let isLastItem = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
                 if isLastSection && isLastItem {
-                    onLoadMore()
+                    self.onLoadMore()
                 }
 
-                let content = cellContent(item)
+                let content = self.cellContent(item)
                 cell.configure(content: content)
                 return cell
             }
         )
-
-        self.dataSource.supplementaryViewProvider = supplementaryViewProvider()
-
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(onRefreshControlValueChanged(sender:)), for: .valueChanged)
-        uiCollectionView.refreshControl = refreshControl
-
-        onInitialized(uiCollectionView)
     }
 
     private static func createLayout(
@@ -197,16 +177,10 @@ final class CollectionView<
             }
         }
     }
-
-    @objc
-    private func onRefreshControlValueChanged(sender: UIRefreshControl) {
-        onRefresh()
-        sender.endRefreshing()
-    }
 }
 
 // MARK: - Section Header/Footer
-private extension CollectionView {
+private extension CollectionViewHolder {
     func supplementaryViewProvider() -> SupplementaryViewProvider? {
         let provider: SupplementaryViewProvider = { [weak self] _, elementKind, indexPath in
             guard let self else { return nil }
@@ -223,15 +197,10 @@ private extension CollectionView {
         return provider
     }
 
-    func makeSectionHeader(
-        indexPath: IndexPath
-    ) -> UICollectionReusableView? {
-        let view = uiCollectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: sectionHeaderID,
-            for: indexPath) as? InnerListSection<SectionHeader>
-
-        guard let view else { return nil }
+    func makeSectionHeader(indexPath: IndexPath) -> UICollectionReusableView? {
+        guard let view = uiCollectionView.dequeueSectionHeader(for: indexPath) else {
+            return nil
+        }
 
         let snapshot = dataSource.snapshot()
         let sectionData = snapshot.sectionIdentifiers[indexPath.section]
@@ -242,15 +211,10 @@ private extension CollectionView {
         return view
     }
 
-    func makeSectionFooter(
-        indexPath: IndexPath
-    ) -> UICollectionReusableView? {
-        let view = uiCollectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionFooter,
-            withReuseIdentifier: sectionFooterID,
-            for: indexPath) as? InnerListSection<SectionFooter>
-
-        guard let view else { return nil }
+    func makeSectionFooter(indexPath: IndexPath) -> UICollectionReusableView? {
+        guard let view = uiCollectionView.dequeueSectionFooter(for: indexPath) else {
+            return nil
+        }
 
         let snapshot = dataSource.snapshot()
         let sectionData = snapshot.sectionIdentifiers[indexPath.section]
