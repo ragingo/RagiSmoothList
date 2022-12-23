@@ -19,7 +19,7 @@ struct InnerList<
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
     typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
-    typealias CollectionViewType = CollectionViewHolder<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
+    typealias CollectionViewHolderType = CollectionViewHolder<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
 
     @Binding private var data: ListDataType
     private let listStyle: any RagiSmoothListStyle
@@ -74,7 +74,7 @@ struct InnerList<
         searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
         context.coordinator.searchBar = searchBar
 
-        let collectionView = CollectionViewHolder(
+        let collectionViewHolder = CollectionViewHolder(
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
@@ -97,12 +97,12 @@ struct InnerList<
             ])
         }
 
-        context.coordinator.collectionView = collectionView
+        context.coordinator.collectionViewHolder = collectionViewHolder
 
-        collectionView.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
-        collectionView.swipeActions(edge: .trailing) { [weak collectionView] indexPath in
-            guard let collectionView else { return [] }
-            let snapshot = collectionView.dataSource.snapshot()
+        collectionViewHolder.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
+        collectionViewHolder.swipeActions(edge: .trailing) { [weak collectionViewHolder] indexPath in
+            guard let collectionViewHolder else { return [] }
+            let snapshot = collectionViewHolder.dataSource.snapshot()
             let section = snapshot.sectionIdentifiers[indexPath.section]
             let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
 
@@ -119,22 +119,22 @@ struct InnerList<
     }
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        if needsRefresh, let collectionView = context.coordinator.collectionView {
-            refreshData(collectionView)
+        if needsRefresh, let collectionViewHolder = context.coordinator.collectionViewHolder {
+            refreshData(collectionViewHolder)
             Task {
                 needsRefresh = false
             }
         }
 
-        if needsScrollToTop, let collectionView = context.coordinator.collectionView {
-            collectionView.scrollToTop()
+        if needsScrollToTop, let collectionViewHolder = context.coordinator.collectionViewHolder {
+            collectionViewHolder.scrollToTop()
             Task {
                 needsScrollToTop = false
             }
         }
     }
 
-    private func refreshData(_ collectionView: CollectionViewType) {
+    private func refreshData(_ collectionViewHolder: CollectionViewHolderType) {
         var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
         newSnapshot.appendSections(data.map { $0.section })
 
@@ -142,8 +142,8 @@ struct InnerList<
             newSnapshot.appendItems(section.items, toSection: section.section)
         }
 
-        let isInitialApply = collectionView.dataSource.snapshot().sectionIdentifiers.isEmpty
-        collectionView.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
+        let isInitialApply = collectionViewHolder.dataSource.snapshot().sectionIdentifiers.isEmpty
+        collectionViewHolder.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -152,7 +152,7 @@ struct InnerList<
 
     final class Coordinator: NSObject, UISearchBarDelegate {
         private let parent: InnerList
-        fileprivate var collectionView: CollectionViewType?
+        fileprivate var collectionViewHolder: CollectionViewHolderType?
         fileprivate var searchBar: UISearchBar?
 
         init(parent: InnerList) {

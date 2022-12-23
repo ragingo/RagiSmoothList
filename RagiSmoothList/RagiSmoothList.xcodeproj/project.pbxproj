@@ -11,6 +11,7 @@
 		523DCD4E2952026A00D0BA72 /* RagiSmoothListStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD4C2952025F00D0BA72 /* RagiSmoothListStyle.swift */; };
 		523DCD5029549BDF00D0BA72 /* CustomCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */; };
 		523DCD522954A09000D0BA72 /* CollectionViewHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */; };
+		523DCD542955458700D0BA72 /* SwipeStartEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD532955458700D0BA72 /* SwipeStartEdge.swift */; };
 		524ABCE62941D67800205599 /* RagiSmoothList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; };
 		524ABCE72941D67800205599 /* RagiSmoothList.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524ABCEB29420F0000205599 /* InnerListCell.swift */; };
@@ -73,6 +74,7 @@
 		523DCD4C2952025F00D0BA72 /* RagiSmoothListStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListStyle.swift; sourceTree = "<group>"; };
 		523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCollectionView.swift; sourceTree = "<group>"; };
 		523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewHolder.swift; sourceTree = "<group>"; };
+		523DCD532955458700D0BA72 /* SwipeStartEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeStartEdge.swift; sourceTree = "<group>"; };
 		524ABCEB29420F0000205599 /* InnerListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerListCell.swift; sourceTree = "<group>"; };
 		52A8FBEB294DFFC600F9C851 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
 		52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RagiSmoothList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,6 +149,7 @@
 				523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */,
 				523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */,
 				52A8FBEB294DFFC600F9C851 /* DataSource.swift */,
+				523DCD532955458700D0BA72 /* SwipeStartEdge.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -435,6 +438,7 @@
 				524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */,
 				52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */,
 				52A8FBEC294DFFC600F9C851 /* DataSource.swift in Sources */,
+				523DCD542955458700D0BA72 /* SwipeStartEdge.swift in Sources */,
 				52FF046029459DB20044495F /* RagiSmoothListEmptySection.swift in Sources */,
 				523DCD4E2952026A00D0BA72 /* RagiSmoothListStyle.swift in Sources */,
 				52FF04542943583F0044495F /* HostingView.swift in Sources */,

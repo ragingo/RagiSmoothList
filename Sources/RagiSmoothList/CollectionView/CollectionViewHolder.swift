@@ -51,71 +51,17 @@ final class CollectionViewHolder<
         onInitialized(collectionView)
     }
 
-    private func createDataSource() -> DataSourceType {
-        DataSource(
-            collectionView: collectionView,
-            cellProvider: { [weak self] collectionView, indexPath, item -> UICollectionViewCell? in
-                guard let self else { return nil }
-
-                guard let cell = self.collectionView.dequeueCell(for: indexPath) else {
-                    return nil
-                }
-
-                let isLastSection = collectionView.numberOfSections == indexPath.section + 1
-                let isLastItem = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
-                if isLastSection && isLastItem {
-                    self.onLoadMore()
-                }
-
-                let content = self.cellContent(item)
-                cell.configure(content: content)
-                return cell
-            }
-        )
-    }
-
-    private static func createLayout(
-        layoutListConfiguration: UICollectionLayoutListConfiguration
-    ) -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
-            return NSCollectionLayoutSection.list(using: layoutListConfiguration, layoutEnvironment: layoutEnvironment)
-        }
-        return layout
-    }
-
     func updateLayout(listStyle: any RagiSmoothListStyle, listConfiguration: RagiSmoothListConfiguration?) {
-        let appearance: UICollectionLayoutListConfiguration.Appearance
-        switch listStyle {
-        case is PlainListStyle:
-            appearance = .plain
-        case is GroupedListStyle:
-            appearance = .grouped
-        case is InsetListStyle:
-            appearance = .insetGrouped // MEMO: UICollectionView に .inset は存在しない
-        case is InsetGroupedListStyle:
-            appearance = .insetGrouped
-        case is SidebarListStyle:
-            appearance = .sidebar
-        case is DefaultListStyle:
-            appearance = .plain
-        default:
-            appearance = .plain
-        }
-        self.layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: appearance)
+        let oldConfig = self.layoutListConfiguration
 
-        let oldConfiguration = self.layoutListConfiguration
-        // MEMO: もっといい方法あるかも？
+        self.layoutListConfiguration = .init(appearance: decideAppearance(listStyle: listStyle))
+        self.configureStyles(listConfiguration: listConfiguration, layoutListConfiguration: &layoutListConfiguration)
         self.layoutListConfiguration.leadingSwipeActionsConfigurationProvider =
-            oldConfiguration.leadingSwipeActionsConfigurationProvider
+            oldConfig.leadingSwipeActionsConfigurationProvider
         self.layoutListConfiguration.trailingSwipeActionsConfigurationProvider =
-            oldConfiguration.trailingSwipeActionsConfigurationProvider
-        Self.configureStyles(listConfiguration: listConfiguration, layoutListConfiguration: &layoutListConfiguration)
-        collectionView.collectionViewLayout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
-    }
+            oldConfig.trailingSwipeActionsConfigurationProvider
 
-    public enum SwipeStartEdge {
-        case leading
-        case trailing
+        collectionView.updateLayout(layoutListConfiguration)
     }
 
     func swipeActions(
@@ -135,15 +81,14 @@ final class CollectionViewHolder<
             layoutListConfiguration.trailingSwipeActionsConfigurationProvider = provider
         }
 
-        let layout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
-        collectionView.collectionViewLayout = layout
+        collectionView.updateLayout(layoutListConfiguration)
     }
 
     func scrollToTop(animated: Bool = true) {
-        collectionView.setContentOffset(.zero, animated: animated)
+        collectionView.scrollToTop(animated: animated)
     }
 
-    private static func configureStyles(
+    private func configureStyles(
         listConfiguration: RagiSmoothListConfiguration?,
         layoutListConfiguration: inout UICollectionLayoutListConfiguration
     ) {
@@ -176,6 +121,48 @@ final class CollectionViewHolder<
                 layoutListConfiguration.separatorConfiguration.bottomSeparatorInsets = insets
             }
         }
+    }
+
+    private func decideAppearance(listStyle: any RagiSmoothListStyle) -> UICollectionLayoutListConfiguration.Appearance {
+        let appearance: UICollectionLayoutListConfiguration.Appearance
+        switch listStyle {
+        case is PlainListStyle:
+            appearance = .plain
+        case is GroupedListStyle:
+            appearance = .grouped
+        case is InsetListStyle:
+            appearance = .insetGrouped // MEMO: UICollectionView に .inset は存在しない
+        case is InsetGroupedListStyle:
+            appearance = .insetGrouped
+        case is SidebarListStyle:
+            appearance = .sidebar
+        case is DefaultListStyle:
+            appearance = .plain
+        default:
+            appearance = .plain
+        }
+        return appearance
+    }
+
+    private func createDataSource() -> DataSourceType {
+        DataSource(
+            collectionView: collectionView,
+            cellProvider: { [weak self] collectionView, indexPath, item -> UICollectionViewCell? in
+                guard let self else { return nil }
+
+                guard let cell = self.collectionView.dequeueCell(for: indexPath) else {
+                    return nil
+                }
+
+                if self.collectionView.isLastItem(indexPath) {
+                    self.onLoadMore()
+                }
+
+                let content = self.cellContent(item)
+                cell.configure(content: content)
+                return cell
+            }
+        )
     }
 }
 

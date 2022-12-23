@@ -70,6 +70,24 @@ final class CustomCollectionView<
         ) as? InnerListSection<SectionFooter>
     }
 
+    func isLastItem(_ indexPath: IndexPath) -> Bool {
+        let isLastSection = numberOfSections == indexPath.section + 1
+        let isLastItem = numberOfItems(inSection: indexPath.section) == indexPath.row + 1
+        return isLastSection && isLastItem
+    }
+
+    func scrollToTop(animated: Bool = true) {
+        setContentOffset(.zero, animated: animated)
+    }
+
+    func updateLayout(_ configuration: UICollectionLayoutListConfiguration) {
+        let layout = UICollectionViewCompositionalLayout { _, layoutEnvironment in
+            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+        }
+
+        collectionViewLayout = layout
+    }
+
     @objc
     private func onRefreshControlValueChanged(sender: UIRefreshControl) {
         onRefresh()
