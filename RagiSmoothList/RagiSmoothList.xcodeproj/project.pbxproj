@@ -9,11 +9,13 @@
 /* Begin PBXBuildFile section */
 		523DCD492951FC5100D0BA72 /* ListStyleSampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD482951FC5100D0BA72 /* ListStyleSampleView.swift */; };
 		523DCD4E2952026A00D0BA72 /* RagiSmoothListStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD4C2952025F00D0BA72 /* RagiSmoothListStyle.swift */; };
+		523DCD5029549BDF00D0BA72 /* CustomCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */; };
+		523DCD522954A09000D0BA72 /* CollectionViewHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */; };
+		523DCD542955458700D0BA72 /* SwipeStartEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523DCD532955458700D0BA72 /* SwipeStartEdge.swift */; };
 		524ABCE62941D67800205599 /* RagiSmoothList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; };
 		524ABCE72941D67800205599 /* RagiSmoothList.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524ABCEB29420F0000205599 /* InnerListCell.swift */; };
 		52A8FBEC294DFFC600F9C851 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8FBEB294DFFC600F9C851 /* DataSource.swift */; };
-		52A8FBEF294E004F00F9C851 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52A8FBEE294E004F00F9C851 /* CollectionView.swift */; };
 		52D01E002941CE4700103B11 /* RagiSmoothList.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D01DFF2941CE4700103B11 /* RagiSmoothList.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E0C2941D05900103B11 /* RagiSmoothList.swift */; };
 		52D01E152941D19000103B11 /* RagiSmoothListExampleAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D01E142941D19000103B11 /* RagiSmoothListExampleAppApp.swift */; };
@@ -70,9 +72,11 @@
 /* Begin PBXFileReference section */
 		523DCD482951FC5100D0BA72 /* ListStyleSampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListStyleSampleView.swift; sourceTree = "<group>"; };
 		523DCD4C2952025F00D0BA72 /* RagiSmoothListStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothListStyle.swift; sourceTree = "<group>"; };
+		523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCollectionView.swift; sourceTree = "<group>"; };
+		523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewHolder.swift; sourceTree = "<group>"; };
+		523DCD532955458700D0BA72 /* SwipeStartEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeStartEdge.swift; sourceTree = "<group>"; };
 		524ABCEB29420F0000205599 /* InnerListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InnerListCell.swift; sourceTree = "<group>"; };
 		52A8FBEB294DFFC600F9C851 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
-		52A8FBEE294E004F00F9C851 /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		52D01DFC2941CE4700103B11 /* RagiSmoothList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RagiSmoothList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D01DFF2941CE4700103B11 /* RagiSmoothList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RagiSmoothList.h; sourceTree = "<group>"; };
 		52D01E0C2941D05900103B11 /* RagiSmoothList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RagiSmoothList.swift; sourceTree = "<group>"; };
@@ -142,8 +146,10 @@
 		52A8FBE9294DFFAE00F9C851 /* CollectionView */ = {
 			isa = PBXGroup;
 			children = (
+				523DCD512954A09000D0BA72 /* CollectionViewHolder.swift */,
+				523DCD4F29549BDF00D0BA72 /* CustomCollectionView.swift */,
 				52A8FBEB294DFFC600F9C851 /* DataSource.swift */,
-				52A8FBEE294E004F00F9C851 /* CollectionView.swift */,
+				523DCD532955458700D0BA72 /* SwipeStartEdge.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -427,15 +433,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				523DCD5029549BDF00D0BA72 /* CustomCollectionView.swift in Sources */,
 				52FF044E294220E80044495F /* RagiSmoothListButtonCell.swift in Sources */,
 				524ABCEC29420F0000205599 /* InnerListCell.swift in Sources */,
-				52A8FBEF294E004F00F9C851 /* CollectionView.swift in Sources */,
 				52D01E0D2941D05900103B11 /* RagiSmoothList.swift in Sources */,
 				52A8FBEC294DFFC600F9C851 /* DataSource.swift in Sources */,
+				523DCD542955458700D0BA72 /* SwipeStartEdge.swift in Sources */,
 				52FF046029459DB20044495F /* RagiSmoothListEmptySection.swift in Sources */,
 				523DCD4E2952026A00D0BA72 /* RagiSmoothListStyle.swift in Sources */,
 				52FF04542943583F0044495F /* HostingView.swift in Sources */,
 				52FF045E29459D760044495F /* RagiSmoothListConfiguration.swift in Sources */,
+				523DCD522954A09000D0BA72 /* CollectionViewHolder.swift in Sources */,
 				52FF046229459E170044495F /* RagiSmoothListSectionModel.swift in Sources */,
 				52FF047E294AE8FD0044495F /* RagiSmoothListCellEditable.swift in Sources */,
 				52FF04362942149F0044495F /* InnerList.swift in Sources */,

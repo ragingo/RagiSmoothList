@@ -19,7 +19,7 @@ struct InnerList<
     typealias ListDataType = [ListSectionModelType]
     typealias UIViewControllerType = UIViewController
     typealias RowDeletedCallback = ((sectionIndex: Int, itemIndex: Int, section: SectionType, item: ItemType)) -> Void
-    typealias CollectionViewType = CollectionView<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
+    typealias CollectionViewHolderType = CollectionViewHolder<SectionType, ItemType, SectionHeader, SectionFooter, Cell>
 
     @Binding private var data: ListDataType
     private let listStyle: any RagiSmoothListStyle
@@ -65,16 +65,70 @@ struct InnerList<
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
 
-        let searchBar = UISearchBar()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        let searchBar = makeSearchBar(parent: viewController)
+        context.coordinator.searchBar = searchBar
         searchBar.delegate = context.coordinator
+
+        let collectionViewHolder = makeCollectionViewHolder(parent: viewController, searchBar: searchBar)
+        context.coordinator.collectionViewHolder = collectionViewHolder
+
+        return viewController
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
+        if needsRefresh, let collectionViewHolder = context.coordinator.collectionViewHolder {
+            refreshData(collectionViewHolder)
+            Task {
+                needsRefresh = false
+            }
+        }
+
+        if needsScrollToTop, let collectionViewHolder = context.coordinator.collectionViewHolder {
+            collectionViewHolder.scrollToTop()
+            Task {
+                needsScrollToTop = false
+            }
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(parent: self)
+    }
+
+    final class Coordinator: NSObject, UISearchBarDelegate {
+        private let parent: InnerList
+        fileprivate var collectionViewHolder: CollectionViewHolderType?
+        fileprivate var searchBar: UISearchBar?
+
+        init(parent: InnerList) {
+            self.parent = parent
+        }
+
+        // MARK: - UISearchBarDelegate
+        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+            parent.searchable?.bindableText?.wrappedValue = searchText
+        }
+
+        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+            searchBar.endEditing(true)
+        }
+    }
+
+    private func makeSearchBar(parent viewController: UIViewControllerType) -> UISearchBar {
+        let searchBar = UISearchBar()
+        viewController.view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.autocapitalizationType = .none
         searchBar.placeholder = searchable?.placeholder
-        viewController.view.addSubview(searchBar)
         searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
-        context.coordinator.searchBar = searchBar
+        return searchBar
+    }
 
-        let collectionView = CollectionView(
+    private func makeCollectionViewHolder(
+        parent viewController: UIViewControllerType,
+        searchBar: UISearchBar
+    ) -> CollectionViewHolderType {
+        let collectionViewHolder = CollectionViewHolder(
             sectionHeaderContent: sectionHeaderContent,
             sectionFooterContent: sectionFooterContent,
             cellContent: cellContent,
@@ -97,15 +151,8 @@ struct InnerList<
             ])
         }
 
-        context.coordinator.collectionView = collectionView
-
-        collectionView.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
-        collectionView.swipeActions(edge: .trailing) { [weak collectionView] indexPath in
-            guard let collectionView else { return [] }
-            let snapshot = collectionView.dataSource.snapshot()
-            let section = snapshot.sectionIdentifiers[indexPath.section]
-            let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-
+        collectionViewHolder.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
+        collectionViewHolder.swipeActions(edge: .trailing) { indexPath, section, item in
             var actions: [UIContextualAction] = []
 
             if let editableCell = item as? RagiSmoothListCellEditable, editableCell.canEdit {
@@ -115,26 +162,10 @@ struct InnerList<
             return actions
         }
 
-        return viewController
+        return collectionViewHolder
     }
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        if needsRefresh, let collectionView = context.coordinator.collectionView {
-            refreshData(collectionView)
-            Task {
-                needsRefresh = false
-            }
-        }
-
-        if needsScrollToTop, let collectionView = context.coordinator.collectionView {
-            collectionView.scrollToTop()
-            Task {
-                needsScrollToTop = false
-            }
-        }
-    }
-
-    private func refreshData(_ collectionView: CollectionViewType) {
+    private func refreshData(_ collectionViewHolder: CollectionViewHolderType) {
         var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
         newSnapshot.appendSections(data.map { $0.section })
 
@@ -142,31 +173,8 @@ struct InnerList<
             newSnapshot.appendItems(section.items, toSection: section.section)
         }
 
-        let isInitialApply = collectionView.dataSource.snapshot().sectionIdentifiers.isEmpty
-        collectionView.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
-    }
-
-    func makeCoordinator() -> Coordinator {
-        return Coordinator(parent: self)
-    }
-
-    final class Coordinator: NSObject, UISearchBarDelegate {
-        private let parent: InnerList
-        fileprivate var collectionView: CollectionViewType?
-        fileprivate var searchBar: UISearchBar?
-
-        init(parent: InnerList) {
-            self.parent = parent
-        }
-
-        // MARK: - UISearchBarDelegate
-        func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-            parent.searchable?.bindableText?.wrappedValue = searchText
-        }
-
-        func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-            searchBar.endEditing(true)
-        }
+        let isInitialApply = collectionViewHolder.dataSource.snapshot().sectionIdentifiers.isEmpty
+        collectionViewHolder.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
     }
 
     private func makeDeleteAction(
@@ -176,7 +184,7 @@ struct InnerList<
         section: SectionType,
         item: ItemType
     ) -> UIContextualAction {
-        let action = UIContextualAction(style: .destructive, title: title) { _, _, handler in
+        let action = UIContextualAction(style: style, title: title) { _, _, handler in
             onRowDeleted((
                 sectionIndex: indexPath.section,
                 itemIndex: indexPath.row,
