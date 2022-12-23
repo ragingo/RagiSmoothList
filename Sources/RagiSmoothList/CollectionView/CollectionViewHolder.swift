@@ -27,7 +27,7 @@ final class CollectionViewHolder<
     private let onLoadMore: () -> Void
     private let onRefresh: () -> Void
 
-    private let uiCollectionView: CustomCollectionView<Cell, SectionHeader, SectionFooter>
+    private let collectionView: CustomCollectionView<Cell, SectionHeader, SectionFooter>
     private var layoutListConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
 
     init(
@@ -44,20 +44,20 @@ final class CollectionViewHolder<
         self.onLoadMore = onLoadMore
         self.onRefresh = onRefresh
 
-        uiCollectionView = .init(onRefresh: onRefresh)
+        collectionView = .init(onRefresh: onRefresh)
 
         self.dataSource.supplementaryViewProvider = supplementaryViewProvider()
 
-        onInitialized(uiCollectionView)
+        onInitialized(collectionView)
     }
 
     private func createDataSource() -> DataSourceType {
         DataSource(
-            collectionView: uiCollectionView,
+            collectionView: collectionView,
             cellProvider: { [weak self] collectionView, indexPath, item -> UICollectionViewCell? in
                 guard let self else { return nil }
 
-                guard let cell = self.uiCollectionView.dequeueCell(for: indexPath) else {
+                guard let cell = self.collectionView.dequeueCell(for: indexPath) else {
                     return nil
                 }
 
@@ -110,7 +110,7 @@ final class CollectionViewHolder<
         self.layoutListConfiguration.trailingSwipeActionsConfigurationProvider =
             oldConfiguration.trailingSwipeActionsConfigurationProvider
         Self.configureStyles(listConfiguration: listConfiguration, layoutListConfiguration: &layoutListConfiguration)
-        uiCollectionView.collectionViewLayout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
+        collectionView.collectionViewLayout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
     }
 
     public enum SwipeStartEdge {
@@ -136,11 +136,11 @@ final class CollectionViewHolder<
         }
 
         let layout = Self.createLayout(layoutListConfiguration: layoutListConfiguration)
-        uiCollectionView.collectionViewLayout = layout
+        collectionView.collectionViewLayout = layout
     }
 
     func scrollToTop(animated: Bool = true) {
-        uiCollectionView.setContentOffset(.zero, animated: animated)
+        collectionView.setContentOffset(.zero, animated: animated)
     }
 
     private static func configureStyles(
@@ -198,7 +198,7 @@ private extension CollectionViewHolder {
     }
 
     func makeSectionHeader(indexPath: IndexPath) -> UICollectionReusableView? {
-        guard let view = uiCollectionView.dequeueSectionHeader(for: indexPath) else {
+        guard let view = collectionView.dequeueSectionHeader(for: indexPath) else {
             return nil
         }
 
@@ -212,7 +212,7 @@ private extension CollectionViewHolder {
     }
 
     func makeSectionFooter(indexPath: IndexPath) -> UICollectionReusableView? {
-        guard let view = uiCollectionView.dequeueSectionFooter(for: indexPath) else {
+        guard let view = collectionView.dequeueSectionFooter(for: indexPath) else {
             return nil
         }
 
