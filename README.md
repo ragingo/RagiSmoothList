@@ -78,6 +78,7 @@ RagiSmoothList(
         Text(shop.name)
     }
 )
+.ragiSmoothListStyle(.insetGrouped)
 .refreshable {
     refresh()
 }
