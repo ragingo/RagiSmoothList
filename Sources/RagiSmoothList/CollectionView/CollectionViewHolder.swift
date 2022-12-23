@@ -67,10 +67,14 @@ final class CollectionViewHolder<
     func swipeActions(
         edge: SwipeStartEdge,
         allowFullSwipe: Bool = true,
-        actions: @escaping (IndexPath) -> [UIContextualAction]
+        actions: @escaping (IndexPath, SectionType, ItemType) -> [UIContextualAction]
     ) {
-        let provider: SwipeActionProvider = { indexPath -> UISwipeActionsConfiguration? in
-            UISwipeActionsConfiguration(actions: actions(indexPath))
+        let provider: SwipeActionProvider = { [weak self] indexPath -> UISwipeActionsConfiguration? in
+            guard let self else { return nil }
+            let snapshot = self.dataSource.snapshot()
+            let section = snapshot.sectionIdentifiers[indexPath.section]
+            let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+            return UISwipeActionsConfiguration(actions: actions(indexPath, section, item))
         }
 
         switch edge {

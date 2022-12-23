@@ -65,55 +65,12 @@ struct InnerList<
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let viewController = UIViewControllerType()
 
-        let searchBar = UISearchBar()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.delegate = context.coordinator
-        searchBar.autocapitalizationType = .none
-        searchBar.placeholder = searchable?.placeholder
-        viewController.view.addSubview(searchBar)
-        searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
+        let searchBar = makeSearchBar(parent: viewController)
         context.coordinator.searchBar = searchBar
+        searchBar.delegate = context.coordinator
 
-        let collectionViewHolder = CollectionViewHolder(
-            sectionHeaderContent: sectionHeaderContent,
-            sectionFooterContent: sectionFooterContent,
-            cellContent: cellContent,
-            onLoadMore: onLoadMore,
-            onRefresh: onRefresh
-        ) { uiCollectionView in
-            uiCollectionView.translatesAutoresizingMaskIntoConstraints = false
-            viewController.view.addSubview(uiCollectionView)
-
-            NSLayoutConstraint.activate([
-                // searchBar
-                viewController.view.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
-                viewController.view.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
-                viewController.view.topAnchor.constraint(equalTo: searchBar.topAnchor),
-                // collection view
-                viewController.view.leadingAnchor.constraint(equalTo: uiCollectionView.leadingAnchor),
-                viewController.view.trailingAnchor.constraint(equalTo: uiCollectionView.trailingAnchor),
-                searchBar.bottomAnchor.constraint(equalTo: uiCollectionView.topAnchor),
-                viewController.view.bottomAnchor.constraint(equalTo: uiCollectionView.bottomAnchor)
-            ])
-        }
-
+        let collectionViewHolder = makeCollectionViewHolder(parent: viewController, searchBar: searchBar)
         context.coordinator.collectionViewHolder = collectionViewHolder
-
-        collectionViewHolder.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
-        collectionViewHolder.swipeActions(edge: .trailing) { [weak collectionViewHolder] indexPath in
-            guard let collectionViewHolder else { return [] }
-            let snapshot = collectionViewHolder.dataSource.snapshot()
-            let section = snapshot.sectionIdentifiers[indexPath.section]
-            let item = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
-
-            var actions: [UIContextualAction] = []
-
-            if let editableCell = item as? RagiSmoothListCellEditable, editableCell.canEdit {
-                actions += [makeDeleteAction(indexPath: indexPath, section: section, item: item)]
-            }
-
-            return actions
-        }
 
         return viewController
     }
@@ -132,18 +89,6 @@ struct InnerList<
                 needsScrollToTop = false
             }
         }
-    }
-
-    private func refreshData(_ collectionViewHolder: CollectionViewHolderType) {
-        var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
-        newSnapshot.appendSections(data.map { $0.section })
-
-        data.forEach { section in
-            newSnapshot.appendItems(section.items, toSection: section.section)
-        }
-
-        let isInitialApply = collectionViewHolder.dataSource.snapshot().sectionIdentifiers.isEmpty
-        collectionViewHolder.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
     }
 
     func makeCoordinator() -> Coordinator {
@@ -169,6 +114,69 @@ struct InnerList<
         }
     }
 
+    private func makeSearchBar(parent viewController: UIViewControllerType) -> UISearchBar {
+        let searchBar = UISearchBar()
+        viewController.view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.autocapitalizationType = .none
+        searchBar.placeholder = searchable?.placeholder
+        searchBar.heightAnchor.constraint(equalToConstant: 0).isActive = searchable == nil
+        return searchBar
+    }
+
+    private func makeCollectionViewHolder(
+        parent viewController: UIViewControllerType,
+        searchBar: UISearchBar
+    ) -> CollectionViewHolderType {
+        let collectionViewHolder = CollectionViewHolder(
+            sectionHeaderContent: sectionHeaderContent,
+            sectionFooterContent: sectionFooterContent,
+            cellContent: cellContent,
+            onLoadMore: onLoadMore,
+            onRefresh: onRefresh
+        ) { uiCollectionView in
+            uiCollectionView.translatesAutoresizingMaskIntoConstraints = false
+            viewController.view.addSubview(uiCollectionView)
+
+            NSLayoutConstraint.activate([
+                // searchBar
+                viewController.view.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor),
+                viewController.view.trailingAnchor.constraint(equalTo: searchBar.trailingAnchor),
+                viewController.view.topAnchor.constraint(equalTo: searchBar.topAnchor),
+                // collection view
+                viewController.view.leadingAnchor.constraint(equalTo: uiCollectionView.leadingAnchor),
+                viewController.view.trailingAnchor.constraint(equalTo: uiCollectionView.trailingAnchor),
+                searchBar.bottomAnchor.constraint(equalTo: uiCollectionView.topAnchor),
+                viewController.view.bottomAnchor.constraint(equalTo: uiCollectionView.bottomAnchor)
+            ])
+        }
+
+        collectionViewHolder.updateLayout(listStyle: listStyle, listConfiguration: listConfiguration)
+        collectionViewHolder.swipeActions(edge: .trailing) { indexPath, section, item in
+            var actions: [UIContextualAction] = []
+
+            if let editableCell = item as? RagiSmoothListCellEditable, editableCell.canEdit {
+                actions += [makeDeleteAction(indexPath: indexPath, section: section, item: item)]
+            }
+
+            return actions
+        }
+
+        return collectionViewHolder
+    }
+
+    private func refreshData(_ collectionViewHolder: CollectionViewHolderType) {
+        var newSnapshot = NSDiffableDataSourceSnapshot<SectionType, ItemType>()
+        newSnapshot.appendSections(data.map { $0.section })
+
+        data.forEach { section in
+            newSnapshot.appendItems(section.items, toSection: section.section)
+        }
+
+        let isInitialApply = collectionViewHolder.dataSource.snapshot().sectionIdentifiers.isEmpty
+        collectionViewHolder.dataSource.apply(newSnapshot, animatingDifferences: !isInitialApply)
+    }
+
     private func makeDeleteAction(
         style: UIContextualAction.Style = .destructive,
         title: String = "Delete",
@@ -176,7 +184,7 @@ struct InnerList<
         section: SectionType,
         item: ItemType
     ) -> UIContextualAction {
-        let action = UIContextualAction(style: .destructive, title: title) { _, _, handler in
+        let action = UIContextualAction(style: style, title: title) { _, _, handler in
             onRowDeleted((
                 sectionIndex: indexPath.section,
                 itemIndex: indexPath.row,
